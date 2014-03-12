@@ -23,6 +23,8 @@
 				<th>Discontinued Date</th>
 				<!-- Table header for Company -->
 				<th>Company</th>
+				<th>Edition</th>
+				<th>Removal</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -33,6 +35,18 @@
 					<td><c:out value="${ computer.introduced }" /></td>
 					<td><c:out value="${ computer.discontinued }" /></td>
 					<td><c:out value="${ computer.company.name }" /></td>
+					<td>
+						<form action="editcomputer" method="GET">
+							<input type="hidden" name="id" value="${computer.id}" /> 
+							<input type="submit" value="Edit" class="btn success" id="editcomputer"  >
+						</form>
+					</td>
+					<td>
+						<form action="delcomputer" method="GET">
+							<input type="hidden" name="id" value="${computer.id}" /> 
+							<input type="submit" value="Delete" class="btn danger" id="delcomputer"  >
+						</form>
+					</td>
 				</tr>
 			</c:forEach>
 		</tbody>
