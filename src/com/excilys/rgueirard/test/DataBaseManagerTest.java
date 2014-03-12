@@ -7,8 +7,9 @@ import com.excilys.rgueirard.persistence.DataBaseManager;
 
 public class DataBaseManagerTest {
 	public static void main(String[] args) throws SQLException{
-		Connection connection = DataBaseManager.getConnection();
-		connection.toString();
+		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
+		Connection connection = dataBaseManager.getConnection();
+		System.out.println(connection.toString());
 		connection.close();
 	}
 }

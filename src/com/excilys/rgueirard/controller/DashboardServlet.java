@@ -1,4 +1,4 @@
-package com.excilys.rgueirard.servlets;
+package com.excilys.rgueirard.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.excilys.rgueirard.beans.Computer;
+import com.excilys.rgueirard.domain.Computer;
 import com.excilys.rgueirard.persistence.ComputerDAO;
 
 /**
@@ -35,13 +35,12 @@ public class DashboardServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		List<Computer> computers = new ArrayList<Computer>();
-		computers = ComputerDAO.getAllComputers();
+		computers = ComputerDAO.retrieveAll();
 
 		request.setAttribute("computers", computers);
-
+		request.setAttribute("size", computers.size());
 		this.getServletContext().getRequestDispatcher("/dashboard.jsp")
 				.forward(request, response);
-
 	}
 
 	/**

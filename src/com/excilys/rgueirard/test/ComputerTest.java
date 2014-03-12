@@ -1,6 +1,6 @@
 package com.excilys.rgueirard.test;
 
-import com.excilys.rgueirard.beans.Computer;
+import com.excilys.rgueirard.domain.Computer;
 
 public class ComputerTest {
 
