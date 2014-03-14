@@ -1,11 +1,7 @@
 package com.excilys.rgueirard.controller;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -14,7 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.excilys.rgueirard.domain.Company;
 import com.excilys.rgueirard.domain.Computer;
+import com.excilys.rgueirard.persistence.CompanyDAO;
 import com.excilys.rgueirard.persistence.ComputerDAO;
 
 /**
@@ -38,6 +36,12 @@ public class AddComputerServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		
+		List<Company> companies  = CompanyDAO.retrieveAll();
+		request.setAttribute("companies", companies);
+		
+		this.getServletContext().getRequestDispatcher("/WEB-INF/addComputer.jsp")
+		.forward(request, response);
 	}
 
 	/**
@@ -50,7 +54,7 @@ public class AddComputerServlet extends HttpServlet {
 		String introducedDate = "";
 		String discontinuedDate = "";
 		String company = "";
-
+		
 		name = request.getParameter("name");
 		introducedDate = request.getParameter("introducedDate");
 		discontinuedDate = request.getParameter("discontinuedDate");
@@ -59,11 +63,11 @@ public class AddComputerServlet extends HttpServlet {
 		ComputerDAO.create(name, introducedDate, discontinuedDate, company);
 		
 		List<Computer> computers = new ArrayList<Computer>();
-		computers = ComputerDAO.retrieveAll();
+		computers = ComputerDAO.retrieveAll(1);
 		
 		request.setAttribute("computers", computers);
 		request.setAttribute("size", computers.size());
-		this.getServletContext().getRequestDispatcher("/dashboard.jsp")
+		this.getServletContext().getRequestDispatcher("/WEB-INF/dashboard.jsp")
 				.forward(request, response);
 	}
 

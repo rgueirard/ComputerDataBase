@@ -26,8 +26,7 @@ public class Company {
 
 	@Override
 	public String toString() {
-		return "\n-------------------" + "\nId : " + id + "\nName : " + name
-				+ "-------------------\n";
+		return "\n\tId : " + id + "\n\tName : " + name;
 	}
 
 	@Override

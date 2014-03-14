@@ -328,3 +328,27 @@ button.btn::-moz-focus-inner,input[type=submit].btn::-moz-focus-inner{padding:0;
 .media-grid li{display:inline;}
 .media-grid a{float:left;padding:4px;margin:0 0 20px 20px;border:1px solid #ddd;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;-webkit-box-shadow:0 1px 1px rgba(0, 0, 0, 0.075);-moz-box-shadow:0 1px 1px rgba(0, 0, 0, 0.075);box-shadow:0 1px 1px rgba(0, 0, 0, 0.075);}.media-grid a img{display:block;}
 .media-grid a:hover{border-color:#0069d6;-webkit-box-shadow:0 1px 4px rgba(0, 105, 214, 0.25);-moz-box-shadow:0 1px 4px rgba(0, 105, 214, 0.25);box-shadow:0 1px 4px rgba(0, 105, 214, 0.25);}
+
+#nameInput { margin-left: .5em; float: left; }
+#nameInput, label { float: left; font-family: Arial, Helvetica, sans-serif; font-size: small; }
+#introducedInput { margin-left: .5em; float: left; }
+#introducedInput, label { float: left; font-family: Arial, Helvetica, sans-serif; font-size: small; }
+#discontinuedInput { margin-left: .5em; float: left; }
+#discontinuedInput, label { float: left; font-family: Arial, Helvetica, sans-serif; font-size: small; }
+
+#nameSpan { margin-left: .5em; float: left; }
+#introducedSpan { margin-left: .5em; float: left; }
+#discontinuedSpan { margin-left: .5em; float: left; }
+
+input.error { border: 1px solid red; }
+label.error {
+	background: url('http://jquery.bassistance.de/validate/demo/images/unchecked.gif') no-repeat;
+	padding-left: 16px;
+	margin-left: .3em;
+}
+label.valid {
+	background: url('/ComputerDataBase/WebContent/resources/images/checked.gif') no-repeat;
+	display: block;
+	width: 16px;
+	height: 16px;
+}

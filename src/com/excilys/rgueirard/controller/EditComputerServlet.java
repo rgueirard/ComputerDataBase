@@ -1,6 +1,8 @@
 package com.excilys.rgueirard.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -8,7 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.excilys.rgueirard.domain.Company;
 import com.excilys.rgueirard.domain.Computer;
+import com.excilys.rgueirard.persistence.CompanyDAO;
 import com.excilys.rgueirard.persistence.ComputerDAO;
 
 /**
@@ -31,11 +35,11 @@ public class EditComputerServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String id = request.getParameter("id");
-		Computer computer =	ComputerDAO.retrieve(id);
-		
+		Computer computer =	ComputerDAO.retrieve(id, 1);
+		List<Company> companies  = CompanyDAO.retrieveAll();
 		request.setAttribute("computer", computer);
-		
-		this.getServletContext().getRequestDispatcher("/editComputer.jsp")
+		request.setAttribute("companies", companies);
+		this.getServletContext().getRequestDispatcher("/WEB-INF/editComputer.jsp")
 		.forward(request, response);
 	}
 
@@ -47,11 +51,17 @@ public class EditComputerServlet extends HttpServlet {
 		String name = request.getParameter("name");
 		String introduced = request.getParameter("introduced");
 		String discontinued = request.getParameter("discontinued");
-		String companyId = request.getParameter("companyId");
+		String companyId = request.getParameter("company");
+		List<Computer> computers = new ArrayList<Computer>();
 		
 		ComputerDAO.update(id, name, introduced, discontinued, companyId);
 		
-		this.getServletContext().getRequestDispatcher("/dashboard.jsp")
+		computers = ComputerDAO.retrieveAll(1);
+		
+		request.setAttribute("computers", computers);
+		request.setAttribute("size", computers.size());
+		
+		this.getServletContext().getRequestDispatcher("/WEB-INF/dashboard.jsp")
 		.forward(request, response);
 	}
 

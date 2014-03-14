@@ -1,24 +1,31 @@
 package com.excilys.rgueirard.test;
 
+import java.util.Date;
+
+import org.apache.log4j.BasicConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.excilys.rgueirard.domain.Company;
 import com.excilys.rgueirard.domain.Computer;
 
 public class ComputerTest {
+	private static Logger logger = LoggerFactory.getLogger(ComputerTest.class);
 
 	public static void main(String[] args) {
-		Computer computer1 = new Computer();
-		computer1.setId(1);
-		computer1.setName("cmpt1");
-		computer1.setIntroduced(null);
-		computer1.setDiscontinued(null);
+		BasicConfigurator.configure();
+		Company company = Company.builder().id(0).name("excilys").build();
+
+		Computer computer1 = Computer.builder().id(1).name("cmpt1")
+				.introduced(new Date()).discontinued(new Date())
+				.company(company).build();
+
+		Computer computer2 = Computer.builder().id(2).name("cmpt2")
+				.introduced(null).discontinued(null).company(company).build();
 		
-		Computer computer2 = new Computer();
-		computer2.setId(2);
-		computer2.setName("cmpt2");
-		computer2.setIntroduced(null);
-		computer2.setDiscontinued(null);
 		
-		System.out.println("computer 1 : \n"+computer1.toString());
-		System.out.println("\ncomputer 2 : \n"+computer2.toString());
+		logger.info("computer 1 : {}\n", computer1.toString());
+		logger.info("computer 2 : {}\n", computer2.toString());
 	}
 
 }

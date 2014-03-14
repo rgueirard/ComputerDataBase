@@ -34,13 +34,16 @@ public class DelComputerServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String id = request.getParameter("id");
 		ComputerDAO.delete(id);
-		
+		int orderBy = 1;
+		if(request.getParameter("orderby")!=null){
+			Integer.parseInt(request.getParameter("orderby"));
+		}
 		List<Computer> computers = new ArrayList<Computer>();
-		computers = ComputerDAO.retrieveAll();
+		computers = ComputerDAO.retrieveAll(orderBy);
 		
 		request.setAttribute("computers", computers);
 		request.setAttribute("size", computers.size());
-		this.getServletContext().getRequestDispatcher("/dashboard.jsp")
+		this.getServletContext().getRequestDispatcher("/WEB-INF/dashboard.jsp")
 				.forward(request, response);
 	}
 

@@ -55,9 +55,9 @@ public class Computer {
 
 	@Override
 	public String toString() {
-		return "\n\tId : " + id + "\n\tName : " + name + "\n\tIntroduced : "
-				+ introduced + "\n\tDiscontinued : " + discontinued
-				+ "\n\tCompany : " + company.toString() + "\n";
+		return "\n-------------------" + "\nId : " + id + "\nName : " + name + "\nIntroduced : "
+				+ introduced + "\nDiscontinued : " + discontinued
+				+ "\ntCompany : " + company.toString() + "\n"+ "-------------------\n";
 	}
 
 	@Override

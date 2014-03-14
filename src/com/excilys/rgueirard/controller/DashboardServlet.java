@@ -35,11 +35,12 @@ public class DashboardServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		List<Computer> computers = new ArrayList<Computer>();
-		computers = ComputerDAO.retrieveAll();
+			
+		computers = ComputerDAO.retrieveAll(1);
 
 		request.setAttribute("computers", computers);
 		request.setAttribute("size", computers.size());
-		this.getServletContext().getRequestDispatcher("/dashboard.jsp")
+		this.getServletContext().getRequestDispatcher("/WEB-INF/dashboard.jsp")
 				.forward(request, response);
 	}
 
@@ -49,7 +50,49 @@ public class DashboardServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		String searchText = request.getParameter("search");
+		int searchType = Integer.parseInt(request.getParameter("searchtype"));
+		int orderBy = 1;
+		
+		if(request.getParameter("orderby")!= null){
+			orderBy = Integer.parseInt(request.getParameter("orderby"));
+		}
+		
+		List<Computer> computers = new ArrayList<Computer>();
+
+		if (searchText.isEmpty()) {
+			computers = ComputerDAO.retrieveAll(orderBy);
+		} else {
+
+			if (searchType == 0) {
+				computers.add(ComputerDAO.retrieve(searchText, orderBy));
+			} else {
+				if (searchType == 1) {
+					computers = ComputerDAO.retrieveByName(searchText, orderBy);
+				} else {
+					if (searchType == 2) {
+						computers = ComputerDAO
+								.retrieveByIntroduced(searchText, orderBy);
+					} else {
+						if (searchType == 3) {
+							computers = ComputerDAO
+									.retrieveByDiscontinued(searchText, orderBy);
+						} else {
+							if (searchType == 4) {
+								computers = ComputerDAO
+										.retrieveByCompany(searchText, orderBy);
+							}
+						}
+					}
+				}
+			}
+		}
+		request.setAttribute("computers", computers);
+		request.setAttribute("size", computers.size());
+
+		this.getServletContext().getRequestDispatcher("/WEB-INF/dashboard.jsp")
+				.forward(request, response);
+
 	}
 
 }

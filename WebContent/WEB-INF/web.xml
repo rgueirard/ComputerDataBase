@@ -14,6 +14,10 @@
     <servlet-class>com.excilys.rgueirard.controller.AddComputerServlet</servlet-class>
   </servlet>
   <servlet>
+    <servlet-name>EditComputerServlet</servlet-name>
+    <servlet-class>com.excilys.rgueirard.controller.EditComputerServlet</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>DashboardServlet</servlet-name>
     <servlet-class>com.excilys.rgueirard.controller.DashboardServlet</servlet-class>
   </servlet>
@@ -28,6 +32,10 @@
   <servlet-mapping>
     <servlet-name>DashboardServlet</servlet-name>
     <url-pattern>/dashboard</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>EditComputerServlet</servlet-name>
+    <url-pattern>/editcomputer</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>DelComputerServlet</servlet-name>
