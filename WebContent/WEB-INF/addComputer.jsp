@@ -9,8 +9,7 @@
 	<script
 		src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.10.0/additional-methods.js"
 		type="text/javascript"></script>
-	<!--<script type="text/javascript" src="//resources/jquery/jquery-2.1.0.js"></script>
-<script type="text/javascript" src="//resources/jquery/jquery.form-validator.js"></script>-->
+
 
 	<h1>Add Computer</h1>
 

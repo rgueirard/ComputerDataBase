@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.excilys.rgueirard.domain.Computer;
-import com.excilys.rgueirard.persistence.ComputerDAO;
+import com.excilys.rgueirard.persistence.ComputerService;
 
 /**
  * Servlet implementation class DashboardServlet
@@ -19,6 +19,9 @@ import com.excilys.rgueirard.persistence.ComputerDAO;
 @WebServlet("/DashboardServlet")
 public class DashboardServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+
+	private static int orderBy;
+	private static int searchType;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -34,12 +37,25 @@ public class DashboardServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		int page = 1;
+		int nbDisplay = 50;
+		if (request.getParameter("page") != null) {
+			page = Integer.parseInt(request.getParameter("page"));
+		}
 		List<Computer> computers = new ArrayList<Computer>();
-			
-		computers = ComputerDAO.retrieveAll(1);
+		ComputerService computerService = ComputerService.getInstance();
+		computers = computerService.retrieveAll(1, (page - 1) * nbDisplay,
+				nbDisplay);
 
+		int nbComputers = computerService.count();
+		int nbPages = (int) Math.ceil(nbComputers * 1.0 / nbDisplay);
+		
 		request.setAttribute("computers", computers);
-		request.setAttribute("size", computers.size());
+		request.setAttribute("size", nbComputers);
+		request.setAttribute("orderBy", orderBy);
+		request.setAttribute("searchType", searchType);
+		request.setAttribute("nbPages", nbPages);
+		request.setAttribute("currentPage", page);
 		this.getServletContext().getRequestDispatcher("/WEB-INF/dashboard.jsp")
 				.forward(request, response);
 	}
@@ -51,45 +67,61 @@ public class DashboardServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String searchText = request.getParameter("search");
-		int searchType = Integer.parseInt(request.getParameter("searchtype"));
-		int orderBy = 1;
+		searchType = Integer.parseInt(request.getParameter("searchtype"));
+		orderBy = 1;
+		int page = 1;
+		int nbDisplay = 15;
+		if (request.getParameter("page") != null) {
+			page = Integer.parseInt(request.getParameter("page"));
+		}
+		List<Computer> computers = new ArrayList<Computer>();
+		ComputerService computerService = ComputerService.getInstance();
+
+		int nbComputers = computerService.count();
+		int nbPages = (int) Math.ceil(nbComputers * 1.0 / nbDisplay);
 		
-		if(request.getParameter("orderby")!= null){
+		
+		if (request.getParameter("orderby") != null) {
 			orderBy = Integer.parseInt(request.getParameter("orderby"));
 		}
-		
-		List<Computer> computers = new ArrayList<Computer>();
 
 		if (searchText.isEmpty()) {
-			computers = ComputerDAO.retrieveAll(orderBy);
+			computers = computerService.retrieveAll(orderBy, (page - 1)
+					* nbDisplay, nbDisplay);
 		} else {
 
 			if (searchType == 0) {
-				computers.add(ComputerDAO.retrieve(searchText, orderBy));
+				computers.add(computerService.retrieve(searchText, orderBy));
 			} else {
 				if (searchType == 1) {
-					computers = ComputerDAO.retrieveByName(searchText, orderBy);
+					computers = computerService.retrieveByName(searchText,
+							orderBy);
 				} else {
 					if (searchType == 2) {
-						computers = ComputerDAO
-								.retrieveByIntroduced(searchText, orderBy);
+						computers = computerService.retrieveByIntroduced(
+								searchText, orderBy);
 					} else {
 						if (searchType == 3) {
-							computers = ComputerDAO
-									.retrieveByDiscontinued(searchText, orderBy);
+							computers = computerService.retrieveByDiscontinued(
+									searchText, orderBy);
 						} else {
 							if (searchType == 4) {
-								computers = ComputerDAO
-										.retrieveByCompany(searchText, orderBy);
+								computers = computerService.retrieveByCompany(
+										searchText, orderBy);
 							}
 						}
 					}
 				}
 			}
 		}
-		request.setAttribute("computers", computers);
-		request.setAttribute("size", computers.size());
 
+		request.setAttribute("computers", computers);
+		request.setAttribute("size", nbComputers);
+		request.setAttribute("orderBy", orderBy);
+		request.setAttribute("searchType", searchType);
+		request.setAttribute("nbPages", nbPages);
+		request.setAttribute("currentPage", page);
+		
 		this.getServletContext().getRequestDispatcher("/WEB-INF/dashboard.jsp")
 				.forward(request, response);
 

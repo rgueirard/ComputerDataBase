@@ -11,8 +11,17 @@ import com.excilys.rgueirard.domain.Company;
 
 public class CompanyDAO {
 
-	private CompanyDAO() {
+	private static CompanyDAO companyDAO = null;
+	
+	public CompanyDAO() {
 		super();
+	}
+	
+	public static CompanyDAO getInstance(){
+		if( companyDAO == null){
+			companyDAO = new CompanyDAO();
+		}
+		return companyDAO;
 	}
 
 	public static void closeObject(PreparedStatement ps, ResultSet rs,
@@ -32,9 +41,8 @@ public class CompanyDAO {
 		}
 	}
 	
-	public static Company retrieve(long id){
-		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		Connection connection = dataBaseManager.getConnection();
+	public Company retrieve(long id, Connection connection){
+		
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		String query = "SELECT id,name FROM company WHERE id = ?";
@@ -55,9 +63,8 @@ public class CompanyDAO {
 		return company;
 	}
 
-	public static List<Company> retrieveAll() {
-		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		Connection connection = dataBaseManager.getConnection();
+	public List<Company> retrieveAll(Connection connection) {
+		
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<Company> companies = new ArrayList<Company>();
