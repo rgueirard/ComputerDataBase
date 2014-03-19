@@ -1,11 +1,15 @@
-package com.excilys.rgueirard.persistence;
+package com.excilys.rgueirard.service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Date;
 
-import com.excilys.rgueirard.domain.ComputerWrapper;
+import com.excilys.rgueirard.domain.Computer;
+import com.excilys.rgueirard.domain.PageWrapper;
+import com.excilys.rgueirard.persistence.ComputerDAO;
+import com.excilys.rgueirard.persistence.DataBaseManager;
+import com.excilys.rgueirard.persistence.LogDAO;
 
 public class ComputerService {
 	private static ComputerService computerService = null;	
@@ -100,18 +104,17 @@ public class ComputerService {
 		}
 	}
 	
-	public ComputerWrapper retrieve(String idS, int orderBy, int offset, int nbDisplay){
+	public PageWrapper<Computer> retrieve(PageWrapper<Computer> wrapper){
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
-		ComputerWrapper wrapper = null;
 		
 		try {
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			wrapper = computerDAO.retrieve(idS, orderBy, offset, nbDisplay, connection);
+			wrapper = computerDAO.retrieve(wrapper, connection);
 			logDAO.create(dateSql.toString(), "retrieve", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
@@ -127,18 +130,17 @@ public class ComputerService {
 		return wrapper;
 	}
 	
-	public ComputerWrapper retrieveByName(String name, int orderBy, int offset, int nbDisplay){
+	public PageWrapper<Computer> retrieveByName(PageWrapper<Computer> wrapper){
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
-		ComputerWrapper wrapper = null;
-			
+				
 		try {
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			wrapper = computerDAO.retrieveByName(name, orderBy, offset, nbDisplay, connection);
+			wrapper = computerDAO.retrieveByName(wrapper, connection);
 			logDAO.create(dateSql.toString(), "retrieveByName", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
@@ -154,18 +156,17 @@ public class ComputerService {
 		return wrapper;
 	}
 	
-	public ComputerWrapper retrieveByCompany(String companyName, int orderBy, int offset, int nbDisplay){
+	public PageWrapper<Computer> retrieveByCompany(PageWrapper<Computer> wrapper){
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
-		ComputerWrapper wrapper = null;
 		
 		try {
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			wrapper = computerDAO.retrieveByCompany(companyName, orderBy, offset, nbDisplay, connection);
+			wrapper = computerDAO.retrieveByCompany(wrapper, connection);
 			logDAO.create(dateSql.toString(), "retrieveByCompany", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
@@ -181,18 +182,17 @@ public class ComputerService {
 		return wrapper;
 	}
 	
-	public ComputerWrapper retrieveByIntroduced(String introducedS, int orderBy, int offset, int nbDisplay){
+	/*public PageWrapper<Computer> retrieveByIntroduced(PageWrapper<Computer> wrapper){
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
-		ComputerWrapper wrapper = null;
 		
 		try {
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			wrapper = computerDAO.retrieveByIntroduced(introducedS, orderBy, offset, nbDisplay, connection);
+			wrapper = computerDAO.retrieveByIntroduced(wrapper, connection);
 			logDAO.create(dateSql.toString(), "retrieveByIntroduced", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
@@ -209,18 +209,17 @@ public class ComputerService {
 			
 	}
 	
-	public ComputerWrapper retrieveByDiscontinued(String discontinuedS, int orderBy, int offset, int nbDisplay){
+	public PageWrapper<Computer> retrieveByDiscontinued(PageWrapper<Computer> wrapper){
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
-		ComputerWrapper wrapper = null;
-		
+				
 		try {
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			wrapper = computerDAO.retrieveByDiscontinued(discontinuedS, orderBy, offset, nbDisplay, connection);
+			wrapper = computerDAO.retrieveByDiscontinued(wrapper, connection);
 			logDAO.create(dateSql.toString(), "retrieveByDiscontinued", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
@@ -235,20 +234,19 @@ public class ComputerService {
 		}
 		return wrapper;
 			
-	}
+	}*/
 	
-	public ComputerWrapper retrieveAll(int orderBy, int offset, int nbDisplay) {
+	public PageWrapper<Computer> retrieveAll(PageWrapper<Computer> wrapper) {
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
-		ComputerWrapper wrapper = null;
-		
+				
 		try {
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			wrapper = computerDAO.retrieveAll(orderBy, offset, nbDisplay, connection);
+			wrapper = computerDAO.retrieveAll(wrapper, connection);
 			logDAO.create(dateSql.toString(), "retrieveAll", connection);
 			connection.commit();
 			connection.setAutoCommit(true);

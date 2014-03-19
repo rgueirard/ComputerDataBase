@@ -10,9 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.excilys.rgueirard.domain.Company;
-import com.excilys.rgueirard.domain.ComputerWrapper;
-import com.excilys.rgueirard.persistence.CompanyService;
-import com.excilys.rgueirard.persistence.ComputerService;
+import com.excilys.rgueirard.domain.Computer;
+import com.excilys.rgueirard.domain.PageWrapper;
+import com.excilys.rgueirard.service.CompanyService;
+import com.excilys.rgueirard.service.ComputerService;
 
 /**
  * Servlet implementation class EditComputerServlet
@@ -38,40 +39,54 @@ public class EditComputerServlet extends HttpServlet {
 		ComputerService computerService = ComputerService.getInstance();
 		CompanyService companyService = CompanyService.getInstance();
 
-		int page = 1;
-		if ((request.getParameter("page") != null)&&(request.getParameter("page") != "")) {
-			page = Integer.parseInt(request.getParameter("page"));
-		}
-		int nbCptValue = 1;
-		if ((request.getParameter("nbByPage") != null)
-				&& (request.getParameter("nbByPage") != "")) {
-			nbCptValue = Integer.parseInt(request.getParameter("nbByPage"));
-		}
-		int orderBy = 1;
-		if ((request.getParameter("orderby") != null)&&(request.getParameter("orderby") != "")) {
-			orderBy = Integer.parseInt(request.getParameter("orderby"));
-		}
-		int searchType = 0;
-		if ((request.getParameter("searchType") != null)&&(request.getParameter("searchType") != "")) {
-			searchType = Integer.parseInt(request.getParameter("searchType"));
-		}
-		String searchMotif = "";
-		if ((request.getParameter("searchMotif") != null)&&(request.getParameter("searchMotif") != "")) {
-			searchMotif = request.getParameter("searchMotif");
+		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
+		String searchMotif = ""; 
+		
+		/* recupération de page */
+		if ((request.getParameter("page") != null)
+				&& (request.getParameter("page") != "")) {
+			wrapper.setCurrentPage(Integer.parseInt(request
+					.getParameter("page")));
 		}
 
-		String id = request.getParameter("id");
+		/* recuperation de nbCptValue et nbDisplay */
+		if ((request.getParameter("nbDisplay") != null)
+				&& (request.getParameter("nbDisplay") != "")) {
+			wrapper.setNbDisplay(Integer.parseInt(request
+					.getParameter("nbDisplay")));
+		}
 
-		ComputerWrapper cptWrapper = computerService.retrieve(id, 1, 0, 1);
+		/* recuperation de orderBy */
+		if ((request.getParameter("orderBy") != null)
+				&& (request.getParameter("orderBy") != "")) {
+			wrapper.setOrderBy(Integer.parseInt(request.getParameter("orderBy")));
+		}
+
+		/* recuperation de searchType */
+		if ((request.getParameter("searchType") != null)
+				&& (request.getParameter("searchType") != "")) {
+			wrapper.setSearchType(Integer.parseInt(request
+					.getParameter("searchType")));
+		}
+		//wrapper.setSearchType(2);
+		
+		/* recuperation de l'ancien motif de recherche */
+		if ((request.getParameter("searchMotif") != null)
+				&& (request.getParameter("searchMotif") != "")) {
+			searchMotif = (request.getParameter("searchMotif"));
+		}
+		
+		/* recuperation du motif recherche */
+		wrapper.setSearchMotif(request.getParameter("id"));
+
+		wrapper = computerService.retrieve(wrapper);
 		List<Company> companies = companyService.retrieveAll();
 
-		request.setAttribute("computer", cptWrapper.getComputer());
+		wrapper.setSearchMotif(searchMotif);
+		
+		request.setAttribute("computer", wrapper.getPages().get(0));
 		request.setAttribute("companies", companies);
-		request.setAttribute("currentPage", page);
-		request.setAttribute("nbDisplay", nbCptValue);
-		request.setAttribute("orderBy", orderBy);
-		request.setAttribute("searchType", searchType);
-		request.setAttribute("searchMotif", searchMotif);
+		request.setAttribute("wrapper", wrapper);
 		this.getServletContext()
 				.getRequestDispatcher("/WEB-INF/editComputer.jsp")
 				.forward(request, response);
@@ -89,38 +104,52 @@ public class EditComputerServlet extends HttpServlet {
 		String introduced = request.getParameter("introduced");
 		String discontinued = request.getParameter("discontinued");
 		String companyId = request.getParameter("company");
-
+		
 		ComputerService computerService = ComputerService.getInstance();
-
 		computerService.update(id, name, introduced, discontinued, companyId);
+		
+		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
 
-		int page = 1;
-		if ((request.getParameter("page") != null)&&(request.getParameter("page") != "")) {
-			page = Integer.parseInt(request.getParameter("page"));
+		/* recupération de page */
+		if ((request.getParameter("page") != null)
+				&& (request.getParameter("page") != "")) {
+			wrapper.setCurrentPage(Integer.parseInt(request
+					.getParameter("page")));
 		}
-		int nbCptValue = 1;
-		if ((request.getParameter("nbByPage") != null)
-				&& (request.getParameter("nbByPage") != "")) {
-			nbCptValue = Integer.parseInt(request.getParameter("nbByPage"));
+
+		/* recuperation de nbCptValue et nbDisplay */
+		if ((request.getParameter("nbDisplay") != null)
+				&& (request.getParameter("nbDisplay") != "")) {
+			wrapper.setNbDisplay(Integer.parseInt(request
+					.getParameter("nbDisplay")));
 		}
-		int orderBy = 1;
-		if ((request.getParameter("orderby") != null)&&(request.getParameter("orderby") != "")) {
-			orderBy = Integer.parseInt(request.getParameter("orderby"));
+
+		/* recuperation de orderBy */
+		if ((request.getParameter("orderBy") != null)
+				&& (request.getParameter("orderBy") != "")) {
+			wrapper.setOrderBy(Integer.parseInt(request.getParameter("orderBy")));
 		}
-		int searchType = 0;
-		if ((request.getParameter("searchType") != null)&&(request.getParameter("searchType") != "")) {
-			searchType = Integer.parseInt(request.getParameter("searchType"));
+
+		/* recuperation de searchType */
+		if ((request.getParameter("searchType") != null)
+				&& (request.getParameter("searchType") != "")) {
+			wrapper.setSearchType(Integer.parseInt(request
+					.getParameter("searchType")));
 		}
-		String searchMotif = "";
-		if ((request.getParameter("searchMotif") != null)&&(request.getParameter("searchMotif") != "")) {
-			searchMotif = request.getParameter("searchMotif");
+
+		/* recuperation du motif recherche */
+		if ((request.getParameter("searchMotif") != null)
+				&& (request.getParameter("searchMotif") != "")) {
+			wrapper.setSearchMotif(request.getParameter("searchMotif"));
 		}
 
 		this.getServletContext()
 				.getRequestDispatcher(
-						"/dashboard?page=" + page + "&nbByPage=" + nbCptValue
-								+ "&orderBy=" + orderBy + "&searchType="
-								+ searchType + "&searchMotif=" + searchMotif)
+						"/dashboard?page=" + wrapper.getCurrentPage()
+								+ "&nbDisplay=" + wrapper.getNbDisplay()
+								+ "&orderBy=" + wrapper.getOrderBy()
+								+ "&searchType=" + wrapper.getSearchType()
+								+ "&searchMotif=" + wrapper.getSearchMotif())
 				.forward(request, response);
 	}
 

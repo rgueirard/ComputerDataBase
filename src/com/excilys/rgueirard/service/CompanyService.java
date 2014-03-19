@@ -1,4 +1,4 @@
-package com.excilys.rgueirard.persistence;
+package com.excilys.rgueirard.service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -7,6 +7,9 @@ import java.util.Date;
 import java.util.List;
 
 import com.excilys.rgueirard.domain.Company;
+import com.excilys.rgueirard.persistence.CompanyDAO;
+import com.excilys.rgueirard.persistence.DataBaseManager;
+import com.excilys.rgueirard.persistence.LogDAO;
 
 public class CompanyService {
 

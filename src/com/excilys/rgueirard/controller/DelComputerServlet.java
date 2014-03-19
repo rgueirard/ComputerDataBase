@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.excilys.rgueirard.persistence.ComputerService;
+import com.excilys.rgueirard.service.ComputerService;
 
 /**
  * Servlet implementation class DelComputerServlet
@@ -45,8 +45,8 @@ public class DelComputerServlet extends HttpServlet {
 			nbCptValue = Integer.parseInt(request.getParameter("nbByPage"));
 		}
 		int orderBy = 1;
-		if ((request.getParameter("orderby") != null)&&(request.getParameter("orderby") != "")) {
-			orderBy = Integer.parseInt(request.getParameter("orderby"));
+		if ((request.getParameter("orderBy") != null)&&(request.getParameter("orderBy") != "")) {
+			orderBy = Integer.parseInt(request.getParameter("orderBy"));
 		}
 		int searchType = 0;
 		if ((request.getParameter("searchType") != null)&&(request.getParameter("searchType") != "")) {

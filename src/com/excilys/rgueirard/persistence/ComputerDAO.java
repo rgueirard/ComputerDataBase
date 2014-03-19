@@ -14,7 +14,8 @@ import java.util.List;
 
 import com.excilys.rgueirard.domain.Company;
 import com.excilys.rgueirard.domain.Computer;
-import com.excilys.rgueirard.domain.ComputerWrapper;
+import com.excilys.rgueirard.domain.PageWrapper;
+import com.excilys.rgueirard.service.CompanyService;
 
 public class ComputerDAO {
 
@@ -133,27 +134,28 @@ public class ComputerDAO {
 		closeObject(ps, null);
 	
 	}
-
-	public ComputerWrapper retrieve(String idS, int orderBy, int offset, int nbDisplay, Connection connection) throws SQLException, ParseException {
+	
+	
+	public PageWrapper<Computer> retrieve(PageWrapper<Computer> wrapper, Connection connection) throws SQLException, ParseException {
 		CompanyService companyService = CompanyService.getInstance();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		String query = "SELECT id,name,introduced,discontinued,company_id FROM computer WHERE id = ? ORDER BY ? LIMIT ?, ?";
 		String sizeQuery = "SELECT count(*) FROM computer WHERE id = ?";
-		ComputerWrapper wrapper = null;
-		int size = 0;
+		List<Computer> computers = new ArrayList<Computer>();
 		Computer computer = new Computer();
-		long id = Long.parseLong(idS);
+		Company company = null;
 		Date introduced = null;
 		Date discontinued = null;
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		Company company = null;
-
+		long id = Long.parseLong(wrapper.getSearchMotif());
+		//int offset = (wrapper.getCurrentPage()-1)*wrapper.getNbDisplay();
 		ps = connection.prepareStatement(query);
 		ps.setLong(1, id);
-		ps.setInt(2, orderBy);
-		ps.setInt(3, offset);
-		ps.setInt(4, nbDisplay);
+		ps.setInt(2, wrapper.getOrderBy());
+		ps.setInt(3, 0);
+		ps.setInt(4, 1);
+		
 		rs = ps.executeQuery();
 		rs.next();
 		if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
@@ -169,31 +171,27 @@ public class ComputerDAO {
 		computer = Computer.builder().id(Long.parseLong(rs.getString(1)))
 				.name(rs.getString(2)).introduced(introduced)
 				.discontinued(discontinued).company(company).build();
-		
+		computers.add(computer);
+		wrapper.setPages(computers);
 		ps = connection.prepareStatement(sizeQuery);
 		ps.setLong(1, id);
 		rs = ps.executeQuery();
 		rs.next();
 		if ((rs.getString(1) != null) && (rs.getString(1) != "")) {
-			size = Integer.parseInt(rs.getString(1));
+			wrapper.setSize(Integer.parseInt(rs.getString(1)));
 		}
 		
 		this.closeObject(ps, rs);
-		
-		wrapper = ComputerWrapper.builder().computer(computer).size(size).build();
-		
+	
 		return wrapper;
 	}
 
-	public ComputerWrapper retrieveByName(String name, int orderBy, int offset, int nbDisplay,
-			Connection connection) throws SQLException, ParseException {
+	public PageWrapper<Computer> retrieveByName(PageWrapper<Computer> wrapper, Connection connection) throws SQLException, ParseException {
 		CompanyService companyService = CompanyService.getInstance();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		String query = "SELECT id,name,introduced,discontinued,company_id FROM computer WHERE name LIKE ? ORDER BY ? LIMIT ?, ?";
 		String sizeQuery = "SELECT count(*) FROM computer WHERE name LIKE ?";
-		ComputerWrapper wrapper = null;
-		int size = 0;
 		List<Computer> computers = new ArrayList<Computer>();
 		Computer computer = new Computer();
 		Date introduced = null;
@@ -202,10 +200,10 @@ public class ComputerDAO {
 		Company company = null;
 
 		ps = connection.prepareStatement(query);
-		ps.setString(1, "%" + name + "%");
-		ps.setInt(2, orderBy);
-		ps.setInt(3, offset);
-		ps.setInt(4, nbDisplay);
+		ps.setString(1, "%" + wrapper.getSearchMotif() + "%");
+		ps.setInt(2, wrapper.getOrderBy());
+		ps.setInt(3, (wrapper.getCurrentPage()-1)*wrapper.getNbDisplay());
+		ps.setInt(4, wrapper.getNbDisplay());
 		rs = ps.executeQuery();
 		while (rs.next()) {
 			if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
@@ -230,31 +228,27 @@ public class ComputerDAO {
 					.discontinued(discontinued).company(company).build();
 			computers.add(computer);
 		}
+		wrapper.setPages(computers);
 		
 		ps = connection.prepareStatement(sizeQuery);
-		ps.setString(1,  "%" + name + "%");
+		ps.setString(1,  "%" + wrapper.getSearchMotif() + "%");
 		rs = ps.executeQuery();
 		rs.next();
 		if ((rs.getString(1) != null) && (rs.getString(1) != "")) {
-			size = Integer.parseInt(rs.getString(1));
+			wrapper.setSize(Integer.parseInt(rs.getString(1)));
 		}
 		
 		this.closeObject(ps, rs);
 		
-		wrapper = ComputerWrapper.builder().computers(computers).size(size).build();
-		
 		return wrapper;
 	}
 
-	public ComputerWrapper retrieveByCompany(String companyName, int orderBy, int offset, int nbDisplay,
-			Connection connection) throws SQLException, ParseException {
+	public PageWrapper<Computer> retrieveByCompany(PageWrapper<Computer> wrapper, Connection connection) throws SQLException, ParseException {
 		CompanyService companyService = CompanyService.getInstance();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		String query = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id FROM computer INNER JOIN company WHERE computer.company_id=company.id AND company.name LIKE ? ORDER BY ? LIMIT ?, ?";
 		String sizeQuery = "SELECT count(*) FROM computer INNER JOIN company WHERE computer.company_id=company.id AND company.name LIKE ?";
-		ComputerWrapper wrapper = null;
-		int size = 0;
 		List<Computer> computers = new ArrayList<Computer>();
 		Computer computer = new Computer();
 		Date introduced = null;
@@ -263,10 +257,10 @@ public class ComputerDAO {
 		Company company = null;
 
 		ps = connection.prepareStatement(query);
-		ps.setString(1, "%" + companyName + "%");
-		ps.setInt(2, orderBy);
-		ps.setInt(3, offset);
-		ps.setInt(4, nbDisplay);
+		ps.setString(1, "%" + wrapper.getSearchMotif() + "%");
+		ps.setInt(2, wrapper.getOrderBy());
+		ps.setInt(3, (wrapper.getCurrentPage()-1)*wrapper.getNbDisplay());
+		ps.setInt(4, wrapper.getNbDisplay());
 		rs = ps.executeQuery();
 		while (rs.next()) {
 			if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
@@ -291,30 +285,29 @@ public class ComputerDAO {
 					.discontinued(discontinued).company(company).build();
 			computers.add(computer);
 		}
+		wrapper.setPages(computers);
 		
 		ps = connection.prepareStatement(sizeQuery);
-		ps.setString(1, "%" + companyName + "%");
+		ps.setString(1, "%" + wrapper.getSearchMotif() + "%");
 		rs = ps.executeQuery();
 		rs.next();
 		if ((rs.getString(1) != null) && (rs.getString(1) != "")) {
-			size = Integer.parseInt(rs.getString(1));
+			wrapper.setSize(Integer.parseInt(rs.getString(1)));
 		}		
 		
 		this.closeObject(ps, rs);
 		
-		wrapper = ComputerWrapper.builder().computers(computers).size(size).build();
-		
 		return wrapper;
 	}
 
-	public ComputerWrapper retrieveByIntroduced(String introducedS, int orderBy, int offset, int nbDisplay,
+	/*public PageWrapper retrieveByIntroduced(String introducedS, int orderBy, int offset, int nbDisplay,
 			Connection connection) throws NumberFormatException, SQLException, ParseException {
 		CompanyService companyService = CompanyService.getInstance();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		String query = "SELECT id,name,introduced,discontinued,company_id FROM computer WHERE introduced = ? ORDER BY ? LIMIT ?, ?";
 		String sizeQuery = "SELECT count(*) FROM computer WHERE introduced = ?";
-		ComputerWrapper wrapper = null;
+		PageWrapper wrapper = null;
 		int size = 0;
 		List<Computer> computers = new ArrayList<Computer>();
 		Computer computer = new Computer();
@@ -371,19 +364,17 @@ public class ComputerDAO {
 		
 		this.closeObject(ps, rs);
 		
-		wrapper = ComputerWrapper.builder().computers(computers).size(size).build();
-		
 		return wrapper;
 	}
 
-	public ComputerWrapper retrieveByDiscontinued(String discontinuedS,
+	public PageWrapper retrieveByDiscontinued(String discontinuedS,
 			int orderBy, int offset, int nbDisplay, Connection connection) throws NumberFormatException, SQLException, ParseException {
 		CompanyService companyService = CompanyService.getInstance();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		String query = "SELECT id,name,introduced,discontinued,company_id FROM computer WHERE discontinued = ? ORDER BY ? LIMIT ?, ?";
 		String sizeQuery = "SELECT count(*) FROM computer WHERE discontinued = ?";
-		ComputerWrapper wrapper = null;
+		PageWrapper wrapper = null;
 		int size = 0;
 		List<Computer> computers = new ArrayList<Computer>();
 		Computer computer = new Computer();
@@ -440,19 +431,16 @@ public class ComputerDAO {
 		
 		this.closeObject(ps, rs);
 		
-		wrapper = ComputerWrapper.builder().computers(computers).size(size).build();
-		
 		return wrapper;
-	}
+	}*/
 
-	public ComputerWrapper retrieveAll(int orderBy, int offset, int nbDisplay, Connection connection) throws NumberFormatException, SQLException, ParseException {
+	public PageWrapper<Computer> retrieveAll(PageWrapper<Computer> wrapper, Connection connection) throws NumberFormatException, SQLException, ParseException {
 		CompanyService companyService = CompanyService.getInstance();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		String query = "SELECT id,name,introduced,discontinued,company_id FROM computer ORDER BY ? LIMIT ?, ?";
 		String sizeQuery = "SELECT count(*) FROM computer";
-		ComputerWrapper wrapper = null;
-		int size = 0;
+		
 		List<Computer> computers = new ArrayList<Computer>();
 		Computer computer;
 		Company company = null;
@@ -463,9 +451,9 @@ public class ComputerDAO {
 		ps = connection
 				.prepareStatement(query);
 
-		ps.setInt(1, orderBy);
-		ps.setInt(2, offset);
-		ps.setInt(3, nbDisplay);
+		ps.setInt(1, wrapper.getOrderBy());
+		ps.setInt(2, (wrapper.getCurrentPage()-1)*wrapper.getNbDisplay());
+		ps.setInt(3, wrapper.getNbDisplay());
 		
 		rs = ps.executeQuery();
 
@@ -492,17 +480,16 @@ public class ComputerDAO {
 					.discontinued(discontinued).company(company).build();
 			computers.add(computer);
 		}
+		wrapper.setPages(computers);
 		
 		ps = connection.prepareStatement(sizeQuery);
 		rs = ps.executeQuery();
 		rs.next();
 		if ((rs.getString(1) != null) && (rs.getString(1) != "")) {
-			size = Integer.parseInt(rs.getString(1));
+			wrapper.setSize(Integer.parseInt(rs.getString(1)));
 		}		
 		
 		this.closeObject(ps, rs);
-		
-		wrapper = ComputerWrapper.builder().computers(computers).size(size).build();
 		
 		return wrapper;
 	}

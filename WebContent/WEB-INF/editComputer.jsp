@@ -66,13 +66,13 @@
 			</div>
 		</fieldset>
 		<div class="actions">
-			<input type="hidden" name="nbByPage" value="${nbDisplay}">
-			<input type="hidden" name="page" value="${currentPage}">
-			<input type="hidden" name="orderBy" value="${orderBy}"/>
-			<input type="hidden" name="searchType" value="${searchType}"/>
-			<input type="hidden" name="searchMotif" value="${searchMotif}"/>
+			<input type="hidden" name="nbDisplay" value="${wrapper.nbDisplay}">
+			<input type="hidden" name="page" value="${wrapper.currentPage}">
+			<input type="hidden" name="orderBy" value="${wrapper.orderBy}"/>
+			<input type="hidden" name="searchType" value="${wrapper.searchType}"/>
+			<input type="hidden" name="searchMotif" value="${wrapper.searchMotif}"/>
 			<input type="submit" id="validInput" value="Add" class="btn primary"> or <a
-				href="dashboard?page=${currentPage}&nbByPage=${nbDisplay}&orderBy=${orderBy}&searchType=${searchType}&searchMotif=${searchMotif}" class="btn">Cancel</a>
+				href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}" class="btn">Cancel</a>
 		</div>
 	</form>
 	<script>

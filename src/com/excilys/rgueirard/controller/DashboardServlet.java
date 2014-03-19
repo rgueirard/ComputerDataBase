@@ -8,9 +8,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.excilys.rgueirard.domain.ComputerWrapper;
-import com.excilys.rgueirard.domain.DashboardWrapper;
-import com.excilys.rgueirard.persistence.ComputerService;
+import com.excilys.rgueirard.domain.Computer;
+import com.excilys.rgueirard.domain.PageWrapper;
+import com.excilys.rgueirard.service.ComputerService;
 
 /**
  * Servlet implementation class DashboardServlet
@@ -33,96 +33,73 @@ public class DashboardServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		ComputerWrapper cptWrapper = null;
 		ComputerService computerService = ComputerService.getInstance();
-		int nbPages;
+		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
 
-		int page = 1;
-		int nbCptValue = 1;
+		/* recupération de page */
 		if ((request.getParameter("page") != null)
 				&& (request.getParameter("page") != "")) {
-			page = Integer.parseInt(request.getParameter("page"));
+			wrapper.setCurrentPage(Integer.parseInt(request.getParameter("page")));
 		}
-		int nbDisplay = 50;
-		if ((request.getParameter("nbByPage") != null)
-				&& (request.getParameter("nbByPage") != "")) {
-			nbCptValue = Integer.parseInt(request.getParameter("nbByPage"));
-			if (nbCptValue == 0) {
-				nbDisplay = 25;
-			} else {
-				if (nbCptValue == 2) {
-					nbDisplay = 75;
-				} else {
-					if (nbCptValue == 3) {
-						nbDisplay = 100;
-					}
-				}
-			}
+
+		/* recuperation de nbCptValue et nbDisplay */
+		if ((request.getParameter("nbDisplay") != null)
+				&& (request.getParameter("nbDisplay") != "")) {
+			wrapper.setNbDisplay(Integer.parseInt(request.getParameter("nbDisplay")));
 		}
-		int orderBy = 1;
-		if ((request.getParameter("orderby") != null)
-				&& (request.getParameter("orderby") != "")) {
-			orderBy = Integer.parseInt(request.getParameter("orderby"));
+
+		/* recuperation de orderBy */
+		if ((request.getParameter("orderBy") != null)
+				&& (request.getParameter("orderBy") != "")) {
+			wrapper.setOrderBy(Integer.parseInt(request.getParameter("orderBy")));
 		}
-		int searchType = 0;
+
+		/* recuperation de searchType */
 		if ((request.getParameter("searchType") != null)
 				&& (request.getParameter("searchType") != "")) {
-			searchType = Integer.parseInt(request.getParameter("searchType"));
+			wrapper.setSearchType(Integer.parseInt(request.getParameter("searchType")));
 		}
-		String searchMotif = "";
+
+		/* recuperation du motif recherche */
 		if ((request.getParameter("searchMotif") != null)
 				&& (request.getParameter("searchMotif") != "")) {
-			searchMotif = request.getParameter("searchMotif");
+			wrapper.setSearchMotif(request.getParameter("searchMotif"));
 		}
 
 		/* recuperation de la liste d'ordinateur */
-		if (searchMotif.isEmpty()) {
-			cptWrapper = computerService.retrieveAll(orderBy, (page - 1)
-					* nbDisplay, nbDisplay);
+		if (wrapper.getSearchMotif().isEmpty()) {
+			wrapper = computerService.retrieveAll(wrapper);
 		} else {
 
-			if (searchType == 0) {
-				cptWrapper = computerService.retrieveByName(searchMotif,
-						orderBy, (page - 1) * nbDisplay, nbDisplay);
+			if (wrapper.getSearchType() == 0) {
+				wrapper = computerService.retrieveByName(wrapper);
 			} else {
-				if (searchType == 1) {
-					cptWrapper = computerService.retrieveByCompany(searchMotif,
-							orderBy, (page - 1) * nbDisplay, nbDisplay);
+				if (wrapper.getSearchType() == 1) {
+					wrapper = computerService.retrieveByCompany(wrapper);
 				} else {
-					if (searchType == 2) {
-						cptWrapper = computerService.retrieve(searchMotif,
-								orderBy, (page - 1) * nbDisplay, nbDisplay);
-					} else {
-						if (searchType == 3) {
-							cptWrapper = computerService.retrieveByIntroduced(
-									searchMotif, orderBy, (page - 1)
-											* nbDisplay, nbDisplay);
+					/*if (wrapper.getSearchType() == 2) {*/
+						wrapper = computerService.retrieve(wrapper);
+					/*} else {
+						if (wrapper.getSearchType() == 3) {
+							wrapper = computerService.retrieveByIntroduced(wrapper);
 						} else {
-							if (searchType == 4) {
-								cptWrapper = computerService
-										.retrieveByDiscontinued(searchMotif,
-												orderBy,
-												(page - 1) * nbDisplay,
-												nbDisplay);
+							if (wrapper.getSearchType() == 4) {
+								wrapper = computerService
+										.retrieveByDiscontinued(wrapper);
 							}
 						}
-					}
+					}*/
 				}
 			}
 		}
 
-		nbPages = (int) Math.ceil(cptWrapper.getSize() * 1.0 / nbDisplay);
-
-		DashboardWrapper wrapper = DashboardWrapper.builder()
-				.size(cptWrapper.getSize()).nbDisplay(nbCptValue)
-				.nbPages(nbPages).currentPage(page)
-				.computers(cptWrapper.getComputers()).orderBy(orderBy)
-				.searchType(searchType).searchMotif(searchMotif).build();
+		/* recuperation de nbPages */
+		wrapper.setNbPages((int) Math.ceil(wrapper.getSize() * 1.0
+				/ wrapper.getNbDisplay()));
 
 		request.setAttribute("wrapper", wrapper);
 		this.getServletContext().getRequestDispatcher("/WEB-INF/dashboard.jsp")
 				.forward(request, response);
-
 	}
 
 	/**
@@ -132,101 +109,69 @@ public class DashboardServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		String searchMotif = "";
-		int page = 1;
-		int nbCptValue = 1;
-		int nbDisplay = 50;
-		int orderBy = 1;
-		int searchType = 0;
-		ComputerWrapper cptWrapper = null;
 		ComputerService computerService = ComputerService.getInstance();
-		int nbPages;
+		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
 
 		/* recupération de page */
 		if ((request.getParameter("page") != null)
 				&& (request.getParameter("page") != "")) {
-			page = Integer.parseInt(request.getParameter("page"));
+			wrapper.setCurrentPage(Integer.parseInt(request.getParameter("page")));
 		}
 
 		/* recuperation de nbCptValue et nbDisplay */
-		if ((request.getParameter("nbByPage") != null)
-				&& (request.getParameter("nbByPage") != "")) {
-			nbCptValue = Integer.parseInt(request.getParameter("nbByPage"));
-			if (nbCptValue == 0) {
-				nbDisplay = 25;
-			} else {
-				if (nbCptValue == 2) {
-					nbDisplay = 75;
-				} else {
-					if (nbCptValue == 3) {
-						nbDisplay = 100;
-					}
-				}
-			}
+		if ((request.getParameter("nbDisplay") != null)
+				&& (request.getParameter("nbDisplay") != "")) {
+			wrapper.setNbDisplay(Integer.parseInt(request.getParameter("nbDisplay")));
 		}
 
 		/* recuperation de orderBy */
-		if ((request.getParameter("orderby") != null)
-				&& (request.getParameter("orderby") != "")) {
-			orderBy = Integer.parseInt(request.getParameter("orderBy"));
+		if ((request.getParameter("orderBy") != null)
+				&& (request.getParameter("orderBy") != "")) {
+			wrapper.setOrderBy(Integer.parseInt(request.getParameter("orderBy")));
 		}
 
 		/* recuperation de searchType */
 		if ((request.getParameter("searchType") != null)
 				&& (request.getParameter("searchType") != "")) {
-			searchType = Integer.parseInt(request.getParameter("searchType"));
+			wrapper.setSearchType(Integer.parseInt(request.getParameter("searchType")));
 		}
 
 		/* recuperation du motif recherche */
 		if ((request.getParameter("searchMotif") != null)
 				&& (request.getParameter("searchMotif") != "")) {
-			searchMotif = request.getParameter("searchMotif");
+			wrapper.setSearchMotif(request.getParameter("searchMotif"));
 		}
 
 		/* recuperation de la liste d'ordinateur */
-		if (searchMotif.isEmpty()) {
-			cptWrapper = computerService.retrieveAll(orderBy, (page - 1)
-					* nbDisplay, nbDisplay);
+		if (wrapper.getSearchMotif().isEmpty()) {
+			wrapper = computerService.retrieveAll(wrapper);
 		} else {
 
-			if (searchType == 0) {
-				cptWrapper = computerService.retrieveByName(searchMotif,
-						orderBy, (page - 1) * nbDisplay, nbDisplay);
+			if (wrapper.getSearchType() == 0) {
+				wrapper = computerService.retrieveByName(wrapper);
 			} else {
-				if (searchType == 1) {
-					cptWrapper = computerService.retrieveByCompany(searchMotif,
-							orderBy, (page - 1) * nbDisplay, nbDisplay);
+				if (wrapper.getSearchType() == 1) {
+					wrapper = computerService.retrieveByCompany(wrapper);
 				} else {
-					if (searchType == 2) {
-						cptWrapper = computerService.retrieve(searchMotif,
-								orderBy, (page - 1) * nbDisplay, nbDisplay);
-					} else {
-						if (searchType == 3) {
-							cptWrapper = computerService.retrieveByIntroduced(
-									searchMotif, orderBy, (page - 1)
-											* nbDisplay, nbDisplay);
+					/*if (wrapper.getSearchType() == 2) {*/
+						wrapper = computerService.retrieve(wrapper);
+					/*} else {
+						if (wrapper.getSearchType() == 3) {
+							wrapper = computerService.retrieveByIntroduced(wrapper);
 						} else {
-							if (searchType == 4) {
-								cptWrapper = computerService
-										.retrieveByDiscontinued(searchMotif,
-												orderBy,
-												(page - 1) * nbDisplay,
-												nbDisplay);
+							if (wrapper.getSearchType() == 4) {
+								wrapper = computerService
+										.retrieveByDiscontinued(wrapper);
 							}
 						}
-					}
+					}*/
 				}
 			}
 		}
 
 		/* recuperation de nbPages */
-		nbPages = (int) Math.ceil(cptWrapper.getSize() * 1.0 / nbDisplay);
-
-		/* création de l'objet a envoyer */
-		DashboardWrapper wrapper = DashboardWrapper.builder().size(cptWrapper.getSize())
-				.nbDisplay(nbCptValue).nbPages(nbPages).currentPage(page)
-				.computers(cptWrapper.getComputers()).orderBy(orderBy).searchType(searchType)
-				.searchMotif(searchMotif).build();
+		wrapper.setNbPages((int) Math.ceil(wrapper.getSize() * 1.0
+				/ wrapper.getNbDisplay()));
 
 		request.setAttribute("wrapper", wrapper);
 		this.getServletContext().getRequestDispatcher("/WEB-INF/dashboard.jsp")

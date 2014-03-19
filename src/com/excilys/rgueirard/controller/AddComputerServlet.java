@@ -10,8 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.excilys.rgueirard.domain.Company;
-import com.excilys.rgueirard.persistence.CompanyService;
-import com.excilys.rgueirard.persistence.ComputerService;
+import com.excilys.rgueirard.domain.Computer;
+import com.excilys.rgueirard.domain.PageWrapper;
+import com.excilys.rgueirard.service.CompanyService;
+import com.excilys.rgueirard.service.ComputerService;
 
 /**
  * Servlet implementation class AddComputerServlet
@@ -35,37 +37,46 @@ public class AddComputerServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		int page = 1;
-		int nbCptValue = 1;
-		if (request.getParameter("page") != null) {
-			page = Integer.parseInt(request.getParameter("page"));
+		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
+
+		/* recupération de page */
+		if ((request.getParameter("page") != null)
+				&& (request.getParameter("page") != "")) {
+			wrapper.setCurrentPage(Integer.parseInt(request
+					.getParameter("page")));
 		}
-		if ((request.getParameter("nbByPage") != null)
-				&& (request.getParameter("nbByPage") != "")) {
-			nbCptValue = Integer.parseInt(request.getParameter("nbByPage"));
+
+		/* recuperation de nbCptValue et nbDisplay */
+		if ((request.getParameter("nbDisplay") != null)
+				&& (request.getParameter("nbDisplay") != "")) {
+			wrapper.setNbDisplay(Integer.parseInt(request
+					.getParameter("nbDisplay")));
 		}
-		int orderBy = 1;
-		if (request.getParameter("orderby") != null) {
-			orderBy = Integer.parseInt(request.getParameter("orderby"));
+
+		/* recuperation de orderBy */
+		if ((request.getParameter("orderBy") != null)
+				&& (request.getParameter("orderBy") != "")) {
+			wrapper.setOrderBy(Integer.parseInt(request.getParameter("orderBy")));
 		}
-		int searchType = 0;
-		if (request.getParameter("searchType") != null) {
-			searchType = Integer.parseInt(request.getParameter("searchType"));
+
+		/* recuperation de searchType */
+		if ((request.getParameter("searchType") != null)
+				&& (request.getParameter("searchType") != "")) {
+			wrapper.setSearchType(Integer.parseInt(request
+					.getParameter("searchType")));
 		}
-		String searchMotif = "";
-		if (request.getParameter("searchMotif") != null) {
-			searchMotif = request.getParameter("searchMotif");
+
+		/* recuperation du motif recherche */
+		if ((request.getParameter("searchMotif") != null)
+				&& (request.getParameter("searchMotif") != "")) {
+			wrapper.setSearchMotif(request.getParameter("searchMotif"));
 		}
 
 		CompanyService companyService = CompanyService.getInstance();
 		List<Company> companies = companyService.retrieveAll();
 
 		request.setAttribute("companies", companies);
-		request.setAttribute("currentPage", page);
-		request.setAttribute("nbDisplay", nbCptValue);
-		request.setAttribute("orderBy", orderBy);
-		request.setAttribute("searchType", searchType);
-		request.setAttribute("searchMotif", searchMotif);
+		request.setAttribute("wrapper", wrapper);
 		this.getServletContext()
 				.getRequestDispatcher("/WEB-INF/addComputer.jsp")
 				.forward(request, response);
@@ -81,27 +92,39 @@ public class AddComputerServlet extends HttpServlet {
 		String introducedDate = "";
 		String discontinuedDate = "";
 		String company = "";
+		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
 
-		int page = 1;
-		if ((request.getParameter("page") != null)&&(request.getParameter("page") != "")) {
-			page = Integer.parseInt(request.getParameter("page"));
+		/* recupération de page */
+		if ((request.getParameter("page") != null)
+				&& (request.getParameter("page") != "")) {
+			wrapper.setCurrentPage(Integer.parseInt(request
+					.getParameter("page")));
 		}
-		int nbCptValue = 1;
-		if ((request.getParameter("nbByPage") != null)
-				&& (request.getParameter("nbByPage") != "")) {
-			nbCptValue = Integer.parseInt(request.getParameter("nbByPage"));
+
+		/* recuperation de nbCptValue et nbDisplay */
+		if ((request.getParameter("nbDisplay") != null)
+				&& (request.getParameter("nbDisplay") != "")) {
+			wrapper.setNbDisplay(Integer.parseInt(request
+					.getParameter("nbDisplay")));
 		}
-		int orderBy = 1;
-		if ((request.getParameter("orderby") != null)&&(request.getParameter("orderby") != "")) {
-			orderBy = Integer.parseInt(request.getParameter("orderby"));
+
+		/* recuperation de orderBy */
+		if ((request.getParameter("orderBy") != null)
+				&& (request.getParameter("orderBy") != "")) {
+			wrapper.setOrderBy(Integer.parseInt(request.getParameter("orderBy")));
 		}
-		int searchType = 0;
-		if ((request.getParameter("searchType") != null)&&(request.getParameter("searchType") != "")) {
-			searchType = Integer.parseInt(request.getParameter("searchType"));
+
+		/* recuperation de searchType */
+		if ((request.getParameter("searchType") != null)
+				&& (request.getParameter("searchType") != "")) {
+			wrapper.setSearchType(Integer.parseInt(request
+					.getParameter("searchType")));
 		}
-		String searchMotif = "";
-		if ((request.getParameter("searchMotif") != null)&&(request.getParameter("searchMotif") != "")) {
-			searchMotif = request.getParameter("searchMotif");
+
+		/* recuperation du motif recherche */
+		if ((request.getParameter("searchMotif") != null)
+				&& (request.getParameter("searchMotif") != "")) {
+			wrapper.setSearchMotif(request.getParameter("searchMotif"));
 		}
 
 		name = request.getParameter("name");
@@ -114,9 +137,11 @@ public class AddComputerServlet extends HttpServlet {
 
 		this.getServletContext()
 				.getRequestDispatcher(
-						"/dashboard?page=" + page + "&nbByPage=" + nbCptValue
-								+ "&orderBy=" + orderBy + "&searchType="
-								+ searchType + "&searchMotif=" + searchMotif)
+						"/dashboard?page=" + wrapper.getCurrentPage()
+								+ "&nbDisplay=" + wrapper.getNbDisplay()
+								+ "&orderBy=" + wrapper.getOrderBy()
+								+ "&searchType=" + wrapper.getSearchType()
+								+ "&searchMotif=" + wrapper.getSearchMotif())
 				.forward(request, response);
 	}
 
