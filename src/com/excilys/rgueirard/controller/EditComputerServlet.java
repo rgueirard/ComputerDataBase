@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.excilys.rgueirard.domain.Company;
-import com.excilys.rgueirard.domain.Computer;
+import com.excilys.rgueirard.domain.ComputerWrapper;
 import com.excilys.rgueirard.persistence.CompanyService;
 import com.excilys.rgueirard.persistence.ComputerService;
 
@@ -62,10 +62,10 @@ public class EditComputerServlet extends HttpServlet {
 
 		String id = request.getParameter("id");
 
-		Computer computer = computerService.retrieve(id, 1);
+		ComputerWrapper cptWrapper = computerService.retrieve(id, 1, 0, 1);
 		List<Company> companies = companyService.retrieveAll();
 
-		request.setAttribute("computer", computer);
+		request.setAttribute("computer", cptWrapper.getComputer());
 		request.setAttribute("companies", companies);
 		request.setAttribute("currentPage", page);
 		request.setAttribute("nbDisplay", nbCptValue);

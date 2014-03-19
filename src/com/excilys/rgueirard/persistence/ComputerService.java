@@ -4,9 +4,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.List;
 
-import com.excilys.rgueirard.domain.Computer;
+import com.excilys.rgueirard.domain.ComputerWrapper;
 
 public class ComputerService {
 	private static ComputerService computerService = null;	
@@ -101,18 +100,18 @@ public class ComputerService {
 		}
 	}
 	
-	public Computer retrieve(String idS, int orderBy){
+	public ComputerWrapper retrieve(String idS, int orderBy, int offset, int nbDisplay){
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
-		Computer computer = null;
+		ComputerWrapper wrapper = null;
 		
 		try {
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			computer = computerDAO.retrieve(idS, orderBy, connection);
+			wrapper = computerDAO.retrieve(idS, orderBy, offset, nbDisplay, connection);
 			logDAO.create(dateSql.toString(), "retrieve", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
@@ -125,21 +124,21 @@ public class ComputerService {
 		} finally{
 			   try{connection.close();}catch(Exception e){e.printStackTrace();}
 		}
-		return computer;
+		return wrapper;
 	}
 	
-	public List<Computer> retrieveByName(String name, int orderBy){
+	public ComputerWrapper retrieveByName(String name, int orderBy, int offset, int nbDisplay){
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
-		List<Computer> computers = null;
+		ComputerWrapper wrapper = null;
 			
 		try {
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			computers = computerDAO.retrieveByName(name, orderBy, connection);
+			wrapper = computerDAO.retrieveByName(name, orderBy, offset, nbDisplay, connection);
 			logDAO.create(dateSql.toString(), "retrieveByName", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
@@ -152,21 +151,21 @@ public class ComputerService {
 		} finally{
 			   try{connection.close();}catch(Exception e){e.printStackTrace();}
 		}
-		return computers;
+		return wrapper;
 	}
 	
-	public List<Computer> retrieveByCompany(String companyName, int orderBy){
+	public ComputerWrapper retrieveByCompany(String companyName, int orderBy, int offset, int nbDisplay){
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
-		List<Computer> computers = null;
+		ComputerWrapper wrapper = null;
 		
 		try {
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			computers = computerDAO.retrieveByCompany(companyName, orderBy, connection);
+			wrapper = computerDAO.retrieveByCompany(companyName, orderBy, offset, nbDisplay, connection);
 			logDAO.create(dateSql.toString(), "retrieveByCompany", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
@@ -179,21 +178,21 @@ public class ComputerService {
 		} finally{
 			   try{connection.close();}catch(Exception e){e.printStackTrace();}
 		}
-		return computers;
+		return wrapper;
 	}
 	
-	public List<Computer> retrieveByIntroduced(String introducedS, int orderBy){
+	public ComputerWrapper retrieveByIntroduced(String introducedS, int orderBy, int offset, int nbDisplay){
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
-		List<Computer> computers = null;
+		ComputerWrapper wrapper = null;
 		
 		try {
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			computers = computerDAO.retrieveByIntroduced(introducedS, orderBy, connection);
+			wrapper = computerDAO.retrieveByIntroduced(introducedS, orderBy, offset, nbDisplay, connection);
 			logDAO.create(dateSql.toString(), "retrieveByIntroduced", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
@@ -206,22 +205,22 @@ public class ComputerService {
 		} finally{
 			   try{connection.close();}catch(Exception e){e.printStackTrace();}
 		}
-		return computers;
+		return wrapper;
 			
 	}
 	
-	public List<Computer> retrieveByDiscontinued(String discontinuedS, int orderBy){
+	public ComputerWrapper retrieveByDiscontinued(String discontinuedS, int orderBy, int offset, int nbDisplay){
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
-		List<Computer> computers = null;
+		ComputerWrapper wrapper = null;
 		
 		try {
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			computers = computerDAO.retrieveByDiscontinued(discontinuedS, orderBy, connection);
+			wrapper = computerDAO.retrieveByDiscontinued(discontinuedS, orderBy, offset, nbDisplay, connection);
 			logDAO.create(dateSql.toString(), "retrieveByDiscontinued", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
@@ -234,22 +233,22 @@ public class ComputerService {
 		} finally{
 			   try{connection.close();}catch(Exception e){e.printStackTrace();}
 		}
-		return computers;
+		return wrapper;
 			
 	}
 	
-	public List<Computer> retrieveAll(int orderBy, int offset, int nbDisplay) {
+	public ComputerWrapper retrieveAll(int orderBy, int offset, int nbDisplay) {
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
-		List<Computer> computers = null;
+		ComputerWrapper wrapper = null;
 		
 		try {
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			computers = computerDAO.retrieveAll(orderBy, offset, nbDisplay, connection);
+			wrapper = computerDAO.retrieveAll(orderBy, offset, nbDisplay, connection);
 			logDAO.create(dateSql.toString(), "retrieveAll", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
@@ -262,33 +261,6 @@ public class ComputerService {
 		} finally{
 			   try{connection.close();}catch(Exception e){e.printStackTrace();}
 		}
-		return computers;
-	}
-	
-	public int count(){
-		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		Connection connection = dataBaseManager.getConnection();
-		Date dateUtil = new Date();
-		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
-		int count = 0;
-		
-		try {
-			connection.setAutoCommit(false);
-			ComputerDAO computerDAO = ComputerDAO.getInstance();
-			LogDAO logDAO = LogDAO.getInstance();
-			count = computerDAO.count(connection);
-			logDAO.create(dateSql.toString(), "count", connection);
-			connection.commit();
-			connection.setAutoCommit(true);
-		} catch (SQLException e) {
-			try {connection.rollback();}catch(SQLException e1){e.printStackTrace();}
-			e.printStackTrace();
-		} catch (ParseException e) {
-			try {connection.rollback();}catch(SQLException e1){e.printStackTrace();}
-			e.printStackTrace();
-		} finally{
-			   try{connection.close();}catch(Exception e){e.printStackTrace();}
-		}
-		return count;
+		return wrapper;
 	}
 }
