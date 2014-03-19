@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.excilys.rgueirard.domain.Computer;
+import com.excilys.rgueirard.domain.DashboardWrapper;
 import com.excilys.rgueirard.persistence.ComputerService;
 
 /**
@@ -20,15 +21,11 @@ import com.excilys.rgueirard.persistence.ComputerService;
 public class DashboardServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	private static int orderBy;
-	private static int searchType;
-
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
 	public DashboardServlet() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -37,27 +34,94 @@ public class DashboardServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		int page = 1;
-		int nbDisplay = 50;
-		if (request.getParameter("page") != null) {
-			page = Integer.parseInt(request.getParameter("page"));
-		}
+			
 		List<Computer> computers = new ArrayList<Computer>();
 		ComputerService computerService = ComputerService.getInstance();
-		computers = computerService.retrieveAll(1, (page - 1) * nbDisplay,
-				nbDisplay);
-
-		int nbComputers = computerService.count();
-		int nbPages = (int) Math.ceil(nbComputers * 1.0 / nbDisplay);
+		int nbComputers;
+		int nbPages;
 		
-		request.setAttribute("computers", computers);
-		request.setAttribute("size", nbComputers);
-		request.setAttribute("orderBy", orderBy);
-		request.setAttribute("searchType", searchType);
-		request.setAttribute("nbPages", nbPages);
-		request.setAttribute("currentPage", page);
+		int page = 1;
+		int nbCptValue = 1;
+		if ((request.getParameter("page") != null)&&(request.getParameter("page") != "")) {
+			page = Integer.parseInt(request.getParameter("page"));
+		}
+		int nbDisplay = 50;
+		if ((request.getParameter("nbByPage") != null)
+				&& (request.getParameter("nbByPage") != "")) {
+			nbCptValue = Integer.parseInt(request.getParameter("nbByPage"));
+			if (nbCptValue == 0) {
+				nbDisplay = 25;
+			} else {
+				if (nbCptValue == 2) {
+					nbDisplay = 75;
+				} else {
+					if (nbCptValue == 3) {
+						nbDisplay = 100;
+					}
+				}
+			}
+		}
+		int orderBy = 1;
+		if ((request.getParameter("orderby") != null)&&(request.getParameter("orderby") != "")) {
+			orderBy = Integer.parseInt(request.getParameter("orderby"));
+		}
+		int searchType = 0;
+		if ((request.getParameter("searchType") != null)&&(request.getParameter("searchType") != "")) {
+			searchType = Integer.parseInt(request.getParameter("searchType"));
+		}
+		String searchMotif = "";
+		if ((request.getParameter("searchMotif") != null)&&(request.getParameter("searchMotif") != "")) {
+			searchMotif = request.getParameter("searchMotif");
+		}
+		
+		/*	recuperation de la liste d'ordinateur	*/
+		if (searchMotif.isEmpty()) {
+			computers = computerService.retrieveAll(orderBy, (page - 1)
+					* nbDisplay, nbDisplay);
+		} else {
+
+			if (searchType == 0) {
+				computers = computerService.retrieveByName(searchMotif, orderBy);
+			} else {
+				if (searchType == 1) {
+					computers = computerService.retrieveByCompany(searchMotif,
+							orderBy);
+				} else {
+					if (searchType == 2) {
+						computers.add(computerService.retrieve(searchMotif,
+								orderBy));
+					} else {
+						if (searchType == 3) {
+							computers = computerService.retrieveByIntroduced(
+									searchMotif, orderBy);
+						} else {
+							if (searchType == 4) {
+								computers = computerService
+										.retrieveByDiscontinued(searchMotif,
+												orderBy);
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		/*	recuperation du nombre de pc dans la base	ps: a changer*/
+		nbComputers = computerService.count();
+		
+		/*	recuperation de nbPages	*/
+		nbPages = (int) Math.ceil(nbComputers * 1.0 / nbDisplay);
+		
+	
+		DashboardWrapper wrapper = DashboardWrapper.builder().size(nbComputers)
+				.nbDisplay(nbCptValue).nbPages(nbPages).currentPage(page)
+				.computers(computers).orderBy(orderBy).searchType(searchType).searchMotif(searchMotif)
+				.build();
+		
+		request.setAttribute("wrapper", wrapper);
 		this.getServletContext().getRequestDispatcher("/WEB-INF/dashboard.jsp")
 				.forward(request, response);
+		
 	}
 
 	/**
@@ -66,65 +130,102 @@ public class DashboardServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String searchText = request.getParameter("search");
-		searchType = Integer.parseInt(request.getParameter("searchtype"));
-		orderBy = 1;
+		
+		String searchMotif = "";		
 		int page = 1;
-		int nbDisplay = 15;
-		if (request.getParameter("page") != null) {
-			page = Integer.parseInt(request.getParameter("page"));
-		}
+		int nbCptValue = 1;
+		int nbDisplay = 50;
+		int orderBy = 1;
+		int searchType = 0;
 		List<Computer> computers = new ArrayList<Computer>();
 		ComputerService computerService = ComputerService.getInstance();
-
-		int nbComputers = computerService.count();
-		int nbPages = (int) Math.ceil(nbComputers * 1.0 / nbDisplay);
+		int nbComputers;
+		int nbPages;
 		
+		/*	recupération de page	*/
+		if ((request.getParameter("page") != null)&&(request.getParameter("page") != "")) {
+			page = Integer.parseInt(request.getParameter("page"));
+		}	
 		
-		if (request.getParameter("orderby") != null) {
-			orderBy = Integer.parseInt(request.getParameter("orderby"));
+		/*	recuperation de nbCptValue et nbDisplay	*/
+		if ((request.getParameter("nbByPage") != null)
+				&& (request.getParameter("nbByPage") != "")) {
+			nbCptValue = Integer.parseInt(request.getParameter("nbByPage"));
+			if (nbCptValue == 0) {
+				nbDisplay = 25;
+			} else {
+				if (nbCptValue == 2) {
+					nbDisplay = 75;
+				} else {
+					if (nbCptValue == 3) {
+						nbDisplay = 100;
+					}
+				}
+			}
 		}
-
-		if (searchText.isEmpty()) {
+		
+		/*	recuperation de orderBy	*/
+		if ((request.getParameter("orderby") != null)&&(request.getParameter("orderby") != "")) {
+			orderBy = Integer.parseInt(request.getParameter("orderBy"));
+		}
+		
+		/*	recuperation de searchType	*/
+		if ((request.getParameter("searchType") != null)&&(request.getParameter("searchType") != "")) {
+			searchType = Integer.parseInt(request.getParameter("searchType"));
+		}
+		
+		/*	recuperation du motif recherche	*/
+		if ((request.getParameter("searchMotif") != null)&&(request.getParameter("searchMotif") != "")) {
+			 searchMotif = request.getParameter("searchMotif");
+		}
+		
+		/*	recuperation de la liste d'ordinateur	*/
+		if (searchMotif.isEmpty()) {
 			computers = computerService.retrieveAll(orderBy, (page - 1)
 					* nbDisplay, nbDisplay);
 		} else {
 
 			if (searchType == 0) {
-				computers.add(computerService.retrieve(searchText, orderBy));
+				computers = computerService.retrieveByName(searchMotif, orderBy);
 			} else {
 				if (searchType == 1) {
-					computers = computerService.retrieveByName(searchText,
+					computers = computerService.retrieveByCompany(searchMotif,
 							orderBy);
 				} else {
 					if (searchType == 2) {
-						computers = computerService.retrieveByIntroduced(
-								searchText, orderBy);
+						computers.add(computerService.retrieve(searchMotif,
+								orderBy));
 					} else {
 						if (searchType == 3) {
-							computers = computerService.retrieveByDiscontinued(
-									searchText, orderBy);
+							computers = computerService.retrieveByIntroduced(
+									searchMotif, orderBy);
 						} else {
 							if (searchType == 4) {
-								computers = computerService.retrieveByCompany(
-										searchText, orderBy);
+								computers = computerService
+										.retrieveByDiscontinued(searchMotif,
+												orderBy);
 							}
 						}
 					}
 				}
 			}
 		}
-
-		request.setAttribute("computers", computers);
-		request.setAttribute("size", nbComputers);
-		request.setAttribute("orderBy", orderBy);
-		request.setAttribute("searchType", searchType);
-		request.setAttribute("nbPages", nbPages);
-		request.setAttribute("currentPage", page);
 		
+		/*	recuperation du nombre de pc dans la base	ps: a changer*/
+		nbComputers = computerService.count();
+		
+		/*	recuperation de nbPages	*/
+		nbPages = (int) Math.ceil(nbComputers * 1.0 / nbDisplay);
+
+		/* création de l'objet a envoyer */
+		DashboardWrapper wrapper = DashboardWrapper.builder().size(nbComputers)
+				.nbDisplay(nbCptValue).nbPages(nbPages).currentPage(page)
+				.computers(computers).orderBy(orderBy).searchType(searchType).searchMotif(searchMotif)
+				.build();
+		
+		request.setAttribute("wrapper", wrapper);
 		this.getServletContext().getRequestDispatcher("/WEB-INF/dashboard.jsp")
 				.forward(request, response);
-
 	}
 
 }

@@ -53,8 +53,13 @@
 			</div>
 		</fieldset>
 		<div class="actions">
+			<input type="hidden" name="nbByPage" value="${nbDisplay}">
+			<input type="hidden" name="page" value="${currentPage}">
+			<input type="hidden" name="orderBy" value="${orderBy}"/>
+			<input type="hidden" name="searchType" value="${searchType}"/>
+			<input type="hidden" name="searchMotif" value="${searchMotif}"/>
 			<input type="submit" id="validInput" value="Add" class="btn primary">
-			or <a href="dashboard" class="btn">Cancel</a>
+			or <a href="dashboard?page=${currentPage}&nbByPage=${nbDisplay}&orderBy=${orderBy}&searchType=${searchType}&searchMotif=${searchMotif}" class="btn">Cancel</a>
 		</div>
 	</form>
 	<script>

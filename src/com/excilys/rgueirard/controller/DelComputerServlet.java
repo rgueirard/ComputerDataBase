@@ -1,8 +1,6 @@
 package com.excilys.rgueirard.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,7 +8,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.excilys.rgueirard.domain.Computer;
 import com.excilys.rgueirard.persistence.ComputerService;
 
 /**
@@ -37,29 +34,34 @@ public class DelComputerServlet extends HttpServlet {
 		String id = request.getParameter("id");
 		ComputerService computerService = ComputerService.getInstance();
 		computerService.delete(id);
-		int orderBy = 1;
-		if (request.getParameter("orderby") != null) {
-			Integer.parseInt(request.getParameter("orderby"));
-		}
 
 		int page = 1;
-		int nbDisplay = 50;
-		if (request.getParameter("page") != null) {
+		if ((request.getParameter("page") != null)&&(request.getParameter("page") != "")) {
 			page = Integer.parseInt(request.getParameter("page"));
 		}
-
-		int nbComputers = computerService.count();
-		int nbPages = (int) Math.ceil(nbComputers * 1.0 / nbDisplay);
-
-		List<Computer> computers = new ArrayList<Computer>();
-		computers = computerService.retrieveAll(orderBy,
-				(page - 1) * nbDisplay, nbDisplay);
-
-		request.setAttribute("computers", computers);
-		request.setAttribute("size", nbComputers);
-		request.setAttribute("nbPages", nbPages);
-		request.setAttribute("currentPage", page);
-		this.getServletContext().getRequestDispatcher("/WEB-INF/dashboard.jsp")
+		int nbCptValue = 1;
+		if ((request.getParameter("nbByPage") != null)
+				&& (request.getParameter("nbByPage") != "")) {
+			nbCptValue = Integer.parseInt(request.getParameter("nbByPage"));
+		}
+		int orderBy = 1;
+		if ((request.getParameter("orderby") != null)&&(request.getParameter("orderby") != "")) {
+			orderBy = Integer.parseInt(request.getParameter("orderby"));
+		}
+		int searchType = 0;
+		if ((request.getParameter("searchType") != null)&&(request.getParameter("searchType") != "")) {
+			searchType = Integer.parseInt(request.getParameter("searchType"));
+		}
+		String searchMotif = "";
+		if ((request.getParameter("searchMotif") != null)&&(request.getParameter("searchMotif") != "")) {
+			searchMotif = request.getParameter("searchMotif");
+		}
+		
+		this.getServletContext()
+				.getRequestDispatcher(
+						"/dashboard?page=" + page + "&nbByPage=" + nbCptValue
+								+ "&orderBy=" + orderBy + "&searchType="
+								+ searchType + "&searchMotif=" + searchMotif)
 				.forward(request, response);
 	}
 

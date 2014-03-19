@@ -30,43 +30,33 @@ public class ComputerDAO {
 		return computerDAO;
 	}
 
-	public void closeObject(PreparedStatement ps, ResultSet rs,
-			Connection connection) {
-		try {
-			if (ps != null) {
-				ps.close();
-			}
-			if (rs != null) {
-				rs.close();
-			}
-			if (connection != null) {
-				connection.close();
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+	public void closeObject(PreparedStatement ps, ResultSet rs) throws SQLException {
+
+		if (ps != null) {
+			ps.close();
+		}
+		if (rs != null) {
+			rs.close();
 		}
 	}
 
-	public void delete(String idString, Connection connection) {
+	public void delete(String idString, Connection connection) throws SQLException {
 
 		String query = "DELETE FROM computer WHERE id = ?";
 		long id = Long.parseLong(idString);
 		PreparedStatement ps = null;
 
-		try {
-			ps = connection.prepareStatement(query);
-			ps.setLong(1, id);
-			ps.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			closeObject(ps, null, connection);
-		}
+		ps = connection.prepareStatement(query);
+		ps.setLong(1, id);
+		ps.executeUpdate();
+		
+		closeObject(ps, null);
+
 
 	}
 
 	public void update(String idS, String nameS, String introducedS,
-			String discontinuedS, String companyIdS, Connection connection) {
+			String discontinuedS, String companyIdS, Connection connection) throws SQLException, ParseException {
 		PreparedStatement ps = null;
 		String query = "UPDATE computer SET name=?, introduced=?, discontinued=?, company_id=? WHERE id=?";
 		long id = Long.parseLong(idS);
@@ -78,42 +68,33 @@ public class ComputerDAO {
 		java.sql.Date introducedSql = null;
 		java.sql.Date discontinuedSql = null;
 
-		try {
-			if ((introducedS != null) && (introducedS != "")) {
-				introducedUtil = formatter.parse(introducedS);
-				introducedSql = new java.sql.Date(introducedUtil.getTime());
-			}
-			if ((discontinuedS != null) && (discontinuedS != "")) {
-				discontinuedUtil = formatter.parse(discontinuedS);
-				discontinuedSql = new java.sql.Date(discontinuedUtil.getTime());
-			}
 
-			ps = connection.prepareStatement(query);
-
-			ps.setString(1, nameS);
-			ps.setDate(2, introducedSql);
-			ps.setDate(3, discontinuedSql);
-			if (companyId != 0) {
-				ps.setLong(4, companyId);
-			} else {
-				ps.setNull(4, Types.BIGINT);
-			}
-			ps.setLong(5, id);
-
-			ps.executeUpdate();
-
-		} catch (ParseException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			closeObject(ps, null, connection);
+		if ((introducedS != null) && (introducedS != "")) {
+			introducedUtil = formatter.parse(introducedS);
+			introducedSql = new java.sql.Date(introducedUtil.getTime());
+		}
+		if ((discontinuedS != null) && (discontinuedS != "")) {
+			discontinuedUtil = formatter.parse(discontinuedS);
+			discontinuedSql = new java.sql.Date(discontinuedUtil.getTime());
 		}
 
+		ps = connection.prepareStatement(query);
+
+		ps.setString(1, nameS);
+		ps.setDate(2, introducedSql);
+		ps.setDate(3, discontinuedSql);
+		if (companyId != 0) {
+			ps.setLong(4, companyId);
+		} else {
+			ps.setNull(4, Types.BIGINT);
+		}
+		ps.setLong(5, id);
+		ps.executeUpdate();
+		closeObject(ps, null);
 	}
 
 	public void create(String name, String introducedDate,
-			String discontinuedDate, String company, Connection connection) {
+			String discontinuedDate, String company, Connection connection) throws SQLException, ParseException {
 
 		String query = "INSERT INTO computer (id,name,introduced,discontinued,company_id) VALUES (0,?,?,?,?)";
 		PreparedStatement ps = null;
@@ -125,41 +106,34 @@ public class ComputerDAO {
 
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
-		try {
-			ps = connection.prepareStatement(query);
+		ps = connection.prepareStatement(query);
 
-			if ((introducedDate != null) && (introducedDate != "")) {
-				introducedUtil = formatter.parse(introducedDate);
-				introducedSql = new java.sql.Date(introducedUtil.getTime());
-			}
-			if ((discontinuedDate != null) && (discontinuedDate != "")) {
-				discontinuedUtil = formatter.parse(discontinuedDate);
-				discontinuedSql = new java.sql.Date(discontinuedUtil.getTime());
-			}
-
-			// ps.setLong(1, id);
-			ps.setString(1, name);
-			ps.setDate(2, introducedSql);
-			ps.setDate(3, discontinuedSql);
-
-			if (companyId != 0) {
-				ps.setLong(4, companyId);
-			} else {
-				ps.setNull(4, Types.BIGINT);
-			}
-
-			ps.executeUpdate();
-			// nextId = nextId + 1;
-		} catch (ParseException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			closeObject(ps, null, connection);
+		if ((introducedDate != null) && (introducedDate != "")) {
+			introducedUtil = formatter.parse(introducedDate);
+			introducedSql = new java.sql.Date(introducedUtil.getTime());
 		}
+		if ((discontinuedDate != null) && (discontinuedDate != "")) {
+			discontinuedUtil = formatter.parse(discontinuedDate);
+			discontinuedSql = new java.sql.Date(discontinuedUtil.getTime());
+		}
+
+		ps.setString(1, name);
+		ps.setDate(2, introducedSql);
+		ps.setDate(3, discontinuedSql);
+
+		if (companyId != 0) {
+			ps.setLong(4, companyId);
+		} else {
+			ps.setNull(4, Types.BIGINT);
+		}
+
+		ps.executeUpdate();
+		
+		closeObject(ps, null);
+	
 	}
 
-	public Computer retrieve(String idS, int orderBy, Connection connection) {
+	public Computer retrieve(String idS, int orderBy, Connection connection) throws SQLException, ParseException {
 		CompanyService companyService = CompanyService.getInstance();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -171,39 +145,32 @@ public class ComputerDAO {
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		Company company = null;
 
-		try {
-			ps = connection.prepareStatement(query);
-			ps.setLong(1, id);
-			ps.setInt(2, orderBy);
-			rs = ps.executeQuery();
-			rs.next();
-			if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
-				introduced = formatter.parse(rs.getString(3));
-			}
-			if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
-				discontinued = formatter.parse(rs.getString(4));
-			}
-			if (rs.getString(5) != null) {
-				company = companyService.retrieve(Long.parseLong(rs
-						.getString(5)));
-			}
-			computer = Computer.builder().id(Long.parseLong(rs.getString(1)))
-					.name(rs.getString(2)).introduced(introduced)
-					.discontinued(discontinued).company(company).build();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			this.closeObject(ps, rs, connection);
+		ps = connection.prepareStatement(query);
+		ps.setLong(1, id);
+		ps.setInt(2, orderBy);
+		rs = ps.executeQuery();
+		rs.next();
+		if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
+			introduced = formatter.parse(rs.getString(3));
 		}
+		if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
+			discontinued = formatter.parse(rs.getString(4));
+		}
+		if (rs.getString(5) != null) {
+			company = companyService.retrieve(Long.parseLong(rs
+					.getString(5)));
+		}
+		computer = Computer.builder().id(Long.parseLong(rs.getString(1)))
+				.name(rs.getString(2)).introduced(introduced)
+				.discontinued(discontinued).company(company).build();
+			
+		this.closeObject(ps, rs);
+		
 		return computer;
 	}
 
 	public List<Computer> retrieveByName(String name, int orderBy,
-			Connection connection) {
+			Connection connection) throws SQLException, ParseException {
 		CompanyService companyService = CompanyService.getInstance();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -215,48 +182,41 @@ public class ComputerDAO {
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		Company company = null;
 
-		try {
-			ps = connection.prepareStatement(query);
-			ps.setString(1, "%" + name + "%");
-			ps.setInt(2, orderBy);
-			rs = ps.executeQuery();
-			while (rs.next()) {
-				if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
-					introduced = formatter.parse(rs.getString(3));
-				} else {
-					introduced = null;
-				}
-				if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
-					discontinued = formatter.parse(rs.getString(4));
-				} else {
-					discontinued = null;
-				}
-				if (rs.getString(5) != null) {
-					company = companyService.retrieve(Long.parseLong(rs
-							.getString(5)));
-				} else {
-					company = null;
-				}
-				computer = Computer.builder()
-						.id(Long.parseLong(rs.getString(1)))
-						.name(rs.getString(2)).introduced(introduced)
-						.discontinued(discontinued).company(company).build();
-				computers.add(computer);
+		ps = connection.prepareStatement(query);
+		ps.setString(1, "%" + name + "%");
+		ps.setInt(2, orderBy);
+		rs = ps.executeQuery();
+		while (rs.next()) {
+			if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
+				introduced = formatter.parse(rs.getString(3));
+			} else {
+				introduced = null;
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			this.closeObject(ps, rs, connection);
+			if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
+				discontinued = formatter.parse(rs.getString(4));
+			} else {
+				discontinued = null;
+			}
+			if (rs.getString(5) != null) {
+				company = companyService.retrieve(Long.parseLong(rs
+						.getString(5)));
+			} else {
+				company = null;
+			}
+			computer = Computer.builder()
+					.id(Long.parseLong(rs.getString(1)))
+					.name(rs.getString(2)).introduced(introduced)
+					.discontinued(discontinued).company(company).build();
+			computers.add(computer);
 		}
+		
+		this.closeObject(ps, rs);
+		
 		return computers;
 	}
 
 	public List<Computer> retrieveByCompany(String companyName, int orderBy,
-			Connection connection) {
+			Connection connection) throws SQLException, ParseException {
 		CompanyService companyService = CompanyService.getInstance();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -268,48 +228,40 @@ public class ComputerDAO {
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		Company company = null;
 
-		try {
-			ps = connection.prepareStatement(query);
-			ps.setString(1, "%" + companyName + "%");
-			ps.setInt(2, orderBy);
-			rs = ps.executeQuery();
-			while (rs.next()) {
-				if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
-					introduced = formatter.parse(rs.getString(3));
-				} else {
-					introduced = null;
-				}
-				if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
-					discontinued = formatter.parse(rs.getString(4));
-				} else {
-					discontinued = null;
-				}
-				if (rs.getString(5) != null) {
-					company = companyService.retrieve(Long.parseLong(rs
-							.getString(5)));
-				} else {
-					company = null;
-				}
-				computer = Computer.builder()
-						.id(Long.parseLong(rs.getString(1)))
-						.name(rs.getString(2)).introduced(introduced)
-						.discontinued(discontinued).company(company).build();
-				computers.add(computer);
+		ps = connection.prepareStatement(query);
+		ps.setString(1, "%" + companyName + "%");
+		ps.setInt(2, orderBy);
+		rs = ps.executeQuery();
+		while (rs.next()) {
+			if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
+				introduced = formatter.parse(rs.getString(3));
+			} else {
+				introduced = null;
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			this.closeObject(ps, rs, connection);
+			if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
+				discontinued = formatter.parse(rs.getString(4));
+			} else {
+				discontinued = null;
+			}
+			if (rs.getString(5) != null) {
+				company = companyService.retrieve(Long.parseLong(rs
+						.getString(5)));
+			} else {
+				company = null;
+			}
+			computer = Computer.builder()
+					.id(Long.parseLong(rs.getString(1)))
+					.name(rs.getString(2)).introduced(introduced)
+					.discontinued(discontinued).company(company).build();
+			computers.add(computer);
 		}
+		
+		this.closeObject(ps, rs);
 		return computers;
 	}
 
 	public List<Computer> retrieveByIntroduced(String introducedS, int orderBy,
-			Connection connection) {
+			Connection connection) throws NumberFormatException, SQLException, ParseException {
 		CompanyService companyService = CompanyService.getInstance();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -322,55 +274,48 @@ public class ComputerDAO {
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		Company company = null;
 
-		try {
-			ps = connection.prepareStatement(query);
+		ps = connection.prepareStatement(query);
 
-			if ((introducedS != null) && (introducedS != "")) {
-				introduced = formatter.parse(introducedS);
-				introducedSql = new java.sql.Date(introduced.getTime());
-			}
-
-			ps.setDate(1, introducedSql);
-			ps.setInt(2, orderBy);
-			rs = ps.executeQuery();
-
-			while (rs.next()) {
-				if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
-					introduced = formatter.parse(rs.getString(3));
-				} else {
-					introduced = null;
-				}
-				if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
-					discontinued = formatter.parse(rs.getString(4));
-				} else {
-					discontinued = null;
-				}
-				if (rs.getString(5) != null) {
-					company = companyService.retrieve(Long.parseLong(rs
-							.getString(5)));
-				} else {
-					company = null;
-				}
-				computer = Computer.builder()
-						.id(Long.parseLong(rs.getString(1)))
-						.name(rs.getString(2)).introduced(introduced)
-						.discontinued(discontinued).company(company).build();
-				computers.add(computer);
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			this.closeObject(ps, rs, connection);
+		if ((introducedS != null) && (introducedS != "")) {
+			introduced = formatter.parse(introducedS);
+			introducedSql = new java.sql.Date(introduced.getTime());
 		}
+
+		ps.setDate(1, introducedSql);
+		ps.setInt(2, orderBy);
+		rs = ps.executeQuery();
+
+		while (rs.next()) {
+			if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
+				introduced = formatter.parse(rs.getString(3));
+			} else {
+				introduced = null;
+			}
+			if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
+				discontinued = formatter.parse(rs.getString(4));
+			} else {
+				discontinued = null;
+			}
+			if (rs.getString(5) != null) {
+				company = companyService.retrieve(Long.parseLong(rs
+						.getString(5)));
+			} else {
+				company = null;
+			}
+			computer = Computer.builder()
+					.id(Long.parseLong(rs.getString(1)))
+					.name(rs.getString(2)).introduced(introduced)
+					.discontinued(discontinued).company(company).build();
+			computers.add(computer);
+		}
+		
+		this.closeObject(ps, rs);
+
 		return computers;
 	}
 
 	public List<Computer> retrieveByDiscontinued(String discontinuedS,
-			int orderBy, Connection connection) {
+			int orderBy, Connection connection) throws NumberFormatException, SQLException, ParseException {
 		CompanyService companyService = CompanyService.getInstance();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -383,54 +328,47 @@ public class ComputerDAO {
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		Company company = null;
 
-		try {
-			ps = connection.prepareStatement(query);
+		ps = connection.prepareStatement(query);
 
-			if ((discontinuedS != null) && (discontinuedS != "")) {
-				discontinued = formatter.parse(discontinuedS);
-				discontinuedSql = new java.sql.Date(introduced.getTime());
-			}
-
-			ps.setDate(1, discontinuedSql);
-			ps.setInt(2, orderBy);
-			rs = ps.executeQuery();
-
-			while (rs.next()) {
-				if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
-					introduced = formatter.parse(rs.getString(3));
-				} else {
-					introduced = null;
-				}
-				if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
-					discontinued = formatter.parse(rs.getString(4));
-				} else {
-					discontinued = null;
-				}
-				if (rs.getString(5) != null) {
-					company = companyService.retrieve(Long.parseLong(rs
-							.getString(5)));
-				} else {
-					company = null;
-				}
-				computer = Computer.builder()
-						.id(Long.parseLong(rs.getString(1)))
-						.name(rs.getString(2)).introduced(introduced)
-						.discontinued(discontinued).company(company).build();
-				computers.add(computer);
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			this.closeObject(ps, rs, connection);
+		if ((discontinuedS != null) && (discontinuedS != "")) {
+			discontinued = formatter.parse(discontinuedS);
+			discontinuedSql = new java.sql.Date(discontinued.getTime());
 		}
+
+		ps.setDate(1, discontinuedSql);
+		ps.setInt(2, orderBy);
+		rs = ps.executeQuery();
+
+		while (rs.next()) {
+			if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
+				introduced = formatter.parse(rs.getString(3));
+			} else {
+				introduced = null;
+			}
+			if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
+				discontinued = formatter.parse(rs.getString(4));
+			} else {
+				discontinued = null;
+			}
+			if (rs.getString(5) != null) {
+				company = companyService.retrieve(Long.parseLong(rs
+						.getString(5)));
+			} else {
+				company = null;
+			}
+			computer = Computer.builder()
+					.id(Long.parseLong(rs.getString(1)))
+					.name(rs.getString(2)).introduced(introduced)
+					.discontinued(discontinued).company(company).build();
+			computers.add(computer);
+		}
+	
+		this.closeObject(ps, rs);
+		
 		return computers;
 	}
 
-	public List<Computer> retrieveAll(int orderBy, int offset, int nbDisplay, Connection connection) {
+	public List<Computer> retrieveAll(int orderBy, int offset, int nbDisplay, Connection connection) throws NumberFormatException, SQLException, ParseException {
 		CompanyService companyService = CompanyService.getInstance();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -441,66 +379,57 @@ public class ComputerDAO {
 		Date introduced = null;
 		Date discontinued = null;
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		int i = 0;
-		// "yyyy-MM-dd HH:mm:ss.S"
-		try {
-			ps = connection
-					.prepareStatement(query);
+		
+		ps = connection
+				.prepareStatement(query);
 
-			ps.setInt(1, orderBy);
-			ps.setInt(2, offset);
-			ps.setInt(3, nbDisplay);
-			
-			rs = ps.executeQuery();
+		ps.setInt(1, orderBy);
+		ps.setInt(2, offset);
+		ps.setInt(3, nbDisplay);
+		
+		rs = ps.executeQuery();
 
-			while (rs.next()) {
-				if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
-					introduced = formatter.parse(rs.getString(3));
-				} else {
-					introduced = null;
-				}
-				if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
-					discontinued = formatter.parse(rs.getString(4));
-				} else {
-					discontinued = null;
-				}
-				if (rs.getString(5) != null) {
-					company = companyService.retrieve(Long.parseLong(rs
-							.getString(5)));
-				} else {
-					company = null;
-				}
-				computer = Computer.builder()
-						.id(Long.parseLong(rs.getString(1)))
-						.name(rs.getString(2)).introduced(introduced)
-						.discontinued(discontinued).company(company).build();
-				computers.add(computer);
+		while (rs.next()) {
+			if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
+				introduced = formatter.parse(rs.getString(3));
+			} else {
+				introduced = null;
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
-		} finally {
-			this.closeObject(ps, rs, connection);
+			if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
+				discontinued = formatter.parse(rs.getString(4));
+			} else {
+				discontinued = null;
+			}
+			if (rs.getString(5) != null) {
+				company = companyService.retrieve(Long.parseLong(rs
+						.getString(5)));
+			} else {
+				company = null;
+			}
+			computer = Computer.builder()
+					.id(Long.parseLong(rs.getString(1)))
+					.name(rs.getString(2)).introduced(introduced)
+					.discontinued(discontinued).company(company).build();
+			computers.add(computer);
 		}
+	
+		this.closeObject(ps, rs);
+		
 		return computers;
 	}
 
-	public int count(Connection connection) {
+	public int count(Connection connection) throws SQLException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		int nbComputer = 0;
-
-		try {
-			ps = connection.prepareStatement("SELECT count(*) FROM computer");
-			rs = ps.executeQuery();
-			rs.next();
-			nbComputer = rs.getInt(1);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			this.closeObject(ps, rs, connection);
-		}
+		
+		ps = connection.prepareStatement("SELECT count(*) FROM computer");
+		rs = ps.executeQuery();
+		rs.next();
+		nbComputer = rs.getInt(1);
+	
+		this.closeObject(ps, rs);
+		
 		return nbComputer;
 	}
 }
