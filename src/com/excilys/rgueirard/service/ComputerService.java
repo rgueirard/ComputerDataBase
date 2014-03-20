@@ -28,12 +28,11 @@ public class ComputerService {
 	public void create(String name, String introducedDate,
 			String discontinuedDate, String company) {
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		Connection connection = null;
+		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
 		
 		try {
-			connection = dataBaseManager.getConnection();
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
@@ -55,12 +54,11 @@ public class ComputerService {
 	public void update(String idS, String nameS, String introducedS,
 			String discontinuedS, String companyIdS) {
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		Connection connection = null;
+		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
 		
 		try {
-			connection = dataBaseManager.getConnection();
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
@@ -86,6 +84,7 @@ public class ComputerService {
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
 					
 		try {
+			
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
