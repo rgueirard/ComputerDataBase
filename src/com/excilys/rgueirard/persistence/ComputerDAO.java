@@ -26,7 +26,7 @@ public class ComputerDAO {
 	private final String LIMIT = "LIMIT ?, ? ";
 	private final String WHERENAME = "WHERE name LIKE ? ";
 	private final String WHEREID = "WHERE id = ? ";
-	
+
 	private ComputerDAO() {
 		super();
 	}
@@ -38,7 +38,8 @@ public class ComputerDAO {
 		return computerDAO;
 	}
 
-	public void closeObject(PreparedStatement ps, ResultSet rs) throws SQLException {
+	public void closeObject(PreparedStatement ps, ResultSet rs)
+			throws SQLException {
 
 		if (ps != null) {
 			ps.close();
@@ -48,7 +49,8 @@ public class ComputerDAO {
 		}
 	}
 
-	public void delete(String idString, Connection connection) throws SQLException {
+	public void delete(String idString, Connection connection)
+			throws SQLException {
 
 		String query = "DELETE FROM computer WHERE id = ?";
 		long id = Long.parseLong(idString);
@@ -57,14 +59,14 @@ public class ComputerDAO {
 		ps = connection.prepareStatement(query);
 		ps.setLong(1, id);
 		ps.executeUpdate();
-		
-		closeObject(ps, null);
 
+		closeObject(ps, null);
 
 	}
 
 	public void update(String idS, String nameS, String introducedS,
-			String discontinuedS, String companyIdS, Connection connection) throws SQLException, ParseException {
+			String discontinuedS, String companyIdS, Connection connection)
+			throws SQLException, ParseException {
 		PreparedStatement ps = null;
 		String query = "UPDATE computer SET name=?, introduced=?, discontinued=?, company_id=? WHERE id=?";
 		long id = Long.parseLong(idS);
@@ -75,7 +77,6 @@ public class ComputerDAO {
 		java.util.Date discontinuedUtil = null;
 		java.sql.Date introducedSql = null;
 		java.sql.Date discontinuedSql = null;
-
 
 		if ((introducedS != null) && (introducedS != "")) {
 			introducedUtil = formatter.parse(introducedS);
@@ -102,7 +103,8 @@ public class ComputerDAO {
 	}
 
 	public void create(String name, String introducedDate,
-			String discontinuedDate, String company, Connection connection) throws SQLException, ParseException {
+			String discontinuedDate, String company, Connection connection)
+			throws SQLException, ParseException {
 
 		String query = "INSERT INTO computer (id,name,introduced,discontinued,company_id) VALUES (0,?,?,?,?)";
 		PreparedStatement ps = null;
@@ -136,55 +138,59 @@ public class ComputerDAO {
 		}
 
 		ps.executeUpdate();
-		
+
 		closeObject(ps, null);
-	
+
 	}
-	
-	public PageWrapper<Computer> retrieve(PageWrapper<Computer> wrapper, Connection connection) throws SQLException, ParseException {
-		CompanyService companyService = CompanyService.getInstance();
+
+	public PageWrapper<Computer> retrieve(PageWrapper<Computer> wrapper,
+			CompanyService companyService, Connection connection)
+			throws SQLException, ParseException {
+		
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		StringBuilder query = new StringBuilder("SELECT cpt.id,cpt.name,cpt.introduced,cpt.discontinued,cpt.company_id FROM computer AS cpt ");
-		StringBuilder sizeQuery = new StringBuilder("SELECT count(*) FROM computer ");
+		StringBuilder query = new StringBuilder(
+				"SELECT cpt.id,cpt.name,cpt.introduced,cpt.discontinued,cpt.company_id FROM computer AS cpt ");
+		StringBuilder sizeQuery = new StringBuilder(
+				"SELECT count(*) FROM computer ");
 		List<Computer> computers = new ArrayList<Computer>();
 		Computer computer = new Computer();
 		Company company = null;
 		Date introduced = null;
 		Date discontinued = null;
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		
-		if(wrapper.getSearchMotif().isEmpty()){
+
+		if (wrapper.getSearchMotif().isEmpty()) {
 			query.append(ORDER);
-			if(wrapper.isAscendant()){
+			if (wrapper.isAscendant()) {
 				query.append(ASC);
 			} else {
 				query.append(DESC);
 			}
 			query.append(LIMIT);
-			
+
 			ps = connection.prepareStatement(sizeQuery.toString());
 			rs = ps.executeQuery();
 			rs.next();
 			if ((rs.getString(1) != null) && (rs.getString(1) != "")) {
 				wrapper.setSize(Integer.parseInt(rs.getString(1)));
-			}		
-			
+			}
+
 			/* recuperation de nbPages */
 			wrapper.setNbPages((int) Math.ceil(wrapper.getSize() * 1.0
 					/ wrapper.getNbDisplay()));
-			
-			
+
 			ps = connection.prepareStatement(query.toString());
 			ps.setInt(1, wrapper.getOrderBy());
-			
-			if(wrapper.getCurrentPage()>wrapper.getNbPages()){
-				wrapper.setCurrentPage(wrapper.getNbPages()-1);
+
+			if (wrapper.getCurrentPage() > wrapper.getNbPages()) {
+				wrapper.setCurrentPage(wrapper.getNbPages() - 1);
 			}
-			
-			ps.setInt(2, (wrapper.getCurrentPage()-1)*wrapper.getNbDisplay());
+
+			ps.setInt(2,
+					(wrapper.getCurrentPage() - 1) * wrapper.getNbDisplay());
 			ps.setInt(3, wrapper.getNbDisplay());
-			
+
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
@@ -211,78 +217,78 @@ public class ComputerDAO {
 				computers.add(computer);
 			}
 			wrapper.setPages(computers);
-			
+
 		} else {
 			switch (wrapper.getSearchType()) {
-				case 0:
-					sizeQuery.append(WHERENAME);
-					query.append(WHERENAME);
-					query.append(ORDER);
-					if(wrapper.isAscendant()){
-						query.append(ASC);
-					} else {
-						query.append(DESC);
-					}
-					query.append(LIMIT);
-					break;
-				case 1:
-					sizeQuery.append("INNER JOIN company AS cpy WHERE company_id=cpy.id AND cpy.name LIKE ?");
-					query.append("INNER JOIN company AS cpy WHERE company_id=cpy.id AND cpy.name LIKE ? ");
-					query.append(ORDER);
-					if(wrapper.isAscendant()){
-						query.append(ASC);
-					} else {
-						query.append(DESC);
-					}
-					query.append(LIMIT);
-					break;
-				case 2:
-					sizeQuery.append(WHEREID);
-					query.append(WHEREID);
-					break;
+			case 0:
+				sizeQuery.append(WHERENAME);
+				query.append(WHERENAME);
+				query.append(ORDER);
+				if (wrapper.isAscendant()) {
+					query.append(ASC);
+				} else {
+					query.append(DESC);
+				}
+				query.append(LIMIT);
+				break;
+			case 1:
+				sizeQuery
+						.append("INNER JOIN company AS cpy WHERE company_id=cpy.id AND cpy.name LIKE ?");
+				query.append("INNER JOIN company AS cpy WHERE company_id=cpy.id AND cpy.name LIKE ? ");
+				query.append(ORDER);
+				if (wrapper.isAscendant()) {
+					query.append(ASC);
+				} else {
+					query.append(DESC);
+				}
+				query.append(LIMIT);
+				break;
+			case 2:
+				sizeQuery.append(WHEREID);
+				query.append(WHEREID);
+				break;
 			}
-		
-		
+
 			/* recupération de la taille */
 			ps = connection.prepareStatement(sizeQuery.toString());
-			if(wrapper.getSearchType()!=2){
+			if (wrapper.getSearchType() != 2) {
 				ps.setString(1, "%" + wrapper.getSearchMotif() + "%");
 			} else {
 				ps.setLong(1, Long.parseLong(wrapper.getSearchMotif()));
 			}
-			
-			
+
 			rs = ps.executeQuery();
 			rs.next();
 			if ((rs.getString(1) != null) && (rs.getString(1) != "")) {
 				wrapper.setSize(Integer.parseInt(rs.getString(1)));
 			}
-			
+
 			/* recuperation des computers */
 			ps = connection.prepareStatement(query.toString());
-			
-			
-			if(wrapper.getSearchType()!=2){
+
+			if (wrapper.getSearchType() != 2) {
 				ps.setString(1, "%" + wrapper.getSearchMotif() + "%");
 			} else {
 				ps.setLong(1, Long.parseLong(wrapper.getSearchMotif()));
 			}
-			
+
 			/* recuperation de nbPages */
-			if(wrapper.getSearchType()!=2){
-				wrapper.setNbPages((int) Math.ceil(wrapper.getSize() * 1.0 / wrapper.getNbDisplay()));
-					
+			if (wrapper.getSearchType() != 2) {
+				wrapper.setNbPages((int) Math.ceil(wrapper.getSize() * 1.0
+						/ wrapper.getNbDisplay()));
+
 				ps.setInt(2, wrapper.getOrderBy());
-				
-				if(wrapper.getCurrentPage()>wrapper.getNbPages()){
-					wrapper.setCurrentPage(wrapper.getNbPages()-1);
+
+				if (wrapper.getCurrentPage() > wrapper.getNbPages()) {
+					wrapper.setCurrentPage(wrapper.getNbPages() - 1);
 				}
-				ps.setInt(3, (wrapper.getCurrentPage()-1)*wrapper.getNbDisplay());
+				ps.setInt(3,
+						(wrapper.getCurrentPage() - 1) * wrapper.getNbDisplay());
 				ps.setInt(4, wrapper.getNbDisplay());
 			}
-			
+
 			rs = ps.executeQuery();
-			
+
 			while (rs.next()) {
 				if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
 					introduced = formatter.parse(rs.getString(3));
@@ -308,8 +314,8 @@ public class ComputerDAO {
 			}
 			wrapper.setPages(computers);
 		}
-		
+
 		this.closeObject(ps, rs);
-		return wrapper;		
+		return wrapper;
 	}
 }

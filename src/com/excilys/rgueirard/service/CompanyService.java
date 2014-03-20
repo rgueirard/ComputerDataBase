@@ -36,8 +36,8 @@ public class CompanyService {
 		try {
 			connection = dataBaseManager.getConnection();
 			connection.setAutoCommit(false);
-			CompanyDAO companyDAO = CompanyDAO.getInstance();
-			LogDAO logDAO = LogDAO.getInstance();
+			CompanyDAO companyDAO = dataBaseManager.getCompanyDAO();
+			LogDAO logDAO = dataBaseManager.getLogDAO();
 			company = companyDAO.retrieve(id, connection);
 			logDAO.create(dateSql.toString(), "create", connection);
 			connection.commit();
@@ -64,8 +64,8 @@ public class CompanyService {
 		try {
 			connection = dataBaseManager.getConnection();
 			connection.setAutoCommit(false);
-			CompanyDAO companyDAO = CompanyDAO.getInstance();
-			LogDAO logDAO = LogDAO.getInstance();
+			CompanyDAO companyDAO = dataBaseManager.getCompanyDAO();
+			LogDAO logDAO = dataBaseManager.getLogDAO();
 			companies = companyDAO.retrieveAll(connection);
 			logDAO.create(dateSql.toString(), "create", connection);
 			connection.commit();

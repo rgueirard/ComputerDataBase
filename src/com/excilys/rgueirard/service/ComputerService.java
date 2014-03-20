@@ -112,62 +112,11 @@ public class ComputerService {
 		
 		try {
 			connection.setAutoCommit(false);
-			ComputerDAO computerDAO = ComputerDAO.getInstance();
-			LogDAO logDAO = LogDAO.getInstance();
-			wrapper = computerDAO.retrieve(wrapper, connection);
+			ComputerDAO computerDAO = dataBaseManager.getComputerDAO();
+			CompanyService companyService = dataBaseManager.getCompanyService();
+			LogDAO logDAO = dataBaseManager.getLogDAO();
+			wrapper = computerDAO.retrieve(wrapper, companyService, connection);
 			logDAO.create(dateSql.toString(), "retrieve", connection);
-			connection.commit();
-			connection.setAutoCommit(true);
-		} catch (SQLException e) {
-			try {connection.rollback();}catch(SQLException e1){e.printStackTrace();}
-			e.printStackTrace();
-		} catch (ParseException e) {
-			try {connection.rollback();}catch(SQLException e1){e.printStackTrace();}
-			e.printStackTrace();
-		} finally{
-			   try{connection.close();}catch(Exception e){e.printStackTrace();}
-		}
-		return wrapper;
-	}
-	
-	public PageWrapper<Computer> retrieveByName(PageWrapper<Computer> wrapper){
-		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		Connection connection = dataBaseManager.getConnection();
-		Date dateUtil = new Date();
-		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
-				
-		try {
-			connection.setAutoCommit(false);
-			ComputerDAO computerDAO = ComputerDAO.getInstance();
-			LogDAO logDAO = LogDAO.getInstance();
-			wrapper = computerDAO.retrieve(wrapper, connection);
-			logDAO.create(dateSql.toString(), "retrieveByName", connection);
-			connection.commit();
-			connection.setAutoCommit(true);
-		} catch (SQLException e) {
-			try {connection.rollback();}catch(SQLException e1){e.printStackTrace();}
-			e.printStackTrace();
-		} catch (ParseException e) {
-			try {connection.rollback();}catch(SQLException e1){e.printStackTrace();}
-			e.printStackTrace();
-		} finally{
-			   try{connection.close();}catch(Exception e){e.printStackTrace();}
-		}
-		return wrapper;
-	}
-	
-	public PageWrapper<Computer> retrieveByCompany(PageWrapper<Computer> wrapper){
-		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		Connection connection = dataBaseManager.getConnection();
-		Date dateUtil = new Date();
-		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
-		
-		try {
-			connection.setAutoCommit(false);
-			ComputerDAO computerDAO = ComputerDAO.getInstance();
-			LogDAO logDAO = LogDAO.getInstance();
-			wrapper = computerDAO.retrieve(wrapper, connection);
-			logDAO.create(dateSql.toString(), "retrieveByCompany", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
 		} catch (SQLException e) {

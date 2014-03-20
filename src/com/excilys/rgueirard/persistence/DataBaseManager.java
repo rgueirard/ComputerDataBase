@@ -3,6 +3,8 @@ package com.excilys.rgueirard.persistence;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import com.excilys.rgueirard.service.CompanyService;
+import com.excilys.rgueirard.service.ComputerService;
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 
@@ -22,7 +24,12 @@ public class DataBaseManager {
 	private final static String user = "root";
 	private final static String password = "root";
 	private static DataBaseManager dataBaseManager = null;
-	private static BoneCP connectionPool;
+	private static BoneCP connectionPool = null;
+	private static ComputerDAO computerDAO = null;
+	private static ComputerService computerService = null;
+	private static CompanyDAO companyDAO = null;
+	private static CompanyService companyService = null;
+	private static LogDAO logDAO = null;
 	/* org.h2.Driver */
 	/* sa    							  */
 	/* test								  */
@@ -47,6 +54,11 @@ public class DataBaseManager {
 				e.printStackTrace();
 			}
 			dataBaseManager = new DataBaseManager();
+			computerDAO = ComputerDAO.getInstance();
+			computerService = ComputerService.getInstance();
+			companyDAO = CompanyDAO.getInstance();
+			companyService = CompanyService.getInstance();
+			logDAO = LogDAO.getInstance();
 		}
 		
 		return dataBaseManager;
@@ -56,13 +68,32 @@ public class DataBaseManager {
 		Connection connection = null;
 		
 		try {
-			//connection = DriverManager.getConnection(url, user, password);
 			connection = connectionPool.getConnection();
 		}
 		catch (SQLException e) {
 			System.err.println(e.getMessage());
 		}
 		return connection;
+	}
+	
+	public ComputerDAO getComputerDAO() {
+		return computerDAO;
+	}
+
+	public ComputerService getComputerService() {
+		return computerService;
+	}
+
+	public CompanyDAO getCompanyDAO() {
+		return companyDAO;
+	}
+
+	public CompanyService getCompanyService() {
+		return companyService;
+	}
+	
+	public LogDAO getLogDAO() {
+		return logDAO;
 	}
 
 	@Override
