@@ -40,7 +40,8 @@ public class EditComputerServlet extends HttpServlet {
 		CompanyService companyService = CompanyService.getInstance();
 
 		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
-		String searchMotif = ""; 
+		String searchMotif = "";
+		int searchType = 0;
 		
 		/* recupération de page */
 		if ((request.getParameter("page") != null)
@@ -65,8 +66,7 @@ public class EditComputerServlet extends HttpServlet {
 		/* recuperation de searchType */
 		if ((request.getParameter("searchType") != null)
 				&& (request.getParameter("searchType") != "")) {
-			wrapper.setSearchType(Integer.parseInt(request
-					.getParameter("searchType")));
+			searchType = Integer.parseInt(request.getParameter("searchType"));
 		}
 		//wrapper.setSearchType(2);
 		
@@ -78,10 +78,11 @@ public class EditComputerServlet extends HttpServlet {
 		
 		/* recuperation du motif recherche */
 		wrapper.setSearchMotif(request.getParameter("id"));
-
+		wrapper.setSearchType(2);
 		wrapper = computerService.retrieve(wrapper);
 		List<Company> companies = companyService.retrieveAll();
 
+		wrapper.setSearchType(searchType);
 		wrapper.setSearchMotif(searchMotif);
 		
 		request.setAttribute("computer", wrapper.getPages().get(0));

@@ -20,7 +20,13 @@ import com.excilys.rgueirard.service.CompanyService;
 public class ComputerDAO {
 
 	private static ComputerDAO computerDAO = null;
-
+	private final String ORDER = "ORDER BY ? ";
+	private final String ASC = "ASC ";
+	private final String DESC = "DESC ";
+	private final String LIMIT = "LIMIT ?, ? ";
+	private final String WHERENAME = "WHERE name LIKE ? ";
+	private final String WHEREID = "WHERE id = ? ";
+	
 	private ComputerDAO() {
 		super();
 	}
@@ -135,362 +141,175 @@ public class ComputerDAO {
 	
 	}
 	
-	
 	public PageWrapper<Computer> retrieve(PageWrapper<Computer> wrapper, Connection connection) throws SQLException, ParseException {
 		CompanyService companyService = CompanyService.getInstance();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		String query = "SELECT id,name,introduced,discontinued,company_id FROM computer WHERE id = ? ORDER BY ? LIMIT ?, ?";
-		String sizeQuery = "SELECT count(*) FROM computer WHERE id = ?";
+		StringBuilder query = new StringBuilder("SELECT cpt.id,cpt.name,cpt.introduced,cpt.discontinued,cpt.company_id FROM computer AS cpt ");
+		StringBuilder sizeQuery = new StringBuilder("SELECT count(*) FROM computer ");
 		List<Computer> computers = new ArrayList<Computer>();
 		Computer computer = new Computer();
 		Company company = null;
 		Date introduced = null;
 		Date discontinued = null;
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		long id = Long.parseLong(wrapper.getSearchMotif());
-		//int offset = (wrapper.getCurrentPage()-1)*wrapper.getNbDisplay();
-		ps = connection.prepareStatement(query);
-		ps.setLong(1, id);
-		ps.setInt(2, wrapper.getOrderBy());
-		ps.setInt(3, 0);
-		ps.setInt(4, 1);
 		
-		rs = ps.executeQuery();
-		rs.next();
-		if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
-			introduced = formatter.parse(rs.getString(3));
-		}
-		if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
-			discontinued = formatter.parse(rs.getString(4));
-		}
-		if (rs.getString(5) != null) {
-			company = companyService.retrieve(Long.parseLong(rs
-					.getString(5)));
-		}
-		computer = Computer.builder().id(Long.parseLong(rs.getString(1)))
-				.name(rs.getString(2)).introduced(introduced)
-				.discontinued(discontinued).company(company).build();
-		computers.add(computer);
-		wrapper.setPages(computers);
-		ps = connection.prepareStatement(sizeQuery);
-		ps.setLong(1, id);
-		rs = ps.executeQuery();
-		rs.next();
-		if ((rs.getString(1) != null) && (rs.getString(1) != "")) {
-			wrapper.setSize(Integer.parseInt(rs.getString(1)));
+		if(wrapper.getSearchMotif().isEmpty()){
+			query.append(ORDER);
+			if(wrapper.isAscendant()){
+				query.append(ASC);
+			} else {
+				query.append(DESC);
+			}
+			query.append(LIMIT);
+			
+			ps = connection.prepareStatement(sizeQuery.toString());
+			rs = ps.executeQuery();
+			rs.next();
+			if ((rs.getString(1) != null) && (rs.getString(1) != "")) {
+				wrapper.setSize(Integer.parseInt(rs.getString(1)));
+			}		
+			
+			/* recuperation de nbPages */
+			wrapper.setNbPages((int) Math.ceil(wrapper.getSize() * 1.0
+					/ wrapper.getNbDisplay()));
+			
+			
+			ps = connection.prepareStatement(query.toString());
+			ps.setInt(1, wrapper.getOrderBy());
+			
+			if(wrapper.getCurrentPage()>wrapper.getNbPages()){
+				wrapper.setCurrentPage(wrapper.getNbPages()-1);
+			}
+			
+			ps.setInt(2, (wrapper.getCurrentPage()-1)*wrapper.getNbDisplay());
+			ps.setInt(3, wrapper.getNbDisplay());
+			
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
+					introduced = formatter.parse(rs.getString(3));
+				} else {
+					introduced = null;
+				}
+				if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
+					discontinued = formatter.parse(rs.getString(4));
+				} else {
+					discontinued = null;
+				}
+				if (rs.getString(5) != null) {
+					company = companyService.retrieve(Long.parseLong(rs
+							.getString(5)));
+				} else {
+					company = null;
+				}
+				computer = Computer.builder()
+						.id(Long.parseLong(rs.getString(1)))
+						.name(rs.getString(2)).introduced(introduced)
+						.discontinued(discontinued).company(company).build();
+				computers.add(computer);
+			}
+			wrapper.setPages(computers);
+			
+		} else {
+			switch (wrapper.getSearchType()) {
+				case 0:
+					sizeQuery.append(WHERENAME);
+					query.append(WHERENAME);
+					query.append(ORDER);
+					if(wrapper.isAscendant()){
+						query.append(ASC);
+					} else {
+						query.append(DESC);
+					}
+					query.append(LIMIT);
+					break;
+				case 1:
+					sizeQuery.append("INNER JOIN company AS cpy WHERE company_id=cpy.id AND cpy.name LIKE ?");
+					query.append("INNER JOIN company AS cpy WHERE company_id=cpy.id AND cpy.name LIKE ? ");
+					query.append(ORDER);
+					if(wrapper.isAscendant()){
+						query.append(ASC);
+					} else {
+						query.append(DESC);
+					}
+					query.append(LIMIT);
+					break;
+				case 2:
+					sizeQuery.append(WHEREID);
+					query.append(WHEREID);
+					break;
+			}
+		
+		
+			/* recupération de la taille */
+			ps = connection.prepareStatement(sizeQuery.toString());
+			if(wrapper.getSearchType()!=2){
+				ps.setString(1, "%" + wrapper.getSearchMotif() + "%");
+			} else {
+				ps.setLong(1, Long.parseLong(wrapper.getSearchMotif()));
+			}
+			
+			
+			rs = ps.executeQuery();
+			rs.next();
+			if ((rs.getString(1) != null) && (rs.getString(1) != "")) {
+				wrapper.setSize(Integer.parseInt(rs.getString(1)));
+			}
+			
+			/* recuperation des computers */
+			ps = connection.prepareStatement(query.toString());
+			
+			
+			if(wrapper.getSearchType()!=2){
+				ps.setString(1, "%" + wrapper.getSearchMotif() + "%");
+			} else {
+				ps.setLong(1, Long.parseLong(wrapper.getSearchMotif()));
+			}
+			
+			/* recuperation de nbPages */
+			if(wrapper.getSearchType()!=2){
+				wrapper.setNbPages((int) Math.ceil(wrapper.getSize() * 1.0 / wrapper.getNbDisplay()));
+					
+				ps.setInt(2, wrapper.getOrderBy());
+				
+				if(wrapper.getCurrentPage()>wrapper.getNbPages()){
+					wrapper.setCurrentPage(wrapper.getNbPages()-1);
+				}
+				ps.setInt(3, (wrapper.getCurrentPage()-1)*wrapper.getNbDisplay());
+				ps.setInt(4, wrapper.getNbDisplay());
+			}
+			
+			rs = ps.executeQuery();
+			
+			while (rs.next()) {
+				if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
+					introduced = formatter.parse(rs.getString(3));
+				} else {
+					introduced = null;
+				}
+				if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
+					discontinued = formatter.parse(rs.getString(4));
+				} else {
+					discontinued = null;
+				}
+				if (rs.getString(5) != null) {
+					company = companyService.retrieve(Long.parseLong(rs
+							.getString(5)));
+				} else {
+					company = null;
+				}
+				computer = Computer.builder()
+						.id(Long.parseLong(rs.getString(1)))
+						.name(rs.getString(2)).introduced(introduced)
+						.discontinued(discontinued).company(company).build();
+				computers.add(computer);
+			}
+			wrapper.setPages(computers);
 		}
 		
 		this.closeObject(ps, rs);
-	
-		return wrapper;
-	}
-
-	public PageWrapper<Computer> retrieveByName(PageWrapper<Computer> wrapper, Connection connection) throws SQLException, ParseException {
-		CompanyService companyService = CompanyService.getInstance();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		String query = "SELECT id,name,introduced,discontinued,company_id FROM computer WHERE name LIKE ? ORDER BY ? LIMIT ?, ?";
-		String sizeQuery = "SELECT count(*) FROM computer WHERE name LIKE ?";
-		List<Computer> computers = new ArrayList<Computer>();
-		Computer computer = new Computer();
-		Date introduced = null;
-		Date discontinued = null;
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		Company company = null;
-
-		ps = connection.prepareStatement(query);
-		ps.setString(1, "%" + wrapper.getSearchMotif() + "%");
-		ps.setInt(2, wrapper.getOrderBy());
-		ps.setInt(3, (wrapper.getCurrentPage()-1)*wrapper.getNbDisplay());
-		ps.setInt(4, wrapper.getNbDisplay());
-		rs = ps.executeQuery();
-		while (rs.next()) {
-			if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
-				introduced = formatter.parse(rs.getString(3));
-			} else {
-				introduced = null;
-			}
-			if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
-				discontinued = formatter.parse(rs.getString(4));
-			} else {
-				discontinued = null;
-			}
-			if (rs.getString(5) != null) {
-				company = companyService.retrieve(Long.parseLong(rs
-						.getString(5)));
-			} else {
-				company = null;
-			}
-			computer = Computer.builder()
-					.id(Long.parseLong(rs.getString(1)))
-					.name(rs.getString(2)).introduced(introduced)
-					.discontinued(discontinued).company(company).build();
-			computers.add(computer);
-		}
-		wrapper.setPages(computers);
-		
-		ps = connection.prepareStatement(sizeQuery);
-		ps.setString(1,  "%" + wrapper.getSearchMotif() + "%");
-		rs = ps.executeQuery();
-		rs.next();
-		if ((rs.getString(1) != null) && (rs.getString(1) != "")) {
-			wrapper.setSize(Integer.parseInt(rs.getString(1)));
-		}
-		
-		this.closeObject(ps, rs);
-		
-		return wrapper;
-	}
-
-	public PageWrapper<Computer> retrieveByCompany(PageWrapper<Computer> wrapper, Connection connection) throws SQLException, ParseException {
-		CompanyService companyService = CompanyService.getInstance();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		String query = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, computer.company_id FROM computer INNER JOIN company WHERE computer.company_id=company.id AND company.name LIKE ? ORDER BY ? LIMIT ?, ?";
-		String sizeQuery = "SELECT count(*) FROM computer INNER JOIN company WHERE computer.company_id=company.id AND company.name LIKE ?";
-		List<Computer> computers = new ArrayList<Computer>();
-		Computer computer = new Computer();
-		Date introduced = null;
-		Date discontinued = null;
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		Company company = null;
-
-		ps = connection.prepareStatement(query);
-		ps.setString(1, "%" + wrapper.getSearchMotif() + "%");
-		ps.setInt(2, wrapper.getOrderBy());
-		ps.setInt(3, (wrapper.getCurrentPage()-1)*wrapper.getNbDisplay());
-		ps.setInt(4, wrapper.getNbDisplay());
-		rs = ps.executeQuery();
-		while (rs.next()) {
-			if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
-				introduced = formatter.parse(rs.getString(3));
-			} else {
-				introduced = null;
-			}
-			if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
-				discontinued = formatter.parse(rs.getString(4));
-			} else {
-				discontinued = null;
-			}
-			if (rs.getString(5) != null) {
-				company = companyService.retrieve(Long.parseLong(rs
-						.getString(5)));
-			} else {
-				company = null;
-			}
-			computer = Computer.builder()
-					.id(Long.parseLong(rs.getString(1)))
-					.name(rs.getString(2)).introduced(introduced)
-					.discontinued(discontinued).company(company).build();
-			computers.add(computer);
-		}
-		wrapper.setPages(computers);
-		
-		ps = connection.prepareStatement(sizeQuery);
-		ps.setString(1, "%" + wrapper.getSearchMotif() + "%");
-		rs = ps.executeQuery();
-		rs.next();
-		if ((rs.getString(1) != null) && (rs.getString(1) != "")) {
-			wrapper.setSize(Integer.parseInt(rs.getString(1)));
-		}		
-		
-		this.closeObject(ps, rs);
-		
-		return wrapper;
-	}
-
-	/*public PageWrapper retrieveByIntroduced(String introducedS, int orderBy, int offset, int nbDisplay,
-			Connection connection) throws NumberFormatException, SQLException, ParseException {
-		CompanyService companyService = CompanyService.getInstance();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		String query = "SELECT id,name,introduced,discontinued,company_id FROM computer WHERE introduced = ? ORDER BY ? LIMIT ?, ?";
-		String sizeQuery = "SELECT count(*) FROM computer WHERE introduced = ?";
-		PageWrapper wrapper = null;
-		int size = 0;
-		List<Computer> computers = new ArrayList<Computer>();
-		Computer computer = new Computer();
-		Date introduced = null;
-		java.sql.Date introducedSql = null;
-		Date discontinued = null;
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		Company company = null;
-
-		ps = connection.prepareStatement(query);
-
-		if ((introducedS != null) && (introducedS != "")) {
-			introduced = formatter.parse(introducedS);
-			introducedSql = new java.sql.Date(introduced.getTime());
-		}
-
-		ps.setDate(1, introducedSql);
-		ps.setInt(2, orderBy);
-		ps.setInt(3, offset);
-		ps.setInt(4, nbDisplay);
-		rs = ps.executeQuery();
-
-		while (rs.next()) {
-			if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
-				introduced = formatter.parse(rs.getString(3));
-			} else {
-				introduced = null;
-			}
-			if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
-				discontinued = formatter.parse(rs.getString(4));
-			} else {
-				discontinued = null;
-			}
-			if (rs.getString(5) != null) {
-				company = companyService.retrieve(Long.parseLong(rs
-						.getString(5)));
-			} else {
-				company = null;
-			}
-			computer = Computer.builder()
-					.id(Long.parseLong(rs.getString(1)))
-					.name(rs.getString(2)).introduced(introduced)
-					.discontinued(discontinued).company(company).build();
-			computers.add(computer);
-		}
-
-		ps = connection.prepareStatement(sizeQuery);
-		ps.setDate(1, introducedSql);
-		rs = ps.executeQuery();
-		rs.next();
-		if ((rs.getString(1) != null) && (rs.getString(1) != "")) {
-			size = Integer.parseInt(rs.getString(1));
-		}		
-		
-		this.closeObject(ps, rs);
-		
-		return wrapper;
-	}
-
-	public PageWrapper retrieveByDiscontinued(String discontinuedS,
-			int orderBy, int offset, int nbDisplay, Connection connection) throws NumberFormatException, SQLException, ParseException {
-		CompanyService companyService = CompanyService.getInstance();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		String query = "SELECT id,name,introduced,discontinued,company_id FROM computer WHERE discontinued = ? ORDER BY ? LIMIT ?, ?";
-		String sizeQuery = "SELECT count(*) FROM computer WHERE discontinued = ?";
-		PageWrapper wrapper = null;
-		int size = 0;
-		List<Computer> computers = new ArrayList<Computer>();
-		Computer computer = new Computer();
-		Date introduced = null;
-		java.sql.Date discontinuedSql = null;
-		Date discontinued = null;
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		Company company = null;
-
-		ps = connection.prepareStatement(query);
-
-		if ((discontinuedS != null) && (discontinuedS != "")) {
-			discontinued = formatter.parse(discontinuedS);
-			discontinuedSql = new java.sql.Date(discontinued.getTime());
-		}
-
-		ps.setDate(1, discontinuedSql);
-		ps.setInt(2, orderBy);
-		ps.setInt(3, offset);
-		ps.setInt(4, nbDisplay);
-		rs = ps.executeQuery();
-
-		while (rs.next()) {
-			if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
-				introduced = formatter.parse(rs.getString(3));
-			} else {
-				introduced = null;
-			}
-			if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
-				discontinued = formatter.parse(rs.getString(4));
-			} else {
-				discontinued = null;
-			}
-			if (rs.getString(5) != null) {
-				company = companyService.retrieve(Long.parseLong(rs
-						.getString(5)));
-			} else {
-				company = null;
-			}
-			computer = Computer.builder()
-					.id(Long.parseLong(rs.getString(1)))
-					.name(rs.getString(2)).introduced(introduced)
-					.discontinued(discontinued).company(company).build();
-			computers.add(computer);
-		}
-	
-		ps = connection.prepareStatement(sizeQuery);
-		ps.setDate(1, discontinuedSql);
-		rs = ps.executeQuery();
-		rs.next();
-		if ((rs.getString(1) != null) && (rs.getString(1) != "")) {
-			size = Integer.parseInt(rs.getString(1));
-		}		
-		
-		this.closeObject(ps, rs);
-		
-		return wrapper;
-	}*/
-
-	public PageWrapper<Computer> retrieveAll(PageWrapper<Computer> wrapper, Connection connection) throws NumberFormatException, SQLException, ParseException {
-		CompanyService companyService = CompanyService.getInstance();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		String query = "SELECT id,name,introduced,discontinued,company_id FROM computer ORDER BY ? LIMIT ?, ?";
-		String sizeQuery = "SELECT count(*) FROM computer";
-		
-		List<Computer> computers = new ArrayList<Computer>();
-		Computer computer;
-		Company company = null;
-		Date introduced = null;
-		Date discontinued = null;
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		
-		ps = connection
-				.prepareStatement(query);
-
-		ps.setInt(1, wrapper.getOrderBy());
-		ps.setInt(2, (wrapper.getCurrentPage()-1)*wrapper.getNbDisplay());
-		ps.setInt(3, wrapper.getNbDisplay());
-		
-		rs = ps.executeQuery();
-
-		while (rs.next()) {
-			if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
-				introduced = formatter.parse(rs.getString(3));
-			} else {
-				introduced = null;
-			}
-			if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
-				discontinued = formatter.parse(rs.getString(4));
-			} else {
-				discontinued = null;
-			}
-			if (rs.getString(5) != null) {
-				company = companyService.retrieve(Long.parseLong(rs
-						.getString(5)));
-			} else {
-				company = null;
-			}
-			computer = Computer.builder()
-					.id(Long.parseLong(rs.getString(1)))
-					.name(rs.getString(2)).introduced(introduced)
-					.discontinued(discontinued).company(company).build();
-			computers.add(computer);
-		}
-		wrapper.setPages(computers);
-		
-		ps = connection.prepareStatement(sizeQuery);
-		rs = ps.executeQuery();
-		rs.next();
-		if ((rs.getString(1) != null) && (rs.getString(1) != "")) {
-			wrapper.setSize(Integer.parseInt(rs.getString(1)));
-		}		
-		
-		this.closeObject(ps, rs);
-		
-		return wrapper;
+		return wrapper;		
 	}
 }

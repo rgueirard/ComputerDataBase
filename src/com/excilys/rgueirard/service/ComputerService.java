@@ -140,7 +140,7 @@ public class ComputerService {
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			wrapper = computerDAO.retrieveByName(wrapper, connection);
+			wrapper = computerDAO.retrieve(wrapper, connection);
 			logDAO.create(dateSql.toString(), "retrieveByName", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
@@ -166,88 +166,8 @@ public class ComputerService {
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			wrapper = computerDAO.retrieveByCompany(wrapper, connection);
+			wrapper = computerDAO.retrieve(wrapper, connection);
 			logDAO.create(dateSql.toString(), "retrieveByCompany", connection);
-			connection.commit();
-			connection.setAutoCommit(true);
-		} catch (SQLException e) {
-			try {connection.rollback();}catch(SQLException e1){e.printStackTrace();}
-			e.printStackTrace();
-		} catch (ParseException e) {
-			try {connection.rollback();}catch(SQLException e1){e.printStackTrace();}
-			e.printStackTrace();
-		} finally{
-			   try{connection.close();}catch(Exception e){e.printStackTrace();}
-		}
-		return wrapper;
-	}
-	
-	/*public PageWrapper<Computer> retrieveByIntroduced(PageWrapper<Computer> wrapper){
-		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		Connection connection = dataBaseManager.getConnection();
-		Date dateUtil = new Date();
-		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
-		
-		try {
-			connection.setAutoCommit(false);
-			ComputerDAO computerDAO = ComputerDAO.getInstance();
-			LogDAO logDAO = LogDAO.getInstance();
-			wrapper = computerDAO.retrieveByIntroduced(wrapper, connection);
-			logDAO.create(dateSql.toString(), "retrieveByIntroduced", connection);
-			connection.commit();
-			connection.setAutoCommit(true);
-		} catch (SQLException e) {
-			try {connection.rollback();}catch(SQLException e1){e.printStackTrace();}
-			e.printStackTrace();
-		} catch (ParseException e) {
-			try {connection.rollback();}catch(SQLException e1){e.printStackTrace();}
-			e.printStackTrace();
-		} finally{
-			   try{connection.close();}catch(Exception e){e.printStackTrace();}
-		}
-		return wrapper;
-			
-	}
-	
-	public PageWrapper<Computer> retrieveByDiscontinued(PageWrapper<Computer> wrapper){
-		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		Connection connection = dataBaseManager.getConnection();
-		Date dateUtil = new Date();
-		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
-				
-		try {
-			connection.setAutoCommit(false);
-			ComputerDAO computerDAO = ComputerDAO.getInstance();
-			LogDAO logDAO = LogDAO.getInstance();
-			wrapper = computerDAO.retrieveByDiscontinued(wrapper, connection);
-			logDAO.create(dateSql.toString(), "retrieveByDiscontinued", connection);
-			connection.commit();
-			connection.setAutoCommit(true);
-		} catch (SQLException e) {
-			try {connection.rollback();}catch(SQLException e1){e.printStackTrace();}
-			e.printStackTrace();
-		} catch (ParseException e) {
-			try {connection.rollback();}catch(SQLException e1){e.printStackTrace();}
-			e.printStackTrace();
-		} finally{
-			   try{connection.close();}catch(Exception e){e.printStackTrace();}
-		}
-		return wrapper;
-			
-	}*/
-	
-	public PageWrapper<Computer> retrieveAll(PageWrapper<Computer> wrapper) {
-		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		Connection connection = dataBaseManager.getConnection();
-		Date dateUtil = new Date();
-		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
-				
-		try {
-			connection.setAutoCommit(false);
-			ComputerDAO computerDAO = ComputerDAO.getInstance();
-			LogDAO logDAO = LogDAO.getInstance();
-			wrapper = computerDAO.retrieveAll(wrapper, connection);
-			logDAO.create(dateSql.toString(), "retrieveAll", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
 		} catch (SQLException e) {

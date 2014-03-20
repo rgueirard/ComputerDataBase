@@ -62,78 +62,118 @@
 					</c:otherwise>
 				</c:choose>-->
 			</select>
-			<span>Order By : </span> 
-			<select	name="orderBy" id="orderby" class="small">
-				<c:choose>
-					<c:when test="${ wrapper.orderBy == 1 }">
-						<option value="1"	selected="selected">id</option>
-					</c:when>
-					<c:otherwise>
-						<option value="1">id</option>
-					</c:otherwise>
-				</c:choose>
-				<c:choose>
-					<c:when test="${ wrapper.orderBy == 2 }">
-						<option value="2"	selected="selected">name</option>
-					</c:when>
-					<c:otherwise>
-						<option value="2">name</option>
-					</c:otherwise>
-				</c:choose>
-				<c:choose>
-					<c:when test="${ wrapper.orderBy == 3 }">
-						<option value="3"	selected="selected">introduced</option>
-					</c:when>
-					<c:otherwise>
-						<option value="3">introduced</option>
-					</c:otherwise>
-				</c:choose>
-				<c:choose>
-					<c:when test="${ wrapper.orderBy == 4 }">
-						<option value="4" selected="selected">discontinued</option>
-					</c:when>
-					<c:otherwise>
-						<option value="4">discontinued</option>
-					</c:otherwise>
-				</c:choose>
-				<c:choose>
-					<c:when test="${ wrapper.orderBy == 5 }">
-						<option value="5"	selected="selected">company</option>
-					</c:when>
-					<c:otherwise>
-						<option value="5">company</option>
-					</c:otherwise>
-				</c:choose>
-			</select>
 			<input type="hidden" name="page" value="${1}" />
 			<input type="hidden" name="nbDisplay" value="${wrapper.nbDisplay}"/>
 			<input type="hidden" name="orderBy" value="${wrapper.orderBy}"/>
+			<input type="hidden" name="ascendant" value="${wrapper.ascendant}"/>
 			<input type="hidden" name="searchType" value="${wrapper.searchType}"/>
 			<input type="hidden" name="searchMotif" value="${wrapper.searchMotif}"/>
 			<input type="submit" id="searchsubmit" value="Filter" class="btn primary"> 
 		</form>
 		<a class="btn success" id="add"
-			href="addcomputer?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}">Add
+			href="addcomputer?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=${wrapper.ascendant}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}">Add
 			Computer</a>
 	</div>
 
 
 	<div id="tab-1" style="display: block;">
-		<table id="sortable1" class="computers zebra-striped">
+		<table>
 			<thead>
 				<tr>
-					<th>Computer Name</th>
-					<th>Introduced Date</th>
-					<th>Discontinued Date</th>
-					<th>Company</th>
-					<th>Edition</th>
-					<th>Removal</th>
+					<th>Computer Id
+						<c:choose>	
+							<c:when test="${wrapper.orderBy == 1}">	
+								<c:choose>
+									<c:when test="${wrapper.ascendant}">
+										<a class="" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/upArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+									</c:when>
+									<c:otherwise>
+										<a class="" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=true&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+									</c:otherwise>
+								</c:choose>
+							</c:when>
+							<c:otherwise>
+								<a class="" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=1&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+							</c:otherwise>
+						</c:choose>
+					</th>
+					<th>Computer Name 
+						<c:choose>	
+							<c:when test="${wrapper.orderBy == 2}">	
+								<c:choose>
+									<c:when test="${wrapper.ascendant}">
+										<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/upArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+									</c:when>
+									<c:otherwise>
+										<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=true&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+									</c:otherwise>
+								</c:choose>
+							</c:when>
+							<c:otherwise>
+								<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=2&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+							</c:otherwise>
+						</c:choose>
+					</th>
+					<th>Introduced Date 
+						<c:choose>	
+							<c:when test="${wrapper.orderBy == 3}">	
+								<c:choose>
+									<c:when test="${wrapper.ascendant}">
+										<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/upArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+									</c:when>
+									<c:otherwise>
+										<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=true&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+									</c:otherwise>
+								</c:choose>
+							</c:when>
+							<c:otherwise>
+								<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=3&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+							</c:otherwise>
+						</c:choose>
+					</th>
+					<th>Discontinued Date 
+						<c:choose>	
+							<c:when test="${wrapper.orderBy == 4}">	
+								<c:choose>
+									<c:when test="${wrapper.ascendant}">
+										<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/upArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+									</c:when>
+									<c:otherwise>
+										<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=true&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+									</c:otherwise>
+								</c:choose>
+							</c:when>
+							<c:otherwise>
+								<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=4&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+							</c:otherwise>
+						</c:choose>				
+					</th>
+					<th>Company 
+						<c:choose>	
+							<c:when test="${wrapper.orderBy == 5}">	
+								<c:choose>
+									<c:when test="${wrapper.ascendant}">
+										<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/upArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+									</c:when>
+									<c:otherwise>
+										<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=true&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+									</c:otherwise>
+								</c:choose>
+							</c:when>
+							<c:otherwise>
+								<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=5&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+							</c:otherwise>
+						</c:choose>
+					</th>
+					<th>Edition </th>
+					<th>Removal </th>
 				</tr>
 			</thead>
 			<tbody>
 				<c:if test="${wrapper.size != 0}">
 					<c:forEach items="${ wrapper.pages }" var="computer">
 						<tr>
+							<td><c:out value="${ computer.id }"/></td>
 							<td><c:out value="${ computer.name }" /></td>
 							<td><fmt:formatDate pattern="yyyy-MM-dd"
 									value="${ computer.introduced }" /></td>
@@ -145,6 +185,7 @@
 									<input type="hidden" name="page" value="${wrapper.currentPage}" />
 									<input type="hidden" name="nbDisplay" value="${wrapper.nbDisplay}"/>
 									<input type="hidden" name="orderBy" value="${wrapper.orderBy}"/>
+									<input type="hidden" name="ascendant" value="${wrapper.ascendant}"/>
 									<input type="hidden" name="searchType" value="${wrapper.searchType}"/>
 									<input type="hidden" name="searchMotif" value="${wrapper.searchMotif}"/>
 									<input type="submit" value="Edit" class="btn success" id="editcomputer">
@@ -156,6 +197,7 @@
 									<input type="hidden" name="page" value="${wrapper.currentPage}" />
 									<input type="hidden" name="nbDisplay" value="${wrapper.nbDisplay}"/>
 									<input type="hidden" name="orderBy" value="${wrapper.orderBy}"/>
+									<input type="hidden" name="ascendant" value="${wrapper.ascendant}"/>
 									<input type="hidden" name="searchType" value="${wrapper.searchType}"/>
 									<input type="hidden" name="searchMotif" value="${wrapper.searchMotif}"/>
 									<input type="submit" value="Delete" class="btn danger" id="delcomputer">
@@ -172,7 +214,7 @@
 		<table>
 			<tr>
 				<c:if test="${wrapper.currentPage != 1}">
-					<td><a href="dashboard?page=${wrapper.currentPage - 1}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"
+					<td><a href="dashboard?page=${wrapper.currentPage - 1}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=${wrapper.ascendant}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"
 						class="btn primary">Prev</a></td>
 				</c:if>
 				<c:choose>
@@ -183,7 +225,7 @@
 									<td>${i}</td>
 								</c:when>
 								<c:otherwise>
-									<td><a href="dashboard?page=${i}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}">${i}</a></td>
+									<td><a href="dashboard?page=${i}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=${wrapper.ascendant}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}">${i}</a></td>
 								</c:otherwise>
 							</c:choose>
 						</c:forEach>
@@ -195,7 +237,7 @@
 							<td>...</td>
 						</c:if>
 						<c:if test="${wrapper.currentPage eq 5}">
-							<td><a href="dashboard?page=4&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}">4</a></td>
+							<td><a href="dashboard?page=4&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=${wrapper.ascendant}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}">4</a></td>
 							<td>5</td>
 							<td>...</td>
 						</c:if>
@@ -208,7 +250,7 @@
 										<td>${i}</td>
 									</c:when>
 									<c:otherwise>
-										<td><a href="dashboard?page=${i}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}">${i}</a></td>
+										<td><a href="dashboard?page=${i}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=${wrapper.ascendant}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}">${i}</a></td>
 									</c:otherwise>
 								</c:choose>
 							</c:forEach>
@@ -217,7 +259,7 @@
 						<c:if test="${wrapper.currentPage eq wrapper.nbPages-4}">
 							<td>...</td>
 							<td>${wrapper.nbPages-4}</td>
-							<td><a href="dashboard?page=${wrapper.nbPages-3}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}">${wrapper.nbPages-3}</a></td>
+							<td><a href="dashboard?page=${wrapper.nbPages-3}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=${wrapper.ascendant}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}">${wrapper.nbPages-3}</a></td>
 						</c:if>
 						<c:if test="${wrapper.currentPage eq wrapper.nbPages-3}">
 							<td>...</td>
@@ -232,7 +274,7 @@
 									<td>${i}</td>
 								</c:when>
 								<c:otherwise>
-									<td><a href="dashboard?page=${i}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}">${i}</a></td>
+									<td><a href="dashboard?page=${i}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=${wrapper.ascendant}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}">${i}</a></td>
 								</c:otherwise>
 							</c:choose>
 						</c:forEach>
@@ -244,14 +286,14 @@
 									<td>${i}</td>
 								</c:when>
 								<c:otherwise>
-									<td><a href="dashboard?page=${i}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}">${i}</a></td>
+									<td><a href="dashboard?page=${i}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=${wrapper.ascendant}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}">${i}</a></td>
 								</c:otherwise>
 							</c:choose>
 						</c:forEach>
 					</c:otherwise>
 				</c:choose>
 				<c:if test="${wrapper.currentPage lt wrapper.nbPages}">
-					<td><a href="dashboard?page=${wrapper.currentPage + 1}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"
+					<td><a href="dashboard?page=${wrapper.currentPage + 1}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=${wrapper.ascendant}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"
 						class="btn primary">Next</a></td>
 				</c:if>
 			</tr>
@@ -295,6 +337,7 @@
 			<input type="hidden" name="page" value="${1}" />
 			<input type="hidden" name="nbDisplay" value="${wrapper.nbDisplay}"/>
 			<input type="hidden" name="orderBy" value="${wrapper.orderBy}"/>
+			<input type="hidden" name="ascendant" value="${wrapper.ascendant}"/>
 			<input type="hidden" name="searchType" value="${wrapper.searchType}"/>
 			<input type="hidden" name="searchMotif" value="${wrapper.searchMotif}"/>
 			<input type="submit" value="Filter" class="btn primary">

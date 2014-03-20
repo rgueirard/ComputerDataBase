@@ -10,6 +10,7 @@ public class PageWrapper<E> {
 	private int currentPage;
 	private List<E> pages;
 	private int orderBy;
+	private boolean ascendant;
 	private int searchType;
 	private String searchMotif;
 
@@ -18,9 +19,10 @@ public class PageWrapper<E> {
 		pages = new ArrayList<E>();
 		size = 0;
 		nbDisplay = 50;
-		nbPages = -1;
+		nbPages = 0;
 		currentPage = 1;
 		orderBy = 1;
+		ascendant = true;
 		searchType = 0;
 		searchMotif = "";
 	}
@@ -73,6 +75,14 @@ public class PageWrapper<E> {
 		this.orderBy = orderBy;
 	}
 
+	public boolean isAscendant() {
+		return ascendant;
+	}
+
+	public void setAscendant(boolean ascendant) {
+		this.ascendant = ascendant;
+	}
+
 	public int getSearchType() {
 		return searchType;
 	}
@@ -89,22 +99,21 @@ public class PageWrapper<E> {
 		this.searchMotif = searchMotif;
 	}
 
+	
 	@Override
 	public String toString() {
-		return "DashboardWrapper [size=" + size + ", nbDisplay=" + nbDisplay
+		return "PageWrapper [size=" + size + ", nbDisplay=" + nbDisplay
 				+ ", nbPages=" + nbPages + ", currentPage=" + currentPage
-				+ ", computers=" + pages + ", orderBy=" + orderBy
-				+ ", searchType=" + searchType + ", searchMotif=" + searchMotif
-				+ "]";
+				+ ", pages=" + pages + ", orderBy=" + orderBy + ", ascendant="
+				+ ascendant + ", searchType=" + searchType + ", searchMotif="
+				+ searchMotif + "]";
 	}
 
-	
-
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + (ascendant ? 1231 : 1237);
 		result = prime * result + currentPage;
 		result = prime * result + nbDisplay;
 		result = prime * result + nbPages;
@@ -125,8 +134,9 @@ public class PageWrapper<E> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		@SuppressWarnings("unchecked")
-		PageWrapper<E> other = (PageWrapper<E>) obj;
+		PageWrapper<?> other = (PageWrapper<?>) obj;
+		if (ascendant != other.ascendant)
+			return false;
 		if (currentPage != other.currentPage)
 			return false;
 		if (nbDisplay != other.nbDisplay)
@@ -152,13 +162,10 @@ public class PageWrapper<E> {
 		return true;
 	}
 
-
-
-
 	public static class Builder<E> {
 		PageWrapper<E> dashboardWrapper;
 
-		private Builder() {
+		public Builder() {
 			dashboardWrapper = new PageWrapper<E>();
 		}
 
@@ -189,6 +196,11 @@ public class PageWrapper<E> {
 		
 		public Builder<E> orderBy(int orderBy) {
 			this.dashboardWrapper.orderBy = orderBy;
+			return this;
+		}
+		
+		public Builder<E> ascendant(boolean ascendant) {
+			this.dashboardWrapper.ascendant = ascendant;
 			return this;
 		}
 		

@@ -342,12 +342,12 @@ button.btn::-moz-focus-inner,input[type=submit].btn::-moz-focus-inner{padding:0;
 
 input.error { border: 1px solid red; }
 label.error {
-	background: url('http://jquery.bassistance.de/validate/demo/images/unchecked.gif') no-repeat;
+	background: url('/ComputerDataBase/resources/images/unchecked.gif') no-repeat;
 	padding-left: 16px;
 	margin-left: .3em;
 }
 label.valid {
-	background: url('/ComputerDataBase/WebContent/resources/images/checked.gif') no-repeat;
+	background: url('/ComputerDataBase/resources/images/checked.gif') no-repeat;
 	display: block;
 	width: 16px;
 	height: 16px;

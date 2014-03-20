@@ -53,6 +53,12 @@ public class DashboardServlet extends HttpServlet {
 				&& (request.getParameter("orderBy") != "")) {
 			wrapper.setOrderBy(Integer.parseInt(request.getParameter("orderBy")));
 		}
+		
+		/* recuperation de ascendant */
+		if ((request.getParameter("ascendant") != null)
+				&& (request.getParameter("ascendant") != "")) {
+			wrapper.setAscendant(Boolean.parseBoolean(request.getParameter("ascendant")));
+		}
 
 		/* recuperation de searchType */
 		if ((request.getParameter("searchType") != null)
@@ -67,35 +73,7 @@ public class DashboardServlet extends HttpServlet {
 		}
 
 		/* recuperation de la liste d'ordinateur */
-		if (wrapper.getSearchMotif().isEmpty()) {
-			wrapper = computerService.retrieveAll(wrapper);
-		} else {
-
-			if (wrapper.getSearchType() == 0) {
-				wrapper = computerService.retrieveByName(wrapper);
-			} else {
-				if (wrapper.getSearchType() == 1) {
-					wrapper = computerService.retrieveByCompany(wrapper);
-				} else {
-					/*if (wrapper.getSearchType() == 2) {*/
-						wrapper = computerService.retrieve(wrapper);
-					/*} else {
-						if (wrapper.getSearchType() == 3) {
-							wrapper = computerService.retrieveByIntroduced(wrapper);
-						} else {
-							if (wrapper.getSearchType() == 4) {
-								wrapper = computerService
-										.retrieveByDiscontinued(wrapper);
-							}
-						}
-					}*/
-				}
-			}
-		}
-
-		/* recuperation de nbPages */
-		wrapper.setNbPages((int) Math.ceil(wrapper.getSize() * 1.0
-				/ wrapper.getNbDisplay()));
+		wrapper = computerService.retrieve(wrapper);
 
 		request.setAttribute("wrapper", wrapper);
 		this.getServletContext().getRequestDispatcher("/WEB-INF/dashboard.jsp")
@@ -129,6 +107,12 @@ public class DashboardServlet extends HttpServlet {
 				&& (request.getParameter("orderBy") != "")) {
 			wrapper.setOrderBy(Integer.parseInt(request.getParameter("orderBy")));
 		}
+		
+		/* recuperation de ascendant */
+		if ((request.getParameter("ascendant") != null)
+				&& (request.getParameter("ascendant") != "")) {
+			wrapper.setAscendant(Boolean.parseBoolean(request.getParameter("ascendant")));
+		}
 
 		/* recuperation de searchType */
 		if ((request.getParameter("searchType") != null)
@@ -143,36 +127,8 @@ public class DashboardServlet extends HttpServlet {
 		}
 
 		/* recuperation de la liste d'ordinateur */
-		if (wrapper.getSearchMotif().isEmpty()) {
-			wrapper = computerService.retrieveAll(wrapper);
-		} else {
-
-			if (wrapper.getSearchType() == 0) {
-				wrapper = computerService.retrieveByName(wrapper);
-			} else {
-				if (wrapper.getSearchType() == 1) {
-					wrapper = computerService.retrieveByCompany(wrapper);
-				} else {
-					/*if (wrapper.getSearchType() == 2) {*/
-						wrapper = computerService.retrieve(wrapper);
-					/*} else {
-						if (wrapper.getSearchType() == 3) {
-							wrapper = computerService.retrieveByIntroduced(wrapper);
-						} else {
-							if (wrapper.getSearchType() == 4) {
-								wrapper = computerService
-										.retrieveByDiscontinued(wrapper);
-							}
-						}
-					}*/
-				}
-			}
-		}
-
-		/* recuperation de nbPages */
-		wrapper.setNbPages((int) Math.ceil(wrapper.getSize() * 1.0
-				/ wrapper.getNbDisplay()));
-
+		wrapper = computerService.retrieve(wrapper);
+		
 		request.setAttribute("wrapper", wrapper);
 		this.getServletContext().getRequestDispatcher("/WEB-INF/dashboard.jsp")
 				.forward(request, response);
