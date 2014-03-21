@@ -31,13 +31,14 @@ public class ComputerService {
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
+		long id = 0;
 		
 		try {
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			computerDAO.create(name, introducedDate, discontinuedDate, company, connection);
-			logDAO.create(dateSql.toString(), "create", connection);
+			id = computerDAO.create(name, introducedDate, discontinuedDate, company, connection);
+			logDAO.create(id, dateSql.toString(), "create", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
 		} catch (SQLException e) {
@@ -57,13 +58,14 @@ public class ComputerService {
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
+		long id = 0;
 		
 		try {
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			computerDAO.update(idS, nameS, introducedS, discontinuedS, companyIdS, connection);
-			logDAO.create(dateSql.toString(), "update", connection);
+			id = computerDAO.update(idS, nameS, introducedS, discontinuedS, companyIdS, connection);
+			logDAO.create(id, dateSql.toString(), "update", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
 		} catch (SQLException e) {
@@ -82,14 +84,15 @@ public class ComputerService {
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
+		long id = 0;
 					
 		try {
 			
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			computerDAO.delete(idString, connection);
-			logDAO.create(dateSql.toString(), "delete", connection);
+			id = computerDAO.delete(idString, connection);
+			logDAO.create(id, dateSql.toString(), "delete", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
 		} catch (SQLException e) {
@@ -108,6 +111,7 @@ public class ComputerService {
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
+		long id = 0;
 		
 		try {
 			connection.setAutoCommit(false);
@@ -115,7 +119,7 @@ public class ComputerService {
 			CompanyService companyService = dataBaseManager.getCompanyService();
 			LogDAO logDAO = dataBaseManager.getLogDAO();
 			wrapper = computerDAO.retrieve(wrapper, companyService, connection);
-			logDAO.create(dateSql.toString(), "retrieve", connection);
+			logDAO.create(0, dateSql.toString(), "retrieve", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
 		} catch (SQLException e) {

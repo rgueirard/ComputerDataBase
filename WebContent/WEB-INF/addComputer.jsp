@@ -66,7 +66,8 @@
 		$("#addComputer").validate({
 			rules : {
 				name : {
-					required : true
+					required : true,
+					maxlength: 255
 				},
 				introducedDate : {
 					dateISO : true
@@ -80,11 +81,9 @@
 
 				introducedDate : {
 					dateISO : "Please enter a valid date.",
-					date : "Please enter a valid date."
 				},
 				discontinuedDate : {
 					dateISO : "Please enter a valid date.",
-					date : "Please enter a valid date."
 				}
 			}
 		});

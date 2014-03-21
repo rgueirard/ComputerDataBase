@@ -48,7 +48,7 @@ public class ComputerDAO {
 		}
 	}
 
-	public void delete(String idString, Connection connection)
+	public long delete(String idString, Connection connection)
 			throws SQLException {
 
 		String query = "DELETE FROM computer WHERE id = ?";
@@ -61,9 +61,10 @@ public class ComputerDAO {
 
 		closeObject(ps, null);
 
+		return id;
 	}
 
-	public void update(String idS, String nameS, String introducedS,
+	public long update(String idS, String nameS, String introducedS,
 			String discontinuedS, String companyIdS, Connection connection)
 			throws SQLException, ParseException {
 		PreparedStatement ps = null;
@@ -99,19 +100,23 @@ public class ComputerDAO {
 		ps.setLong(5, id);
 		ps.executeUpdate();
 		closeObject(ps, null);
+		
+		return id;
 	}
 
-	public void create(String name, String introducedDate,
+	public long create(String name, String introducedDate,
 			String discontinuedDate, String company, Connection connection)
 			throws SQLException, ParseException {
 
 		String query = "INSERT INTO computer (id,name,introduced,discontinued,company_id) VALUES (0,?,?,?,?)";
 		PreparedStatement ps = null;
+		ResultSet rs = null;
 		java.util.Date introducedUtil = null;
 		java.util.Date discontinuedUtil = null;
 		java.sql.Date introducedSql = null;
 		java.sql.Date discontinuedSql = null;
 		long companyId = Long.parseLong(company);
+		long id = 0;
 
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -137,9 +142,16 @@ public class ComputerDAO {
 		}
 
 		ps.executeUpdate();
-
+		rs = ps.getGeneratedKeys();
+		rs.next();
+		System.out.println("\n"+rs.getString(1)+"\n");
+		if(rs.getString(1)!=null){
+			id = Long.parseLong(rs.getString(1));
+		}
+			
 		closeObject(ps, null);
 
+		return id;
 	}
 
 	public PageWrapper<ComputerDTO> retrieve(PageWrapper<ComputerDTO> wrapper,
@@ -153,14 +165,11 @@ public class ComputerDAO {
 		StringBuilder sizeQuery = new StringBuilder(
 				"SELECT count(*) FROM computer ");
 		List<ComputerDTO> computers = new ArrayList<ComputerDTO>();
-		//Computer computer = new Computer();
 		ComputerDTO computerDTO = null;
 		long companyId = 0;
 		String companyName = null;
 		Company company = null;
-		/*Date introduced = null;
-		Date discontinued = null;
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");*/
+		
 
 		if (wrapper.getSearchMotif().isEmpty()) {
 			query.append(ORDER);
@@ -196,16 +205,7 @@ public class ComputerDAO {
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
-				/*if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
-					introduced = formatter.parse(rs.getString(3));
-				} else {
-					introduced = null;
-				}
-				if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
-					discontinued = formatter.parse(rs.getString(4));
-				} else {
-					discontinued = null;
-				}*/
+				
 				if (rs.getString(5) != null) {
 					company = companyService.retrieve(Long.parseLong(rs
 							.getString(5)));
@@ -299,16 +299,7 @@ public class ComputerDAO {
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
-				/*if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
-					introduced = formatter.parse(rs.getString(3));
-				} else {
-					introduced = null;
-				}
-				if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
-					discontinued = formatter.parse(rs.getString(4));
-				} else {
-					discontinued = null;
-				}*/
+				
 				if (rs.getString(5) != null) {
 					company = companyService.retrieve(Long.parseLong(rs
 							.getString(5)));

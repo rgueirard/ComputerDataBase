@@ -36,8 +36,8 @@ private static LogDAO logDAO = null;
 		}
 	}
 	
-	public void create(String timeS, String message, Connection connection) throws SQLException, ParseException {
-		String query = "INSERT INTO log (id,time,message) VALUES (0,?,?)";
+	public void create(long computerId, String timeS, String message, Connection connection) throws SQLException, ParseException {
+		String query = "INSERT INTO log (id, computer_id, time, message) VALUES (0, ?, ?, ?)";
 		PreparedStatement ps = null;
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		Date timeUtil = null;
@@ -50,8 +50,9 @@ private static LogDAO logDAO = null;
 			timeSql = new java.sql.Date(timeUtil.getTime());
 		}
 		
-		ps.setDate(1, timeSql);
-		ps.setString(2, message);
+		ps.setLong(1, computerId);
+		ps.setDate(2, timeSql);
+		ps.setString(3, message);
 		ps.executeUpdate();
 		
 		closeObject(ps, null);
