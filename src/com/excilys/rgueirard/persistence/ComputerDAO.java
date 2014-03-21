@@ -9,11 +9,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import com.excilys.rgueirard.domain.Company;
-import com.excilys.rgueirard.domain.Computer;
+import com.excilys.rgueirard.domain.ComputerDTO;
 import com.excilys.rgueirard.domain.PageWrapper;
 import com.excilys.rgueirard.service.CompanyService;
 
@@ -143,7 +142,7 @@ public class ComputerDAO {
 
 	}
 
-	public PageWrapper<Computer> retrieve(PageWrapper<Computer> wrapper,
+	public PageWrapper<ComputerDTO> retrieve(PageWrapper<ComputerDTO> wrapper,
 			CompanyService companyService, Connection connection)
 			throws SQLException, ParseException {
 		
@@ -153,12 +152,15 @@ public class ComputerDAO {
 				"SELECT cpt.id,cpt.name,cpt.introduced,cpt.discontinued,cpt.company_id FROM computer AS cpt ");
 		StringBuilder sizeQuery = new StringBuilder(
 				"SELECT count(*) FROM computer ");
-		List<Computer> computers = new ArrayList<Computer>();
-		Computer computer = new Computer();
+		List<ComputerDTO> computers = new ArrayList<ComputerDTO>();
+		//Computer computer = new Computer();
+		ComputerDTO computerDTO = null;
+		long companyId = 0;
+		String companyName = null;
 		Company company = null;
-		Date introduced = null;
+		/*Date introduced = null;
 		Date discontinued = null;
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");*/
 
 		if (wrapper.getSearchMotif().isEmpty()) {
 			query.append(ORDER);
@@ -194,7 +196,7 @@ public class ComputerDAO {
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
-				if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
+				/*if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
 					introduced = formatter.parse(rs.getString(3));
 				} else {
 					introduced = null;
@@ -203,18 +205,25 @@ public class ComputerDAO {
 					discontinued = formatter.parse(rs.getString(4));
 				} else {
 					discontinued = null;
-				}
+				}*/
 				if (rs.getString(5) != null) {
 					company = companyService.retrieve(Long.parseLong(rs
 							.getString(5)));
+					companyId = company.getId();
+					companyName = company.getName();
 				} else {
 					company = null;
+					companyId = 0;
+					companyName = null;
 				}
-				computer = Computer.builder()
+				computerDTO = ComputerDTO.builder()
 						.id(Long.parseLong(rs.getString(1)))
-						.name(rs.getString(2)).introduced(introduced)
-						.discontinued(discontinued).company(company).build();
-				computers.add(computer);
+						.name(rs.getString(2)).introduced(rs.getString(3))
+						.discontinued(rs.getString(4))
+						.companyId(companyId)
+						.companyName(companyName)
+						.build();
+				computers.add(computerDTO);
 			}
 			wrapper.setPages(computers);
 
@@ -290,7 +299,7 @@ public class ComputerDAO {
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
-				if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
+				/*if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
 					introduced = formatter.parse(rs.getString(3));
 				} else {
 					introduced = null;
@@ -299,18 +308,21 @@ public class ComputerDAO {
 					discontinued = formatter.parse(rs.getString(4));
 				} else {
 					discontinued = null;
-				}
+				}*/
 				if (rs.getString(5) != null) {
 					company = companyService.retrieve(Long.parseLong(rs
 							.getString(5)));
+					companyId = company.getId();
+					companyName = company.getName();
 				} else {
 					company = null;
+					companyName = null;
 				}
-				computer = Computer.builder()
+				computerDTO = ComputerDTO.builder()
 						.id(Long.parseLong(rs.getString(1)))
-						.name(rs.getString(2)).introduced(introduced)
-						.discontinued(discontinued).company(company).build();
-				computers.add(computer);
+						.name(rs.getString(2)).introduced(rs.getString(3))
+						.discontinued(rs.getString(4)).companyId(companyId).companyName(companyName).build();
+				computers.add(computerDTO);
 			}
 			wrapper.setPages(computers);
 		}

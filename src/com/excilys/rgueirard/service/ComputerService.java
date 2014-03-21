@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Date;
 
-import com.excilys.rgueirard.domain.Computer;
+import com.excilys.rgueirard.domain.ComputerDTO;
 import com.excilys.rgueirard.domain.PageWrapper;
 import com.excilys.rgueirard.persistence.ComputerDAO;
 import com.excilys.rgueirard.persistence.DataBaseManager;
@@ -103,7 +103,7 @@ public class ComputerService {
 		}
 	}
 	
-	public PageWrapper<Computer> retrieve(PageWrapper<Computer> wrapper){
+	public PageWrapper<ComputerDTO> retrieve(PageWrapper<ComputerDTO> wrapper){
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();

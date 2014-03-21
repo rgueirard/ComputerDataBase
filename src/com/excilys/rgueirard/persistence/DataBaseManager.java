@@ -24,7 +24,7 @@ public class DataBaseManager {
 	private final static String user = "root";
 	private final static String password = "root";
 	private static DataBaseManager dataBaseManager = null;
-	//private static ThreadLocal<Connection> connection = new ThreadLocal<Connection>();
+	private static ThreadLocal<Connection> connection = new ThreadLocal<Connection>();
 	private static BoneCP connectionPool = null;
 	private static ComputerDAO computerDAO = null;
 	private static ComputerService computerService = null;
@@ -73,16 +73,17 @@ public class DataBaseManager {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}	*/
-		Connection connection = null;
+		//Connection connection = null;
 
 		try {
-		connection = connectionPool.getConnection();
+			//connection = connectionPool.getConnection();
+			connection.set(connectionPool.getConnection());
 		}
 		catch (SQLException e) {
 		System.err.println(e.getMessage());
 		}
-		return connection;
-		//return connection.get();
+		//return connection;
+		return connection.get();
 	}
 
 	public ComputerDAO getComputerDAO() {

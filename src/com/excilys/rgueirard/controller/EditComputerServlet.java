@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.excilys.rgueirard.domain.Company;
 import com.excilys.rgueirard.domain.Computer;
+import com.excilys.rgueirard.domain.ComputerDTO;
 import com.excilys.rgueirard.domain.PageWrapper;
 import com.excilys.rgueirard.service.CompanyService;
 import com.excilys.rgueirard.service.ComputerService;
@@ -39,7 +40,7 @@ public class EditComputerServlet extends HttpServlet {
 		ComputerService computerService = ComputerService.getInstance();
 		CompanyService companyService = CompanyService.getInstance();
 
-		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
+		PageWrapper<ComputerDTO> wrapper = new PageWrapper<ComputerDTO>();
 		String searchMotif = "";
 		int searchType = 0;
 		

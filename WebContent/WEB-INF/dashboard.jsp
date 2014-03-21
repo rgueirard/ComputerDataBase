@@ -176,10 +176,9 @@
 						<tr>
 							<td><c:out value="${ computer.id }"/></td>
 							<td><c:out value="${ computer.name }" /></td>
-							<td><fmt:formatDate pattern="yyyy-MM-dd"
-									value="${ computer.introduced }" /></td>
+							<td><c:out value="${ computer.introduced }"/></td>
 							<td><c:out value="${ computer.discontinued }" /></td>
-							<td><c:out value="${ computer.company.name }" /></td>
+							<td><c:out value="${ computer.companyName }" /></td>
 							<td>
 								<form action="editcomputer" method="GET">
 									<input type="hidden" name="id" value="${computer.id}" />

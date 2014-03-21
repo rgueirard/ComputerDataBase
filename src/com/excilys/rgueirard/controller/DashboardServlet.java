@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.excilys.rgueirard.domain.Computer;
+import com.excilys.rgueirard.domain.ComputerDTO;
 import com.excilys.rgueirard.domain.PageWrapper;
 import com.excilys.rgueirard.service.ComputerService;
 
@@ -34,7 +34,7 @@ public class DashboardServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 
 		ComputerService computerService = ComputerService.getInstance();
-		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
+		PageWrapper<ComputerDTO> wrapper = new PageWrapper<ComputerDTO>();
 
 		/* recupération de page */
 		if ((request.getParameter("page") != null)
@@ -88,7 +88,7 @@ public class DashboardServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 
 		ComputerService computerService = ComputerService.getInstance();
-		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
+		PageWrapper<ComputerDTO> wrapper = new PageWrapper<ComputerDTO>();
 
 		/* recupération de page */
 		if ((request.getParameter("page") != null)
