@@ -10,6 +10,7 @@ public class ComputerDTO {
 
 	public ComputerDTO() {
 		super();
+		this.id = 0;
 	}
 
 	public long getId() {

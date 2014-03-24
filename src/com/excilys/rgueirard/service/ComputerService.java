@@ -25,8 +25,7 @@ public class ComputerService {
 		return computerService;
 	}
 	
-	public void create(String name, String introducedDate,
-			String discontinuedDate, String company) {
+	public void create(ComputerDTO computerDTO) {
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
@@ -37,7 +36,7 @@ public class ComputerService {
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			id = computerDAO.create(name, introducedDate, discontinuedDate, company, connection);
+			id = computerDAO.create(computerDTO, connection);
 			logDAO.create(id, dateSql.toString(), "create", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
@@ -52,8 +51,7 @@ public class ComputerService {
 		}
 	}
 
-	public void update(String idS, String nameS, String introducedS,
-			String discontinuedS, String companyIdS) {
+	public void update(ComputerDTO computerDTO) {
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
@@ -64,7 +62,7 @@ public class ComputerService {
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			id = computerDAO.update(idS, nameS, introducedS, discontinuedS, companyIdS, connection);
+			id = computerDAO.update(computerDTO, connection);
 			logDAO.create(id, dateSql.toString(), "update", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
@@ -111,7 +109,6 @@ public class ComputerService {
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
-		long id = 0;
 		
 		try {
 			connection.setAutoCommit(false);

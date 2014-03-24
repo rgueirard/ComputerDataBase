@@ -38,30 +38,6 @@
 						<option value="1">by company</option>
 					</c:otherwise>
 				</c:choose>
-				<!--<c:choose>
-					<c:when test="${ wrapper.searchType == 2 }">
-						<option value="2"	selected="selected">by id</option>
-					</c:when>
-					<c:otherwise>
-						<option value="2">by id</option>
-					</c:otherwise>
-				</c:choose>
-				<c:choose>
-					<c:when test="${ wrapper.searchType == 3 }">
-						<option value="3"	selected="selected">by introduced date</option>
-					</c:when>
-					<c:otherwise>
-						<option value="3">by introduced date</option>
-					</c:otherwise>
-				</c:choose>
-				<c:choose>
-					<c:when test="${ wrapper.searchType == 4 }">
-						<option value="4"	selected="selected">by discontinued date</option>
-					</c:when>
-					<c:otherwise>
-						<option value="4">by discontinued date</option>
-					</c:otherwise>
-				</c:choose>-->
 			</select>
 			<input type="hidden" name="page" value="${1}" />
 			<input type="hidden" name="nbDisplay" value="${wrapper.nbDisplay}"/>
@@ -86,15 +62,15 @@
 							<c:when test="${wrapper.orderBy == 1}">	
 								<c:choose>
 									<c:when test="${wrapper.ascendant}">
-										<a class="" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/upArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+										<a href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/upArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
 									</c:when>
 									<c:otherwise>
-										<a class="" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=true&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+										<a href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=true&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
 									</c:otherwise>
 								</c:choose>
 							</c:when>
 							<c:otherwise>
-								<a class="" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=1&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+								<a href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=1&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
 							</c:otherwise>
 						</c:choose>
 					</th>
@@ -103,15 +79,15 @@
 							<c:when test="${wrapper.orderBy == 2}">	
 								<c:choose>
 									<c:when test="${wrapper.ascendant}">
-										<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/upArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+										<a href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/upArrow.png" border=0 width=16 height=16 alt="Computer Name"></a>
 									</c:when>
 									<c:otherwise>
-										<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=true&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+										<a href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=true&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Name"></a>
 									</c:otherwise>
 								</c:choose>
 							</c:when>
 							<c:otherwise>
-								<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=2&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+								<a href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=2&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Name"></a>
 							</c:otherwise>
 						</c:choose>
 					</th>
@@ -120,15 +96,15 @@
 							<c:when test="${wrapper.orderBy == 3}">	
 								<c:choose>
 									<c:when test="${wrapper.ascendant}">
-										<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/upArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+										<a href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/upArrow.png" border=0 width=16 height=16 alt="Introduced Date"></a>
 									</c:when>
 									<c:otherwise>
-										<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=true&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+										<a href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=true&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Introduced Date"></a>
 									</c:otherwise>
 								</c:choose>
 							</c:when>
 							<c:otherwise>
-								<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=3&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+								<a href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=3&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Introduced Date"></a>
 							</c:otherwise>
 						</c:choose>
 					</th>
@@ -137,15 +113,15 @@
 							<c:when test="${wrapper.orderBy == 4}">	
 								<c:choose>
 									<c:when test="${wrapper.ascendant}">
-										<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/upArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+										<a href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/upArrow.png" border=0 width=16 height=16 alt="Discontinued Date"></a>
 									</c:when>
 									<c:otherwise>
-										<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=true&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+										<a href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=true&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Discontinued Date"></a>
 									</c:otherwise>
 								</c:choose>
 							</c:when>
 							<c:otherwise>
-								<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=4&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+								<a href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=4&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Discontinued Date"></a>
 							</c:otherwise>
 						</c:choose>				
 					</th>
@@ -154,15 +130,15 @@
 							<c:when test="${wrapper.orderBy == 5}">	
 								<c:choose>
 									<c:when test="${wrapper.ascendant}">
-										<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/upArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+										<a href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/upArrow.png" border=0 width=16 height=16 alt="Company"></a>
 									</c:when>
 									<c:otherwise>
-										<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=true&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+										<a href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=true&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Company"></a>
 									</c:otherwise>
 								</c:choose>
 							</c:when>
 							<c:otherwise>
-								<a class="arrow" href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=5&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Computer Id"></a>
+								<a href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=5&ascendant=false&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"><img src="/ComputerDataBase/resources/images/downArrow.png" border=0 width=16 height=16 alt="Company"></a>
 							</c:otherwise>
 						</c:choose>
 					</th>

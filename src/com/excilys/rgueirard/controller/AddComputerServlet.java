@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.excilys.rgueirard.domain.Company;
 import com.excilys.rgueirard.domain.Computer;
+import com.excilys.rgueirard.domain.ComputerDTO;
+import com.excilys.rgueirard.domain.ErrorWrapper;
 import com.excilys.rgueirard.domain.PageWrapper;
 import com.excilys.rgueirard.service.CompanyService;
 import com.excilys.rgueirard.service.ComputerService;
@@ -71,7 +73,11 @@ public class AddComputerServlet extends HttpServlet {
 				&& (request.getParameter("searchMotif") != "")) {
 			wrapper.setSearchMotif(request.getParameter("searchMotif"));
 		}
-
+		
+		if (request.getAttribute("computer") != null) {
+			request.setAttribute("computer", request.getAttribute("computer"));
+		}
+		
 		CompanyService companyService = CompanyService.getInstance();
 		List<Company> companies = companyService.retrieveAll();
 
@@ -88,12 +94,26 @@ public class AddComputerServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String name = "";
-		String introducedDate = "";
-		String discontinuedDate = "";
-		String company = "";
+		
+		ComputerService computerService = ComputerService.getInstance();
 		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
+		ErrorWrapper error = new ErrorWrapper();
+		ComputerDTO computerDTO = null;
+		long companyId = 0;
+		
+		String name = request.getParameter("name");
+		String introduced = request.getParameter("introducedDate");
+		String discontinued = request.getParameter("discontinuedDate");
 
+		if ((request.getParameter("company") != null)
+				&& (request.getParameter("company") != "")) {
+			companyId = Long.parseLong(request.getParameter("company"));
+		} request.getParameter("company");
+		
+		computerDTO = ComputerDTO.builder().name(name)
+				.introduced(introduced).discontinued(discontinued)
+				.companyId(companyId).build();
+		
 		/* recupération de page */
 		if ((request.getParameter("page") != null)
 				&& (request.getParameter("page") != "")) {
@@ -127,22 +147,22 @@ public class AddComputerServlet extends HttpServlet {
 			wrapper.setSearchMotif(request.getParameter("searchMotif"));
 		}
 
-		name = request.getParameter("name");
-		introducedDate = request.getParameter("introducedDate");
-		discontinuedDate = request.getParameter("discontinuedDate");
-		company = request.getParameter("company");
-
-		ComputerService computerService = ComputerService.getInstance();
-		computerService.create(name, introducedDate, discontinuedDate, company);
-
-		this.getServletContext()
-				.getRequestDispatcher(
-						"/dashboard?page=" + wrapper.getCurrentPage()
-								+ "&nbDisplay=" + wrapper.getNbDisplay()
-								+ "&orderBy=" + wrapper.getOrderBy()
-								+ "&searchType=" + wrapper.getSearchType()
-								+ "&searchMotif=" + wrapper.getSearchMotif())
-				.forward(request, response);
+		error = ComputerValidator.validate(computerDTO);
+		if (error.isState()) {
+			request.setAttribute("error", error);
+			request.setAttribute("computer", computerDTO);
+			doGet(request, response);
+		} else {
+			computerService.create(computerDTO);
+			this.getServletContext()
+					.getRequestDispatcher(
+							"/dashboard?page=" + wrapper.getCurrentPage()
+									+ "&nbDisplay=" + wrapper.getNbDisplay()
+									+ "&orderBy=" + wrapper.getOrderBy()
+									+ "&searchType=" + wrapper.getSearchType()
+									+ "&searchMotif=" + wrapper.getSearchMotif())
+					.forward(request, response);
+		}
 	}
 
 }

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.excilys.rgueirard.domain.Company;
 import com.excilys.rgueirard.domain.Computer;
 import com.excilys.rgueirard.domain.ComputerDTO;
+import com.excilys.rgueirard.domain.ErrorWrapper;
 import com.excilys.rgueirard.domain.PageWrapper;
 import com.excilys.rgueirard.service.CompanyService;
 import com.excilys.rgueirard.service.ComputerService;
@@ -43,7 +44,7 @@ public class EditComputerServlet extends HttpServlet {
 		PageWrapper<ComputerDTO> wrapper = new PageWrapper<ComputerDTO>();
 		String searchMotif = "";
 		int searchType = 0;
-		
+
 		/* recupération de page */
 		if ((request.getParameter("page") != null)
 				&& (request.getParameter("page") != "")) {
@@ -69,14 +70,17 @@ public class EditComputerServlet extends HttpServlet {
 				&& (request.getParameter("searchType") != "")) {
 			searchType = Integer.parseInt(request.getParameter("searchType"));
 		}
-		//wrapper.setSearchType(2);
-		
+
 		/* recuperation de l'ancien motif de recherche */
 		if ((request.getParameter("searchMotif") != null)
 				&& (request.getParameter("searchMotif") != "")) {
 			searchMotif = (request.getParameter("searchMotif"));
 		}
-		
+
+		if (request.getParameter("computer") != null) {
+
+		}
+
 		/* recuperation du motif recherche */
 		wrapper.setSearchMotif(request.getParameter("id"));
 		wrapper.setSearchType(2);
@@ -86,7 +90,13 @@ public class EditComputerServlet extends HttpServlet {
 		wrapper.setSearchType(searchType);
 		wrapper.setSearchMotif(searchMotif);
 		
-		request.setAttribute("computer", wrapper.getPages().get(0));
+		if (request.getAttribute("computer") != null) {
+			request.setAttribute("computer", request.getAttribute("computer"));
+
+		} else {
+			request.setAttribute("computer", wrapper.getPages().get(0));
+		}
+		
 		request.setAttribute("companies", companies);
 		request.setAttribute("wrapper", wrapper);
 		this.getServletContext()
@@ -101,16 +111,31 @@ public class EditComputerServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		String id = request.getParameter("id");
-		String name = request.getParameter("name");
-		String introduced = request.getParameter("introduced");
-		String discontinued = request.getParameter("discontinued");
-		String companyId = request.getParameter("company");
-		
 		ComputerService computerService = ComputerService.getInstance();
-		computerService.update(id, name, introduced, discontinued, companyId);
-		
+
 		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
+		ComputerDTO computerDTO = null;
+		long id = 0;
+		long companyId = 0;
+		ErrorWrapper error = new ErrorWrapper();
+
+		if ((request.getParameter("id") != null)
+				&& (request.getParameter("id") != "")) {
+			id = Long.parseLong(request.getParameter("id"));
+
+		}
+		String name = request.getParameter("name");
+		String introduced = request.getParameter("introducedDate");
+		String discontinued = request.getParameter("discontinuedDate");
+
+		if ((request.getParameter("company") != null)
+				&& (request.getParameter("company") != "")) {
+			companyId = Long.parseLong(request.getParameter("company"));
+		}
+
+		computerDTO = ComputerDTO.builder().id(id).name(name)
+				.introduced(introduced).discontinued(discontinued)
+				.companyId(companyId).build();
 
 		/* recupération de page */
 		if ((request.getParameter("page") != null)
@@ -145,14 +170,23 @@ public class EditComputerServlet extends HttpServlet {
 			wrapper.setSearchMotif(request.getParameter("searchMotif"));
 		}
 
-		this.getServletContext()
-				.getRequestDispatcher(
-						"/dashboard?page=" + wrapper.getCurrentPage()
-								+ "&nbDisplay=" + wrapper.getNbDisplay()
-								+ "&orderBy=" + wrapper.getOrderBy()
-								+ "&searchType=" + wrapper.getSearchType()
-								+ "&searchMotif=" + wrapper.getSearchMotif())
-				.forward(request, response);
-	}
+		error = ComputerValidator.validate(computerDTO);
+		if (error.isState()) {
+			request.setAttribute("error", error);
+			request.setAttribute("computer", computerDTO);
+			doGet(request, response);
+		} else {
+			computerService.update(computerDTO);
+			this.getServletContext()
+					.getRequestDispatcher(
+							"/dashboard?page=" + wrapper.getCurrentPage()
+									+ "&nbDisplay=" + wrapper.getNbDisplay()
+									+ "&orderBy=" + wrapper.getOrderBy()
+									+ "&searchType=" + wrapper.getSearchType()
+									+ "&searchMotif="
+									+ wrapper.getSearchMotif())
+					.forward(request, response);
+		}
 
+	}
 }
