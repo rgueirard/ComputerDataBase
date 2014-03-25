@@ -9,7 +9,7 @@ public class ComputerValidator {
 		ErrorWrapper error = new ErrorWrapper();
 		Boolean dateError = false;
 		String regexpName = ".*[<|>|\"]+.*";
-
+					
 		if ((computerDTO.getIntroduced().length() > 0)
 				&& (validDate(computerDTO.getIntroduced()))) {
 			error.setValidIntroducedDate("Please enter a valid introduced date.\n");
@@ -49,7 +49,8 @@ public class ComputerValidator {
 
 	public static boolean validDate(String date) {
 		boolean error = true;
-		if (date.length() == 10) {
+		String regexpDate = "[0-9]{4}[-](0?[1-9]|1[012])[-](0?[1-9]|[12][0-9]|3[01])";
+		if (date.matches(regexpDate)) {
 			int year = Integer.parseInt(date.substring(0, 4));
 			int month = Integer.parseInt(date.substring(5, 7));
 			int day = Integer.parseInt(date.substring(8, 10));
