@@ -1,7 +1,7 @@
-package com.excilys.rgueirard.controller;
+package com.excilys.rgueirard.validator;
 
-import com.excilys.rgueirard.domain.ComputerDTO;
-import com.excilys.rgueirard.domain.ErrorWrapper;
+import com.excilys.rgueirard.dto.ComputerDTO;
+import com.excilys.rgueirard.wrapper.ErrorWrapper;
 
 public class ComputerValidator {
 

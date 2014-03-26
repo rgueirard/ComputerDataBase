@@ -1,4 +1,4 @@
-package com.excilys.rgueirard.persistence;
+package com.excilys.rgueirard.mapper;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -7,7 +7,8 @@ import java.util.Date;
 
 import com.excilys.rgueirard.domain.Company;
 import com.excilys.rgueirard.domain.Computer;
-import com.excilys.rgueirard.domain.ComputerDTO;
+import com.excilys.rgueirard.dto.ComputerDTO;
+import com.excilys.rgueirard.persistence.DataBaseManager;
 import com.excilys.rgueirard.service.CompanyService;
 
 public class ComputerMapper {
@@ -19,7 +20,7 @@ public class ComputerMapper {
 		String discontinued = null;
 		long companyId = 0;
 		String companyName = null;
-		
+
 		if (computer.getIntroduced() != null) {
 			introduced = formatter.format(computer.getIntroduced());
 		}
@@ -32,26 +33,31 @@ public class ComputerMapper {
 		}
 		computerDTO = ComputerDTO.builder().id(computer.getId())
 				.name(computer.getName()).introduced(introduced)
-				.discontinued(discontinued).companyId(companyId).companyName(companyName).build();
+				.discontinued(discontinued).companyId(companyId)
+				.companyName(companyName).build();
 
 		return computerDTO;
 	}
 
-	public static Computer DTOToComputer(ComputerDTO computerDTO)
-			throws ParseException {
+	public static Computer DTOToComputer(ComputerDTO computerDTO) {
 		Computer computer = null;
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		Date introduced = null;
 		Date discontinued = null;
 		Company company = null;
+		try {
+			if ((computerDTO.getIntroduced() != null)
+					&& (computerDTO.getIntroduced() != "")) {
 
-		if ((computerDTO.getIntroduced() != null)
-				&& (computerDTO.getIntroduced() != "")) {
-			introduced = formatter.parse(computerDTO.getIntroduced());
-		}
-		if ((computerDTO.getDiscontinued() != null)
-				&& (computerDTO.getDiscontinued() != "")) {
-			discontinued = formatter.parse(computerDTO.getDiscontinued());
+				introduced = formatter.parse(computerDTO.getIntroduced());
+
+			}
+			if ((computerDTO.getDiscontinued() != null)
+					&& (computerDTO.getDiscontinued() != "")) {
+				discontinued = formatter.parse(computerDTO.getDiscontinued());
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
 		}
 		if (computerDTO.getCompanyId() != 0) {
 			DataBaseManager dataBaseManager = DataBaseManager.getInstance();

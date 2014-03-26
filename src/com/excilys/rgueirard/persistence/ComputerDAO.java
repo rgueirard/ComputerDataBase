@@ -9,12 +9,13 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.excilys.rgueirard.domain.Company;
-import com.excilys.rgueirard.domain.ComputerDTO;
-import com.excilys.rgueirard.domain.PageWrapper;
+import com.excilys.rgueirard.domain.Computer;
 import com.excilys.rgueirard.service.CompanyService;
+import com.excilys.rgueirard.wrapper.PageWrapper;
 
 public class ComputerDAO {
 
@@ -64,76 +65,62 @@ public class ComputerDAO {
 		return id;
 	}
 
-	public long update(ComputerDTO computerDTO, Connection connection)
+	public long update(Computer computer, Connection connection)
 			throws SQLException, ParseException {
 		PreparedStatement ps = null;
 		String query = "UPDATE computer SET name=?, introduced=?, discontinued=?, company_id=? WHERE id=?";
-		
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		java.util.Date introducedUtil = null;
-		java.util.Date discontinuedUtil = null;
 		java.sql.Date introducedSql = null;
 		java.sql.Date discontinuedSql = null;
 		
-		if ((computerDTO.getIntroduced() != null) && (computerDTO.getIntroduced() != "")) {
-			introducedUtil = formatter.parse(computerDTO.getIntroduced());
-			introducedSql = new java.sql.Date(introducedUtil.getTime());
+		if (computer.getIntroduced() != null) {
+			introducedSql = new java.sql.Date(computer.getIntroduced().getTime());
 		}
-		if ((computerDTO.getDiscontinued() != null) && (computerDTO.getDiscontinued() != "")) {
-			discontinuedUtil = formatter.parse(computerDTO.getDiscontinued());
-			discontinuedSql = new java.sql.Date(discontinuedUtil.getTime());
+		if (computer.getDiscontinued() != null) {
+			discontinuedSql = new java.sql.Date(computer.getDiscontinued().getTime());
 		}
 
 		ps = connection.prepareStatement(query);
 
-		ps.setString(1, computerDTO.getName());
+		ps.setString(1, computer.getName());
 		ps.setDate(2, introducedSql);
 		ps.setDate(3, discontinuedSql);
-		if (computerDTO.getCompanyId() != 0) {
-			ps.setLong(4, computerDTO.getCompanyId());
+		if (computer.getCompany() != null) {
+			ps.setLong(4, computer.getCompany().getId());
 		} else {
 			ps.setNull(4, Types.BIGINT);
 		}
 		
-		ps.setLong(5, computerDTO.getId());
+		ps.setLong(5, computer.getId());
 		ps.executeUpdate();
 		closeObject(ps, null);
 		
-		return computerDTO.getId();
+		return computer.getId();
 	}
 
-	public long create(ComputerDTO computerDTO, Connection connection)
+	public long create(Computer computer, Connection connection)
 			throws SQLException, ParseException {
 
 		String query = "INSERT INTO computer (id,name,introduced,discontinued,company_id) VALUES (0,?,?,?,?)";
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		java.util.Date introducedUtil = null;
-		java.util.Date discontinuedUtil = null;
 		java.sql.Date introducedSql = null;
 		java.sql.Date discontinuedSql = null;
-		//long companyId = Long.parseLong(company);
-		//long id = 0;
-
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-
+		
 		ps = connection.prepareStatement(query);
 
-		if ((computerDTO.getIntroduced() != null) && (computerDTO.getIntroduced() != "")) {
-			introducedUtil = formatter.parse(computerDTO.getIntroduced());
-			introducedSql = new java.sql.Date(introducedUtil.getTime());
+		if (computer.getIntroduced() != null) {
+			introducedSql = new java.sql.Date(computer.getIntroduced().getTime());
 		}
-		if ((computerDTO.getDiscontinued() != null) && (computerDTO.getDiscontinued() != "")) {
-			discontinuedUtil = formatter.parse(computerDTO.getDiscontinued());
-			discontinuedSql = new java.sql.Date(discontinuedUtil.getTime());
+		if (computer.getDiscontinued() != null) {
+			discontinuedSql = new java.sql.Date(computer.getDiscontinued().getTime());
 		}
 
-		ps.setString(1, computerDTO.getName());
+		ps.setString(1, computer.getName());
 		ps.setDate(2, introducedSql);
 		ps.setDate(3, discontinuedSql);
 
-		if (computerDTO.getCompanyId() != 0) {
-			ps.setLong(4, computerDTO.getCompanyId());
+		if (computer.getCompany() != null) {
+			ps.setLong(4, computer.getCompany().getId());
 		} else {
 			ps.setNull(4, Types.BIGINT);
 		}
@@ -142,30 +129,28 @@ public class ComputerDAO {
 		rs = ps.getGeneratedKeys();
 		rs.next();
 		if(rs.getString(1)!=null){
-			computerDTO.setId(Long.parseLong(rs.getString(1)));
+			computer.setId(Long.parseLong(rs.getString(1)));
 		}
 			
 		closeObject(ps, rs);
 
-		return computerDTO.getId();
+		return computer.getId();
 	}
 
-	public PageWrapper<ComputerDTO> retrieve(PageWrapper<ComputerDTO> wrapper,
+	public PageWrapper<Computer> retrieve(PageWrapper<Computer> wrapper,
 			CompanyService companyService, Connection connection)
 			throws SQLException, ParseException {
-		
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		StringBuilder query = new StringBuilder(
 				"SELECT cpt.id,cpt.name,cpt.introduced,cpt.discontinued,cpt.company_id FROM computer AS cpt ");
 		StringBuilder sizeQuery = new StringBuilder(
 				"SELECT count(*) FROM computer ");
-		List<ComputerDTO> computers = new ArrayList<ComputerDTO>();
-		ComputerDTO computerDTO = null;
-		String introduced = null;
-		String discontinued = null;
-		long companyId = 0;
-		String companyName = null;
+		List<Computer> computers = new ArrayList<Computer>();
+		Computer computer = null;
+		Date introduced = null;
+		Date discontinued = null;
 		Company company = null;
 		
 		/* retrieve all */
@@ -203,31 +188,31 @@ public class ComputerDAO {
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
-				
-				if(rs.getString(3) != null) {
-					introduced = rs.getString(3).substring(0, 10);
+				if ((rs.getString(3) != null)
+						&& (rs.getString(3) != "")) {
+					introduced = formatter.parse(rs.getString(3));
+				} else {
+					introduced = null;
 				}
-				if(rs.getString(4) != null) {
-					discontinued = rs.getString(4).substring(0, 10);
+				if ((rs.getString(4) != null)
+						&& (rs.getString(4) != "")) {
+					discontinued = formatter.parse(rs.getString(4));
+				} else {
+					discontinued = null;
 				}
 				if(rs.getString(5) != null) {
 					company = companyService.retrieve(Long.parseLong(rs
 							.getString(5)));
-					companyId = company.getId();
-					companyName = company.getName();
 				} else {
 					company = null;
-					companyId = 0;
-					companyName = null;
 				}
-				computerDTO = ComputerDTO.builder()
+				computer = Computer.builder()
 						.id(Long.parseLong(rs.getString(1)))
 						.name(rs.getString(2)).introduced(introduced)
 						.discontinued(discontinued)
-						.companyId(companyId)
-						.companyName(companyName)
+						.company(company)
 						.build();
-				computers.add(computerDTO);
+				computers.add(computer);
 			}
 			wrapper.setPages(computers);
 
@@ -308,26 +293,29 @@ public class ComputerDAO {
 
 			while (rs.next()) {
 				
-				if(rs.getString(3) != null) {
-					introduced = rs.getString(3).substring(0, 10);
+				if ((rs.getString(3) != null)
+						&& (rs.getString(3) != "")) {
+					introduced = formatter.parse(rs.getString(3));
+				} else {
+					introduced = null;
 				}
-				if(rs.getString(4) != null) {
-					discontinued = rs.getString(4).substring(0, 10);
+				if ((rs.getString(4) != null)
+						&& (rs.getString(4) != "")) {
+					discontinued = formatter.parse(rs.getString(4));
+				} else {
+					discontinued = null;
 				}
 				if (rs.getString(5) != null) {
 					company = companyService.retrieve(Long.parseLong(rs
 							.getString(5)));
-					companyId = company.getId();
-					companyName = company.getName();
 				} else {
 					company = null;
-					companyName = null;
 				}
-				computerDTO = ComputerDTO.builder()
+				computer = Computer.builder()
 						.id(Long.parseLong(rs.getString(1)))
 						.name(rs.getString(2)).introduced(introduced)
-						.discontinued(discontinued).companyId(companyId).companyName(companyName).build();
-				computers.add(computerDTO);
+						.discontinued(discontinued).company(company).build();
+				computers.add(computer);
 			}
 			wrapper.setPages(computers);
 		}

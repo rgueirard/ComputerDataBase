@@ -1,4 +1,4 @@
-package com.excilys.rgueirard.domain;
+package com.excilys.rgueirard.wrapper;
 
 public class ErrorWrapper {
 	private String validIntroducedDate;

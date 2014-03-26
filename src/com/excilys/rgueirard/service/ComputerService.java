@@ -5,11 +5,11 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Date;
 
-import com.excilys.rgueirard.domain.ComputerDTO;
-import com.excilys.rgueirard.domain.PageWrapper;
+import com.excilys.rgueirard.domain.Computer;
 import com.excilys.rgueirard.persistence.ComputerDAO;
 import com.excilys.rgueirard.persistence.DataBaseManager;
 import com.excilys.rgueirard.persistence.LogDAO;
+import com.excilys.rgueirard.wrapper.PageWrapper;
 
 public class ComputerService {
 	private static ComputerService computerService = null;	
@@ -25,7 +25,7 @@ public class ComputerService {
 		return computerService;
 	}
 	
-	public void create(ComputerDTO computerDTO) {
+	public void create(Computer computer) {
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
@@ -36,7 +36,7 @@ public class ComputerService {
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			id = computerDAO.create(computerDTO, connection);
+			id = computerDAO.create(computer, connection);
 			logDAO.create(id, dateSql.toString(), "create", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
@@ -51,7 +51,7 @@ public class ComputerService {
 		}
 	}
 
-	public void update(ComputerDTO computerDTO) {
+	public void update(Computer computer) {
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();
@@ -62,7 +62,7 @@ public class ComputerService {
 			connection.setAutoCommit(false);
 			ComputerDAO computerDAO = ComputerDAO.getInstance();
 			LogDAO logDAO = LogDAO.getInstance();
-			id = computerDAO.update(computerDTO, connection);
+			id = computerDAO.update(computer, connection);
 			logDAO.create(id, dateSql.toString(), "update", connection);
 			connection.commit();
 			connection.setAutoCommit(true);
@@ -104,7 +104,7 @@ public class ComputerService {
 		}
 	}
 	
-	public PageWrapper<ComputerDTO> retrieve(PageWrapper<ComputerDTO> wrapper){
+	public PageWrapper<Computer> retrieve(PageWrapper<Computer> wrapper){
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		Date dateUtil = new Date();

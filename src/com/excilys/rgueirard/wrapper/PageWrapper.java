@@ -1,4 +1,4 @@
-package com.excilys.rgueirard.domain;
+package com.excilys.rgueirard.wrapper;
 
 import java.util.ArrayList;
 import java.util.List;

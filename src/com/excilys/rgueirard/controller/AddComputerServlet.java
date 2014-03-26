@@ -11,11 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.excilys.rgueirard.domain.Company;
 import com.excilys.rgueirard.domain.Computer;
-import com.excilys.rgueirard.domain.ComputerDTO;
-import com.excilys.rgueirard.domain.ErrorWrapper;
-import com.excilys.rgueirard.domain.PageWrapper;
+import com.excilys.rgueirard.dto.ComputerDTO;
+import com.excilys.rgueirard.mapper.ComputerMapper;
 import com.excilys.rgueirard.service.CompanyService;
 import com.excilys.rgueirard.service.ComputerService;
+import com.excilys.rgueirard.validator.ComputerValidator;
+import com.excilys.rgueirard.wrapper.ErrorWrapper;
+import com.excilys.rgueirard.wrapper.PageWrapper;
 
 /**
  * Servlet implementation class AddComputerServlet
@@ -99,6 +101,7 @@ public class AddComputerServlet extends HttpServlet {
 		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
 		ErrorWrapper error = new ErrorWrapper();
 		ComputerDTO computerDTO = null;
+		Computer computer = null;
 		long companyId = 0;
 		
 		String name = request.getParameter("name");
@@ -153,7 +156,8 @@ public class AddComputerServlet extends HttpServlet {
 			request.setAttribute("computer", computerDTO);
 			doGet(request, response);
 		} else {
-			computerService.create(computerDTO);
+			computer = ComputerMapper.DTOToComputer(computerDTO);
+			computerService.create(computer);
 			this.getServletContext()
 					.getRequestDispatcher(
 							"/dashboard?page=" + wrapper.getCurrentPage()

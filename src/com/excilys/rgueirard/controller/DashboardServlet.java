@@ -8,9 +8,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.excilys.rgueirard.domain.ComputerDTO;
-import com.excilys.rgueirard.domain.PageWrapper;
+import com.excilys.rgueirard.domain.Computer;
+import com.excilys.rgueirard.dto.ComputerDTO;
+import com.excilys.rgueirard.mapper.WrapperMapper;
 import com.excilys.rgueirard.service.ComputerService;
+import com.excilys.rgueirard.wrapper.PageWrapper;
 
 /**
  * Servlet implementation class DashboardServlet
@@ -43,7 +45,8 @@ public class DashboardServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 
 		ComputerService computerService = ComputerService.getInstance();
-		PageWrapper<ComputerDTO> wrapper = new PageWrapper<ComputerDTO>();
+		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
+		PageWrapper<ComputerDTO> wrapperDTO = new PageWrapper<ComputerDTO>();
 
 		/* recupération de page */
 		if ((request.getParameter("page") != null)
@@ -80,13 +83,16 @@ public class DashboardServlet extends HttpServlet {
 				&& (request.getParameter("searchMotif") != "")) {
 			wrapper.setSearchMotif(request.getParameter("searchMotif"));
 		}
-
+		
 		/* recuperation de la liste d'ordinateur */
 		wrapper = computerService.retrieve(wrapper);
+		//System.out.println("wrapper.cpt : "+wrapper.getPages()+"\n");
 		
-		request.setAttribute("wrapper", wrapper);
+		wrapperDTO = WrapperMapper.computerToDTO(wrapper);
+		
+		request.setAttribute("wrapper", wrapperDTO);
 		this.getServletContext().getRequestDispatcher("/WEB-INF/dashboard.jsp")
 				.forward(request, response);
 	}
 
-}
+} 

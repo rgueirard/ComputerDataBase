@@ -1,4 +1,4 @@
-package com.excilys.rgueirard.domain;
+package com.excilys.rgueirard.dto;
 
 public class ComputerDTO {
 	private long id;

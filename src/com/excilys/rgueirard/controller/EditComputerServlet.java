@@ -11,11 +11,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.excilys.rgueirard.domain.Company;
 import com.excilys.rgueirard.domain.Computer;
-import com.excilys.rgueirard.domain.ComputerDTO;
-import com.excilys.rgueirard.domain.ErrorWrapper;
-import com.excilys.rgueirard.domain.PageWrapper;
+import com.excilys.rgueirard.dto.ComputerDTO;
+import com.excilys.rgueirard.mapper.ComputerMapper;
+import com.excilys.rgueirard.mapper.WrapperMapper;
 import com.excilys.rgueirard.service.CompanyService;
 import com.excilys.rgueirard.service.ComputerService;
+import com.excilys.rgueirard.validator.ComputerValidator;
+import com.excilys.rgueirard.wrapper.ErrorWrapper;
+import com.excilys.rgueirard.wrapper.PageWrapper;
 
 /**
  * Servlet implementation class EditComputerServlet
@@ -40,8 +43,10 @@ public class EditComputerServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		ComputerService computerService = ComputerService.getInstance();
 		CompanyService companyService = CompanyService.getInstance();
-
-		PageWrapper<ComputerDTO> wrapper = new PageWrapper<ComputerDTO>();
+		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
+		PageWrapper<ComputerDTO> wrapperDTO = new PageWrapper<ComputerDTO>();
+		ComputerDTO computerDTO = null;
+		
 		String searchMotif = "";
 		int searchType = 0;
 
@@ -84,21 +89,24 @@ public class EditComputerServlet extends HttpServlet {
 		/* recuperation du motif recherche */
 		wrapper.setSearchMotif(request.getParameter("id"));
 		wrapper.setSearchType(2);
+		
 		wrapper = computerService.retrieve(wrapper);
 		List<Company> companies = companyService.retrieveAll();
 
-		wrapper.setSearchType(searchType);
-		wrapper.setSearchMotif(searchMotif);
+		wrapperDTO = WrapperMapper.computerToDTO(wrapper);
+		computerDTO = wrapperDTO.getPages().get(0);
+		wrapperDTO.setSearchType(searchType);
+		wrapperDTO.setSearchMotif(searchMotif);
 		
 		if (request.getAttribute("computer") != null) {
 			request.setAttribute("computer", request.getAttribute("computer"));
 
 		} else {
-			request.setAttribute("computer", wrapper.getPages().get(0));
+			request.setAttribute("computer", computerDTO);
 		}
 		
 		request.setAttribute("companies", companies);
-		request.setAttribute("wrapper", wrapper);
+		request.setAttribute("wrapper", wrapperDTO);
 		this.getServletContext()
 				.getRequestDispatcher("/WEB-INF/editComputer.jsp")
 				.forward(request, response);
@@ -114,6 +122,7 @@ public class EditComputerServlet extends HttpServlet {
 		ComputerService computerService = ComputerService.getInstance();
 
 		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
+		Computer computer = null;
 		ComputerDTO computerDTO = null;
 		long id = 0;
 		long companyId = 0;
@@ -176,7 +185,8 @@ public class EditComputerServlet extends HttpServlet {
 			request.setAttribute("computer", computerDTO);
 			doGet(request, response);
 		} else {
-			computerService.update(computerDTO);
+			computer = ComputerMapper.DTOToComputer(computerDTO);
+			computerService.update(computer);
 			this.getServletContext()
 					.getRequestDispatcher(
 							"/dashboard?page=" + wrapper.getCurrentPage()
