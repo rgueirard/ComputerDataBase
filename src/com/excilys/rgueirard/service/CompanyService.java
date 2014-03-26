@@ -1,6 +1,5 @@
 package com.excilys.rgueirard.service;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -25,50 +24,24 @@ public class CompanyService {
 
 	public Company retrieve(long id){
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		Connection connection = null;
-		//Date dateUtil = new Date();
-		//java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
 		Company company = null;
-		
+		CompanyDAO companyDAO = dataBaseManager.getCompanyDAO();
 		try {
-			connection = dataBaseManager.getConnection();
-			connection.setAutoCommit(false);
-			CompanyDAO companyDAO = dataBaseManager.getCompanyDAO();
-			//LogDAO logDAO = dataBaseManager.getLogDAO();
-			company = companyDAO.retrieve(id, connection);
-			//logDAO.create(0, dateSql.toString(), "retrieveCompany", connection);
-			connection.commit();
-			connection.setAutoCommit(true);
+			company = companyDAO.retrieve(id);
 		} catch (SQLException e) {
-			try {connection.rollback();}catch(SQLException e1){e.printStackTrace();}
 			e.printStackTrace();
-		} finally{
-			   try{connection.close();}catch(Exception e){e.printStackTrace();}
 		}
 		return company;
 	}
 	
 	public List<Company> retrieveAll() {
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		Connection connection = null;
-		//Date dateUtil = new Date();
-		//java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
 		List<Company> companies = null;
-
+		CompanyDAO companyDAO = dataBaseManager.getCompanyDAO();
 		try {
-			connection = dataBaseManager.getConnection();
-			connection.setAutoCommit(false);
-			CompanyDAO companyDAO = dataBaseManager.getCompanyDAO();
-			//LogDAO logDAO = dataBaseManager.getLogDAO();
-			companies = companyDAO.retrieveAll(connection);
-			//logDAO.create(0, dateSql.toString(), "retrieveCompanies", connection);
-			connection.commit();
-			connection.setAutoCommit(true);
+			companies = companyDAO.retrieveAll();
 		} catch (SQLException e) {
-			try {connection.rollback();}catch(SQLException e1){e.printStackTrace();}
 			e.printStackTrace();
-		} finally{
-			   try{connection.close();}catch(Exception e){e.printStackTrace();}
 		}
 		return companies;
 	}

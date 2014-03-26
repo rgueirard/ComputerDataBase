@@ -1,6 +1,6 @@
 <%@ tag body-content="empty" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ attribute name="wrapper" required="true" type="com.excilys.rgueirard.domain.PageWrapper" %>
+<%@ attribute name="wrapper" required="true" type="com.excilys.rgueirard.wrapper.PageWrapper" %>
 <table>
 	<tr>
 		<c:if test="${wrapper.currentPage != 1}">

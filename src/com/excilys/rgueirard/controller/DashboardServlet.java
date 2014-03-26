@@ -86,7 +86,6 @@ public class DashboardServlet extends HttpServlet {
 		
 		/* recuperation de la liste d'ordinateur */
 		wrapper = computerService.retrieve(wrapper);
-		//System.out.println("wrapper.cpt : "+wrapper.getPages()+"\n");
 		
 		wrapperDTO = WrapperMapper.computerToDTO(wrapper);
 		

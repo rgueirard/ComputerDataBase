@@ -26,7 +26,12 @@ public class Company {
 
 	@Override
 	public String toString() {
-		return "\n\tId : " + id + "\n\tName : " + name;
+		StringBuilder sb = new StringBuilder("");
+		sb.append("\n\tId : ");
+		sb.append(id);
+		sb.append("\n\tName : ");
+		sb.append(name);
+		return sb.toString();
 	}
 
 	@Override

@@ -36,7 +36,9 @@ private static LogDAO logDAO = null;
 		}
 	}
 	
-	public void create(long computerId, String timeS, String message, Connection connection) throws SQLException, ParseException {
+	public void create(long computerId, String timeS, String message) throws SQLException, ParseException {
+		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
+		Connection connection = dataBaseManager.getConnection();
 		String query = "INSERT INTO log (id, computer_id, time, message) VALUES (0, ?, ?, ?)";
 		PreparedStatement ps = null;
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");

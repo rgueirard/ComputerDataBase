@@ -37,8 +37,9 @@ public class CompanyDAO {
 		}
 	}
 	
-	public Company retrieve(long id, Connection connection) throws SQLException{
-		
+	public Company retrieve(long id) throws SQLException{
+		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
+		Connection connection = dataBaseManager.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		String query = "SELECT id,name FROM company WHERE id = ?";
@@ -55,8 +56,9 @@ public class CompanyDAO {
 		return company;
 	}
 
-	public List<Company> retrieveAll(Connection connection) throws SQLException {
-		
+	public List<Company> retrieveAll() throws SQLException {
+		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
+		Connection connection = dataBaseManager.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<Company> companies = new ArrayList<Company>();

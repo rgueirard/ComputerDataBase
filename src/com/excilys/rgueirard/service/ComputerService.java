@@ -27,17 +27,18 @@ public class ComputerService {
 	
 	public void create(Computer computer) {
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		Connection connection = dataBaseManager.getConnection();
+		ComputerDAO computerDAO = ComputerDAO.getInstance();
+		LogDAO logDAO = LogDAO.getInstance();
+		Connection connection = null;
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
 		long id = 0;
 		
 		try {
+			connection = dataBaseManager.getConnection();
 			connection.setAutoCommit(false);
-			ComputerDAO computerDAO = ComputerDAO.getInstance();
-			LogDAO logDAO = LogDAO.getInstance();
-			id = computerDAO.create(computer, connection);
-			logDAO.create(id, dateSql.toString(), "create", connection);
+			id = computerDAO.create(computer);
+			logDAO.create(id, dateSql.toString(), "create");
 			connection.commit();
 			connection.setAutoCommit(true);
 		} catch (SQLException e) {
@@ -47,23 +48,24 @@ public class ComputerService {
 			try {connection.rollback();}catch(SQLException e1){e.printStackTrace();}
 			e.printStackTrace();
 		} finally{
-			   try{connection.close();}catch(Exception e){e.printStackTrace();}
+			try {dataBaseManager.closeConnection();}catch(SQLException e){e.printStackTrace();}
 		}
 	}
 
 	public void update(Computer computer) {
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		Connection connection = dataBaseManager.getConnection();
+		ComputerDAO computerDAO = ComputerDAO.getInstance();
+		LogDAO logDAO = LogDAO.getInstance();
+		Connection connection = null;
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
 		long id = 0;
 		
 		try {
+			connection = dataBaseManager.getConnection();
 			connection.setAutoCommit(false);
-			ComputerDAO computerDAO = ComputerDAO.getInstance();
-			LogDAO logDAO = LogDAO.getInstance();
-			id = computerDAO.update(computer, connection);
-			logDAO.create(id, dateSql.toString(), "update", connection);
+			id = computerDAO.update(computer);
+			logDAO.create(id, dateSql.toString(), "update");
 			connection.commit();
 			connection.setAutoCommit(true);
 		} catch (SQLException e) {
@@ -73,24 +75,24 @@ public class ComputerService {
 			try {connection.rollback();}catch(SQLException e1){e.printStackTrace();}
 			e.printStackTrace();
 		} finally{
-			   try{connection.close();}catch(Exception e){e.printStackTrace();}
+			try {dataBaseManager.closeConnection();}catch(SQLException e){e.printStackTrace();}
 		}
 	}
 	
 	public void delete(String idString){
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		Connection connection = dataBaseManager.getConnection();
+		ComputerDAO computerDAO = ComputerDAO.getInstance();
+		LogDAO logDAO = LogDAO.getInstance();
+		Connection connection = null;
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
 		long id = 0;
 					
 		try {
-			
+			connection = dataBaseManager.getConnection();
 			connection.setAutoCommit(false);
-			ComputerDAO computerDAO = ComputerDAO.getInstance();
-			LogDAO logDAO = LogDAO.getInstance();
-			id = computerDAO.delete(idString, connection);
-			logDAO.create(id, dateSql.toString(), "delete", connection);
+			id = computerDAO.delete(idString);
+			logDAO.create(id, dateSql.toString(), "delete");
 			connection.commit();
 			connection.setAutoCommit(true);
 		} catch (SQLException e) {
@@ -100,34 +102,36 @@ public class ComputerService {
 			try {connection.rollback();}catch(SQLException e1){e.printStackTrace();}
 			e.printStackTrace();
 		} finally{
-			   try{connection.close();}catch(Exception e){e.printStackTrace();}
+			try {dataBaseManager.closeConnection();}catch(SQLException e){e.printStackTrace();}
 		}
 	}
 	
 	public PageWrapper<Computer> retrieve(PageWrapper<Computer> wrapper){
 		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		Connection connection = dataBaseManager.getConnection();
-		Date dateUtil = new Date();
-		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
-		
+		ComputerDAO computerDAO = dataBaseManager.getComputerDAO();
+		CompanyService companyService = dataBaseManager.getCompanyService();
 		try {
-			connection.setAutoCommit(false);
-			ComputerDAO computerDAO = dataBaseManager.getComputerDAO();
-			CompanyService companyService = dataBaseManager.getCompanyService();
-			LogDAO logDAO = dataBaseManager.getLogDAO();
-			wrapper = computerDAO.retrieve(wrapper, companyService, connection);
-			logDAO.create(0, dateSql.toString(), "retrieve", connection);
-			connection.commit();
-			connection.setAutoCommit(true);
+			wrapper = computerDAO.retrieve(wrapper, companyService);
 		} catch (SQLException e) {
-			try {connection.rollback();}catch(SQLException e1){e.printStackTrace();}
 			e.printStackTrace();
 		} catch (ParseException e) {
-			try {connection.rollback();}catch(SQLException e1){e.printStackTrace();}
 			e.printStackTrace();
-		} finally{
-			   try{connection.close();}catch(Exception e){e.printStackTrace();}
 		}
 		return wrapper;
+	}
+	
+	public Computer retrieveById(long id) {
+		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
+		ComputerDAO computerDAO = dataBaseManager.getComputerDAO();
+		CompanyService companyService = dataBaseManager.getCompanyService();
+		Computer computer = null;
+		try {
+			computer = computerDAO.retrieveById(id, companyService);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return computer;		
 	}
 }

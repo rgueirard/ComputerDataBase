@@ -32,11 +32,6 @@ public class DataBaseManager {
 	private static CompanyService companyService = null;
 	private static LogDAO logDAO = null;
 
-	/* org.h2.Driver */
-	/* sa */
-	/* test */
-	/* jdbc:h2:~/test */
-
 	private DataBaseManager() {
 
 	}
@@ -66,23 +61,10 @@ public class DataBaseManager {
 		return dataBaseManager;
 	}
 
-	public Connection getConnection(){
-		
-		/*try {
+	public Connection getConnection() throws SQLException{
+		if(connection.get()==null){
 			openConnection();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}	*/
-		//Connection connection = null;
-
-		try {
-			//connection = connectionPool.getConnection();
-			connection.set(connectionPool.getConnection());
 		}
-		catch (SQLException e) {
-		System.err.println(e.getMessage());
-		}
-		//return connection;
 		return connection.get();
 	}
 
@@ -112,20 +94,18 @@ public class DataBaseManager {
 		super.finalize();
 	}
 
-	/*public void openConnection() throws SQLException {
-		if (connection != null && connection.get() != null
-				&& !connection.get().isClosed()) {
+	public void openConnection() throws SQLException {
+		if ((connection != null)&&(connection.get() != null)&&(!connection.get().isClosed())) {
 			connection.get().close();
 		}
 		connection.set(connectionPool.getConnection());
 	}
 
 	public void closeConnection() throws SQLException {
-
-		if (connection != null && connection.get() != null
-				&& !connection.get().isClosed()) {
+		if ((connection != null)&&(connection.get() != null)&&(!connection.get().isClosed())) {
 			connection.get().close();
 		}
-	}*/
+		connection.remove();
+	}
 
 }

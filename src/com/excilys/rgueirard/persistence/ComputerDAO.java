@@ -49,9 +49,9 @@ public class ComputerDAO {
 		}
 	}
 
-	public long delete(String idString, Connection connection)
-			throws SQLException {
-
+	public long delete(String idString) throws SQLException {
+		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
+		Connection connection = dataBaseManager.getConnection();
 		String query = "DELETE FROM computer WHERE id = ?";
 		long id = Long.parseLong(idString);
 		PreparedStatement ps = null;
@@ -65,18 +65,21 @@ public class ComputerDAO {
 		return id;
 	}
 
-	public long update(Computer computer, Connection connection)
-			throws SQLException, ParseException {
+	public long update(Computer computer) throws SQLException, ParseException {
+		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
+		Connection connection = dataBaseManager.getConnection();
 		PreparedStatement ps = null;
 		String query = "UPDATE computer SET name=?, introduced=?, discontinued=?, company_id=? WHERE id=?";
 		java.sql.Date introducedSql = null;
 		java.sql.Date discontinuedSql = null;
-		
+
 		if (computer.getIntroduced() != null) {
-			introducedSql = new java.sql.Date(computer.getIntroduced().getTime());
+			introducedSql = new java.sql.Date(computer.getIntroduced()
+					.getTime());
 		}
 		if (computer.getDiscontinued() != null) {
-			discontinuedSql = new java.sql.Date(computer.getDiscontinued().getTime());
+			discontinuedSql = new java.sql.Date(computer.getDiscontinued()
+					.getTime());
 		}
 
 		ps = connection.prepareStatement(query);
@@ -89,30 +92,32 @@ public class ComputerDAO {
 		} else {
 			ps.setNull(4, Types.BIGINT);
 		}
-		
+
 		ps.setLong(5, computer.getId());
 		ps.executeUpdate();
 		closeObject(ps, null);
-		
+
 		return computer.getId();
 	}
 
-	public long create(Computer computer, Connection connection)
-			throws SQLException, ParseException {
-
+	public long create(Computer computer) throws SQLException, ParseException {
+		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
+		Connection connection = dataBaseManager.getConnection();
 		String query = "INSERT INTO computer (id,name,introduced,discontinued,company_id) VALUES (0,?,?,?,?)";
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		java.sql.Date introducedSql = null;
 		java.sql.Date discontinuedSql = null;
-		
+
 		ps = connection.prepareStatement(query);
 
 		if (computer.getIntroduced() != null) {
-			introducedSql = new java.sql.Date(computer.getIntroduced().getTime());
+			introducedSql = new java.sql.Date(computer.getIntroduced()
+					.getTime());
 		}
 		if (computer.getDiscontinued() != null) {
-			discontinuedSql = new java.sql.Date(computer.getDiscontinued().getTime());
+			discontinuedSql = new java.sql.Date(computer.getDiscontinued()
+					.getTime());
 		}
 
 		ps.setString(1, computer.getName());
@@ -128,18 +133,19 @@ public class ComputerDAO {
 		ps.executeUpdate();
 		rs = ps.getGeneratedKeys();
 		rs.next();
-		if(rs.getString(1)!=null){
+		if (rs.getString(1) != null) {
 			computer.setId(Long.parseLong(rs.getString(1)));
 		}
-			
+
 		closeObject(ps, rs);
 
 		return computer.getId();
 	}
 
 	public PageWrapper<Computer> retrieve(PageWrapper<Computer> wrapper,
-			CompanyService companyService, Connection connection)
-			throws SQLException, ParseException {
+			CompanyService companyService) throws SQLException, ParseException {
+		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
+		Connection connection = dataBaseManager.getConnection();
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -152,7 +158,7 @@ public class ComputerDAO {
 		Date introduced = null;
 		Date discontinued = null;
 		Company company = null;
-		
+
 		/* retrieve all */
 		if (wrapper.getSearchMotif().isEmpty()) {
 			query.append(ORDER);
@@ -188,19 +194,17 @@ public class ComputerDAO {
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
-				if ((rs.getString(3) != null)
-						&& (rs.getString(3) != "")) {
+				if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
 					introduced = formatter.parse(rs.getString(3));
 				} else {
 					introduced = null;
 				}
-				if ((rs.getString(4) != null)
-						&& (rs.getString(4) != "")) {
+				if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
 					discontinued = formatter.parse(rs.getString(4));
 				} else {
 					discontinued = null;
 				}
-				if(rs.getString(5) != null) {
+				if (rs.getString(5) != null) {
 					company = companyService.retrieve(Long.parseLong(rs
 							.getString(5)));
 				} else {
@@ -209,14 +213,12 @@ public class ComputerDAO {
 				computer = Computer.builder()
 						.id(Long.parseLong(rs.getString(1)))
 						.name(rs.getString(2)).introduced(introduced)
-						.discontinued(discontinued)
-						.company(company)
-						.build();
+						.discontinued(discontinued).company(company).build();
 				computers.add(computer);
 			}
 			wrapper.setPages(computers);
 
-		/* retrieve by name, by company, by id */
+			/* retrieve by name, by company, by id */
 		} else {
 			switch (wrapper.getSearchType()) {
 			/* by name */
@@ -244,20 +246,12 @@ public class ComputerDAO {
 				}
 				query.append(LIMIT);
 				break;
-			/* by id */
-			case 2:
-				sizeQuery.append(WHEREID);
-				query.append(WHEREID);
-				break;
 			}
 
 			/* recupération de la taille */
 			ps = connection.prepareStatement(sizeQuery.toString());
-			if (wrapper.getSearchType() != 2) {
-				ps.setString(1, "%" + wrapper.getSearchMotif() + "%");
-			} else {
-				ps.setLong(1, Long.parseLong(wrapper.getSearchMotif()));
-			}
+
+			ps.setString(1, "%" + wrapper.getSearchMotif() + "%");
 
 			rs = ps.executeQuery();
 			rs.next();
@@ -268,39 +262,31 @@ public class ComputerDAO {
 			/* recuperation des computers */
 			ps = connection.prepareStatement(query.toString());
 
-			if (wrapper.getSearchType() != 2) {
-				ps.setString(1, "%" + wrapper.getSearchMotif() + "%");
-			} else {
-				ps.setLong(1, Long.parseLong(wrapper.getSearchMotif()));
-			}
+			ps.setString(1, "%" + wrapper.getSearchMotif() + "%");
 
 			/* recuperation de nbPages */
-			if (wrapper.getSearchType() != 2) {
-				wrapper.setNbPages((int) Math.ceil(wrapper.getSize() * 1.0
-						/ wrapper.getNbDisplay()));
+			wrapper.setNbPages((int) Math.ceil(wrapper.getSize() * 1.0
+					/ wrapper.getNbDisplay()));
 
-				ps.setInt(2, wrapper.getOrderBy());
+			ps.setInt(2, wrapper.getOrderBy());
 
-				if (wrapper.getCurrentPage() > wrapper.getNbPages()) {
-					wrapper.setCurrentPage(wrapper.getNbPages() - 1);
-				}
-				ps.setInt(3,
-						(wrapper.getCurrentPage() - 1) * wrapper.getNbDisplay());
-				ps.setInt(4, wrapper.getNbDisplay());
+			if (wrapper.getCurrentPage() > wrapper.getNbPages()) {
+				wrapper.setCurrentPage(wrapper.getNbPages() - 1);
 			}
+			ps.setInt(3,
+					(wrapper.getCurrentPage() - 1) * wrapper.getNbDisplay());
+			ps.setInt(4, wrapper.getNbDisplay());
 
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
-				
-				if ((rs.getString(3) != null)
-						&& (rs.getString(3) != "")) {
+
+				if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
 					introduced = formatter.parse(rs.getString(3));
 				} else {
 					introduced = null;
 				}
-				if ((rs.getString(4) != null)
-						&& (rs.getString(4) != "")) {
+				if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
 					discontinued = formatter.parse(rs.getString(4));
 				} else {
 					discontinued = null;
@@ -322,5 +308,47 @@ public class ComputerDAO {
 
 		this.closeObject(ps, rs);
 		return wrapper;
+	}
+
+	public Computer retrieveById(long id, CompanyService companyService)
+			throws SQLException, ParseException {
+		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
+		Connection connection = dataBaseManager.getConnection();
+		Computer computer = null;
+		Date introduced = null;
+		Date discontinued = null;
+		Company company = null;
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		StringBuilder query = new StringBuilder(
+				"SELECT cpt.id,cpt.name,cpt.introduced,cpt.discontinued,cpt.company_id FROM computer AS cpt ");
+		query.append(WHEREID);
+
+		ps = connection.prepareStatement(query.toString());
+		ps.setLong(1, id);
+		rs = ps.executeQuery();
+		rs.next();
+		if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
+			introduced = formatter.parse(rs.getString(3));
+		} else {
+			introduced = null;
+		}
+		if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
+			discontinued = formatter.parse(rs.getString(4));
+		} else {
+			discontinued = null;
+		}
+		if (rs.getString(5) != null) {
+			company = companyService.retrieve(Long.parseLong(rs.getString(5)));
+		} else {
+			company = null;
+		}
+		computer = Computer.builder().id(Long.parseLong(rs.getString(1)))
+				.name(rs.getString(2)).introduced(introduced)
+				.discontinued(discontinued).company(company).build();
+
+		return computer;
 	}
 }

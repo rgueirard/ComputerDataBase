@@ -55,9 +55,21 @@ public class Computer {
 
 	@Override
 	public String toString() {
-		return "\n-------------------" + "\nId : " + id + "\nName : " + name + "\nIntroduced : "
-				+ introduced + "\nDiscontinued : " + discontinued
-				+ "\ntCompany : " + company.toString() + "\n"+ "-------------------\n";
+		StringBuilder sb = new StringBuilder("");
+		sb.append("\n-------------------\nId : ");
+		sb.append(id);
+		sb.append("\nName : ");
+		sb.append(name);
+		sb.append("\nIntroduced : ");
+		sb.append(introduced);
+		sb.append("\nDiscontinued : ");
+		sb.append(discontinued);
+		if(this.company != null) {
+			sb.append("\ntCompany : ");
+			sb.append("company.toString()");
+		}
+		sb.append("\n-------------------\n");
+		return sb.toString();
 	}
 
 	@Override

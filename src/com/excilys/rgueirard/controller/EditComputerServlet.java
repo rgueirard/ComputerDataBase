@@ -46,9 +46,9 @@ public class EditComputerServlet extends HttpServlet {
 		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
 		PageWrapper<ComputerDTO> wrapperDTO = new PageWrapper<ComputerDTO>();
 		ComputerDTO computerDTO = null;
-		
-		String searchMotif = "";
-		int searchType = 0;
+		Computer computer = null;
+		// String searchMotif = "";
+		// int searchType = 0;
 
 		/* recupération de page */
 		if ((request.getParameter("page") != null)
@@ -73,38 +73,30 @@ public class EditComputerServlet extends HttpServlet {
 		/* recuperation de searchType */
 		if ((request.getParameter("searchType") != null)
 				&& (request.getParameter("searchType") != "")) {
-			searchType = Integer.parseInt(request.getParameter("searchType"));
+			wrapper.setSearchType(Integer.parseInt(request
+					.getParameter("searchType")));
 		}
 
 		/* recuperation de l'ancien motif de recherche */
 		if ((request.getParameter("searchMotif") != null)
 				&& (request.getParameter("searchMotif") != "")) {
-			searchMotif = (request.getParameter("searchMotif"));
+			wrapper.setSearchMotif((request.getParameter("searchMotif")));
 		}
 
-		if (request.getParameter("computer") != null) {
-
-		}
-
-		/* recuperation du motif recherche */
-		wrapper.setSearchMotif(request.getParameter("id"));
-		wrapper.setSearchType(2);
-		
-		wrapper = computerService.retrieve(wrapper);
 		List<Company> companies = companyService.retrieveAll();
 
 		wrapperDTO = WrapperMapper.computerToDTO(wrapper);
-		computerDTO = wrapperDTO.getPages().get(0);
-		wrapperDTO.setSearchType(searchType);
-		wrapperDTO.setSearchMotif(searchMotif);
-		
+
 		if (request.getAttribute("computer") != null) {
 			request.setAttribute("computer", request.getAttribute("computer"));
 
 		} else {
+			computer = computerService.retrieveById(Long.parseLong(request
+					.getParameter("id")));
+			computerDTO = ComputerMapper.computerToDTO(computer);
 			request.setAttribute("computer", computerDTO);
 		}
-		
+
 		request.setAttribute("companies", companies);
 		request.setAttribute("wrapper", wrapperDTO);
 		this.getServletContext()
