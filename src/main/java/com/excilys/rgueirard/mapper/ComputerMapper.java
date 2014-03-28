@@ -5,15 +5,25 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.excilys.rgueirard.domain.Company;
 import com.excilys.rgueirard.domain.Computer;
 import com.excilys.rgueirard.dto.ComputerDTO;
 import com.excilys.rgueirard.persistence.DataBaseManager;
 import com.excilys.rgueirard.service.CompanyService;
 
+@Component
 public class ComputerMapper {
 
-	public static ComputerDTO computerToDTO(Computer computer) {
+	@Autowired
+	private DataBaseManager dataBaseManager;
+	
+	@Autowired
+	private CompanyService companyService;
+	
+	public ComputerDTO computerToDTO(Computer computer) {
 		ComputerDTO computerDTO = null;
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		String introduced = null;
@@ -39,7 +49,7 @@ public class ComputerMapper {
 		return computerDTO;
 	}
 
-	public static Computer DTOToComputer(ComputerDTO computerDTO) {
+	public Computer DTOToComputer(ComputerDTO computerDTO) {
 		Computer computer = null;
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		Date introduced = null;
@@ -60,8 +70,6 @@ public class ComputerMapper {
 			e.printStackTrace();
 		}
 		if (computerDTO.getCompanyId() != 0) {
-			DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-			CompanyService companyService = dataBaseManager.getCompanyService();
 			company = companyService.retrieve(computerDTO.getCompanyId());
 		}
 

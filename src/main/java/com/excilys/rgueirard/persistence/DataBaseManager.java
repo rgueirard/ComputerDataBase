@@ -3,11 +3,12 @@ package com.excilys.rgueirard.persistence;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import com.excilys.rgueirard.service.CompanyService;
-import com.excilys.rgueirard.service.ComputerService;
+import org.springframework.stereotype.Component;
+
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 
+@Component
 public class DataBaseManager {
 	static {
 		try {
@@ -23,42 +24,26 @@ public class DataBaseManager {
 	private final static String url = "jdbc:mysql://localhost:3306/MySQL_JDBC?zeroDateTimeBehavior=convertToNull";
 	private final static String user = "root";
 	private final static String password = "root";
-	private static DataBaseManager dataBaseManager = null;
-	private static ThreadLocal<Connection> connection = new ThreadLocal<Connection>();
+	
+	private static ThreadLocal<Connection> connection;
 	private static BoneCP connectionPool = null;
-	private static ComputerDAO computerDAO = null;
-	private static ComputerService computerService = null;
-	private static CompanyDAO companyDAO = null;
-	private static CompanyService companyService = null;
-	private static LogDAO logDAO = null;
 
-	private DataBaseManager() {
-
-	}
-
-	public static DataBaseManager getInstance() {
-		if (dataBaseManager == null) {
-			BoneCPConfig config = new BoneCPConfig();
-			config.setJdbcUrl(url);
-			config.setUsername(user);
-			config.setPassword(password);
-			config.setMinConnectionsPerPartition(5);
-			config.setMaxConnectionsPerPartition(10);
-			config.setPartitionCount(1);
-			try {
-				connectionPool = new BoneCP(config);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			dataBaseManager = new DataBaseManager();
-			computerDAO = ComputerDAO.getInstance();
-			computerService = ComputerService.getInstance();
-			companyDAO = CompanyDAO.getInstance();
-			companyService = CompanyService.getInstance();
-			logDAO = LogDAO.getInstance();
+	public DataBaseManager() {
+		BoneCPConfig config = new BoneCPConfig();
+		config.setJdbcUrl(url);
+		config.setUsername(user);
+		config.setPassword(password);
+		config.setMinConnectionsPerPartition(5);
+		config.setMaxConnectionsPerPartition(10);
+		config.setPartitionCount(1);
+		
+		try {
+			connectionPool = new BoneCP(config);
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-
-		return dataBaseManager;
+		
+		connection = new ThreadLocal<Connection>();
 	}
 
 	public Connection getConnection() throws SQLException{
@@ -66,32 +51,6 @@ public class DataBaseManager {
 			openConnection();
 		}
 		return connection.get();
-	}
-
-	public ComputerDAO getComputerDAO() {
-		return computerDAO;
-	}
-
-	public ComputerService getComputerService() {
-		return computerService;
-	}
-
-	public CompanyDAO getCompanyDAO() {
-		return companyDAO;
-	}
-
-	public CompanyService getCompanyService() {
-		return companyService;
-	}
-
-	public LogDAO getLogDAO() {
-		return logDAO;
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		connectionPool.shutdown();
-		super.finalize();
 	}
 
 	public void openConnection() throws SQLException {

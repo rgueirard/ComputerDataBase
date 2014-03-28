@@ -13,14 +13,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import com.excilys.rgueirard.domain.Company;
 import com.excilys.rgueirard.domain.Computer;
 import com.excilys.rgueirard.service.CompanyService;
 import com.excilys.rgueirard.wrapper.PageWrapper;
 
+@Repository
 public class ComputerDAO {
 
-	private static ComputerDAO computerDAO = null;
+	@Autowired
+	DataBaseManager dataBaseManager;	
+	
+	
 	private final String ORDER = "ORDER BY ? ";
 	private final String ASC = "ASC ";
 	private final String DESC = "DESC ";
@@ -28,15 +35,8 @@ public class ComputerDAO {
 	private final String WHERENAME = "WHERE name LIKE ? ";
 	private final String WHEREID = "WHERE id = ? ";
 
-	private ComputerDAO() {
+	public ComputerDAO() {
 		super();
-	}
-
-	public static ComputerDAO getInstance() {
-		if (computerDAO == null) {
-			computerDAO = new ComputerDAO();
-		}
-		return computerDAO;
 	}
 
 	public void closeObject(PreparedStatement ps, ResultSet rs)
@@ -51,7 +51,7 @@ public class ComputerDAO {
 	}
 
 	public long delete(String idString) throws SQLException {
-		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
+		
 		Connection connection = dataBaseManager.getConnection();
 		String query = "DELETE FROM computer WHERE id = ?";
 		long id = Long.parseLong(idString);
@@ -67,7 +67,6 @@ public class ComputerDAO {
 	}
 
 	public long update(Computer computer) throws SQLException, ParseException {
-		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		PreparedStatement ps = null;
 		String query = "UPDATE computer SET name=?, introduced=?, discontinued=?, company_id=? WHERE id=?";
@@ -102,7 +101,6 @@ public class ComputerDAO {
 	}
 
 	public long create(Computer computer) throws SQLException, ParseException {
-		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		String query = "INSERT INTO computer (id,name,introduced,discontinued,company_id) VALUES (0,?,?,?,?)";
 		PreparedStatement ps = null;
@@ -145,7 +143,6 @@ public class ComputerDAO {
 
 	public PageWrapper<Computer> retrieve(PageWrapper<Computer> wrapper,
 			CompanyService companyService) throws SQLException, ParseException {
-		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		PreparedStatement ps = null;
@@ -313,7 +310,6 @@ public class ComputerDAO {
 
 	public Computer retrieveById(long id, CompanyService companyService)
 			throws SQLException, ParseException {
-		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		Computer computer = null;
 		Date introduced = null;

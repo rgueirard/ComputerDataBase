@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
 import com.excilys.rgueirard.domain.Company;
 import com.excilys.rgueirard.domain.Computer;
 import com.excilys.rgueirard.dto.ComputerDTO;
@@ -34,15 +37,32 @@ public class EditComputerServlet extends HttpServlet {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+	@Autowired
+	private ComputerService computerService;
+	
+	@Autowired
+	private CompanyService companyService;
 
+	@Autowired
+	private WrapperMapper wrapperMapper;
+	
+	@Autowired
+	private ComputerMapper computerMapper;
+	
+	@Override
+	public void init() throws ServletException {
+		super.init();
+		SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, getServletContext());
+	}
+	
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		ComputerService computerService = ComputerService.getInstance();
-		CompanyService companyService = CompanyService.getInstance();
+		
 		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
 		PageWrapper<ComputerDTO> wrapperDTO = new PageWrapper<ComputerDTO>();
 		ComputerDTO computerDTO = null;
@@ -85,7 +105,7 @@ public class EditComputerServlet extends HttpServlet {
 
 		List<Company> companies = companyService.retrieveAll();
 
-		wrapperDTO = WrapperMapper.computerToDTO(wrapper);
+		wrapperDTO = wrapperMapper.computerToDTO(wrapper);
 
 		if (request.getAttribute("computer") != null) {
 			request.setAttribute("computer", request.getAttribute("computer"));
@@ -93,7 +113,7 @@ public class EditComputerServlet extends HttpServlet {
 		} else {
 			computer = computerService.retrieveById(Long.parseLong(request
 					.getParameter("id")));
-			computerDTO = ComputerMapper.computerToDTO(computer);
+			computerDTO = computerMapper.computerToDTO(computer);
 			request.setAttribute("computer", computerDTO);
 		}
 
@@ -110,8 +130,6 @@ public class EditComputerServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-
-		ComputerService computerService = ComputerService.getInstance();
 
 		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
 		Computer computer = null;
@@ -177,7 +195,7 @@ public class EditComputerServlet extends HttpServlet {
 			request.setAttribute("computer", computerDTO);
 			doGet(request, response);
 		} else {
-			computer = ComputerMapper.DTOToComputer(computerDTO);
+			computer = computerMapper.DTOToComputer(computerDTO);
 			computerService.update(computer);
 			this.getServletContext()
 					.getRequestDispatcher(

@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
 import com.excilys.rgueirard.domain.Company;
 import com.excilys.rgueirard.domain.Computer;
 import com.excilys.rgueirard.dto.ComputerDTO;
@@ -33,7 +36,22 @@ public class AddComputerServlet extends HttpServlet {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+	@Autowired
+    private ComputerService computerService;
+	
+	@Autowired
+	private CompanyService companyService;
+	
+	@Autowired
+	private ComputerMapper computerMapper;
 
+	@Override
+	public void init() throws ServletException {
+		super.init();
+		SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, getServletContext());
+	}
+	
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
@@ -80,7 +98,6 @@ public class AddComputerServlet extends HttpServlet {
 			request.setAttribute("computer", request.getAttribute("computer"));
 		}
 		
-		CompanyService companyService = CompanyService.getInstance();
 		List<Company> companies = companyService.retrieveAll();
 
 		request.setAttribute("companies", companies);
@@ -97,7 +114,6 @@ public class AddComputerServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		
-		ComputerService computerService = ComputerService.getInstance();
 		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
 		ErrorWrapper error = new ErrorWrapper();
 		ComputerDTO computerDTO = null;
@@ -156,7 +172,7 @@ public class AddComputerServlet extends HttpServlet {
 			request.setAttribute("computer", computerDTO);
 			doGet(request, response);
 		} else {
-			computer = ComputerMapper.DTOToComputer(computerDTO);
+			computer = computerMapper.DTOToComputer(computerDTO);
 			computerService.create(computer);
 			this.getServletContext()
 					.getRequestDispatcher(

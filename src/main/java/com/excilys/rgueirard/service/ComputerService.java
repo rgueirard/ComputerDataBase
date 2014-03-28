@@ -5,30 +5,35 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.excilys.rgueirard.domain.Computer;
 import com.excilys.rgueirard.persistence.ComputerDAO;
 import com.excilys.rgueirard.persistence.DataBaseManager;
 import com.excilys.rgueirard.persistence.LogDAO;
 import com.excilys.rgueirard.wrapper.PageWrapper;
 
+@Service
 public class ComputerService {
-	private static ComputerService computerService = null;	
 	
-	private ComputerService() {
+	@Autowired
+	private ComputerDAO computerDAO;
+	
+	@Autowired
+	private LogDAO logDAO;
+	
+	@Autowired
+	private CompanyService companyService;
+	
+	@Autowired
+	DataBaseManager dataBaseManager;
+	
+	public ComputerService() {
 		super();
 	}
-	
-	public static ComputerService getInstance(){
-		if( computerService == null){
-			computerService = new ComputerService();
-		}
-		return computerService;
-	}
-	
+		
 	public void create(Computer computer) {
-		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		ComputerDAO computerDAO = ComputerDAO.getInstance();
-		LogDAO logDAO = LogDAO.getInstance();
 		Connection connection = null;
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
@@ -53,9 +58,6 @@ public class ComputerService {
 	}
 
 	public void update(Computer computer) {
-		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		ComputerDAO computerDAO = ComputerDAO.getInstance();
-		LogDAO logDAO = LogDAO.getInstance();
 		Connection connection = null;
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
@@ -80,9 +82,6 @@ public class ComputerService {
 	}
 	
 	public void delete(String idString){
-		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		ComputerDAO computerDAO = ComputerDAO.getInstance();
-		LogDAO logDAO = LogDAO.getInstance();
 		Connection connection = null;
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
@@ -107,23 +106,19 @@ public class ComputerService {
 	}
 	
 	public PageWrapper<Computer> retrieve(PageWrapper<Computer> wrapper){
-		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		ComputerDAO computerDAO = dataBaseManager.getComputerDAO();
-		CompanyService companyService = dataBaseManager.getCompanyService();
 		try {
 			wrapper = computerDAO.retrieve(wrapper, companyService);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {
 			e.printStackTrace();
+		} finally{
+			try {dataBaseManager.closeConnection();}catch(SQLException e){e.printStackTrace();}
 		}
 		return wrapper;
 	}
 	
 	public Computer retrieveById(long id) {
-		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
-		ComputerDAO computerDAO = dataBaseManager.getComputerDAO();
-		CompanyService companyService = dataBaseManager.getCompanyService();
 		Computer computer = null;
 		try {
 			computer = computerDAO.retrieveById(id, companyService);
@@ -131,6 +126,8 @@ public class ComputerService {
 			e.printStackTrace();
 		} catch (ParseException e) {
 			e.printStackTrace();
+		} finally{
+			try {dataBaseManager.closeConnection();}catch(SQLException e){e.printStackTrace();}
 		}
 		return computer;		
 	}

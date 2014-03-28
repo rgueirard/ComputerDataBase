@@ -1,13 +1,20 @@
 package com.excilys.rgueirard.mapper;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.excilys.rgueirard.domain.Computer;
 import com.excilys.rgueirard.dto.ComputerDTO;
 import com.excilys.rgueirard.wrapper.PageWrapper;
 
+@Component
 public class WrapperMapper {
 	
+	@Autowired
+	private ComputerMapper computerMapper;
 	
-	public static PageWrapper<ComputerDTO> computerToDTO(PageWrapper<Computer> wrapper) {
+	
+	public PageWrapper<ComputerDTO> computerToDTO(PageWrapper<Computer> wrapper) {
 		PageWrapper<ComputerDTO> wrapperDTO = new PageWrapper<ComputerDTO>();
 		
 		if (wrapper.getCurrentPage() != 1) {
@@ -35,13 +42,13 @@ public class WrapperMapper {
 		wrapperDTO.setAscendant(wrapper.isAscendant());
 		
 		for(Computer computer : wrapper.getPages()){
-			wrapperDTO.getPages().add(ComputerMapper.computerToDTO(computer));
+			wrapperDTO.getPages().add(computerMapper.computerToDTO(computer));
 		}
 
 		return wrapperDTO;
 	}
 
-	public static PageWrapper<Computer> DTOToComputer(PageWrapper<ComputerDTO> wrapperDTO) {
+	public PageWrapper<Computer> DTOToComputer(PageWrapper<ComputerDTO> wrapperDTO) {
 		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
 		
 		if (wrapperDTO.getCurrentPage() != 1) {
@@ -69,7 +76,7 @@ public class WrapperMapper {
 		wrapper.setAscendant(wrapperDTO.isAscendant());
 		
 		for(ComputerDTO computerDTO : wrapperDTO.getPages()) {
-			wrapper.getPages().add(ComputerMapper.DTOToComputer(computerDTO));
+			wrapper.getPages().add(computerMapper.DTOToComputer(computerDTO));
 		}
 		
 		return wrapper;

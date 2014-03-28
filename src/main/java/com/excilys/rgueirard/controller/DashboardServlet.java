@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
 import com.excilys.rgueirard.domain.Computer;
 import com.excilys.rgueirard.dto.ComputerDTO;
 import com.excilys.rgueirard.mapper.WrapperMapper;
@@ -27,7 +30,20 @@ public class DashboardServlet extends HttpServlet {
 	public DashboardServlet() {
 		super();
 	}
+	
+	@Autowired
+	private ComputerService computerService;
+	
+	@Autowired
+	private WrapperMapper wrapperMapper;
 
+	
+	@Override
+	public void init() throws ServletException {
+		super.init();
+		SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, getServletContext());
+	}
+	
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
@@ -41,10 +57,11 @@ public class DashboardServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
+	
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		ComputerService computerService = ComputerService.getInstance();
+		
 		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
 		PageWrapper<ComputerDTO> wrapperDTO = new PageWrapper<ComputerDTO>();
 
@@ -87,11 +104,10 @@ public class DashboardServlet extends HttpServlet {
 		/* recuperation de la liste d'ordinateur */
 		wrapper = computerService.retrieve(wrapper);
 		
-		wrapperDTO = WrapperMapper.computerToDTO(wrapper);
+		wrapperDTO = wrapperMapper.computerToDTO(wrapper);
 		
 		request.setAttribute("wrapper", wrapperDTO);
 		this.getServletContext().getRequestDispatcher("/WEB-INF/dashboard.jsp")
 				.forward(request, response);
 	}
-
 } 

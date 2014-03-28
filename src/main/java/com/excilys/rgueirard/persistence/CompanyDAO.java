@@ -7,23 +7,21 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import com.excilys.rgueirard.domain.Company;
 
+@Repository
 public class CompanyDAO {
-
-	private static CompanyDAO companyDAO = null;
 	
 	public CompanyDAO() {
 		super();
 	}
 	
-	public static CompanyDAO getInstance(){
-		if( companyDAO == null){
-			companyDAO = new CompanyDAO();
-		}
-		return companyDAO;
-	}
-
+	@Autowired
+	DataBaseManager dataBaseManager;	
+	
 	public static void closeObject(PreparedStatement ps, ResultSet rs) {
 		try {
 			if(ps != null){
@@ -38,7 +36,6 @@ public class CompanyDAO {
 	}
 	
 	public Company retrieve(long id) throws SQLException{
-		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -57,7 +54,6 @@ public class CompanyDAO {
 	}
 
 	public List<Company> retrieveAll() throws SQLException {
-		DataBaseManager dataBaseManager = DataBaseManager.getInstance();
 		Connection connection = dataBaseManager.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
