@@ -50,11 +50,10 @@ public class ComputerDAO {
 		}
 	}
 
-	public long delete(String idString) throws SQLException {
+	public long delete(long id) throws SQLException {
 		
 		Connection connection = dataBaseManager.getConnection();
 		String query = "DELETE FROM computer WHERE id = ?";
-		long id = Long.parseLong(idString);
 		PreparedStatement ps = null;
 
 		ps = connection.prepareStatement(query);
@@ -256,54 +255,54 @@ public class ComputerDAO {
 			if ((rs.getString(1) != null) && (rs.getString(1) != "")) {
 				wrapper.setSize(Integer.parseInt(rs.getString(1)));
 			}
-
-			/* recuperation des computers */
-			ps = connection.prepareStatement(query.toString());
-
-			ps.setString(1, "%" + wrapper.getSearchMotif() + "%");
-
-			/* recuperation de nbPages */
-			wrapper.setNbPages((int) Math.ceil(wrapper.getSize() * 1.0
-					/ wrapper.getNbDisplay()));
-
-			ps.setInt(2, wrapper.getOrderBy());
-
-			if (wrapper.getCurrentPage() > wrapper.getNbPages()) {
-				wrapper.setCurrentPage(wrapper.getNbPages() - 1);
+			if(wrapper.getSize()!=0){
+				/* recuperation des computers */
+				ps = connection.prepareStatement(query.toString());
+	
+				ps.setString(1, "%" + wrapper.getSearchMotif() + "%");
+	
+				/* recuperation de nbPages */
+				wrapper.setNbPages((int) Math.ceil(wrapper.getSize() * 1.0
+						/ wrapper.getNbDisplay()));
+	
+				ps.setInt(2, wrapper.getOrderBy());
+	
+				if (wrapper.getCurrentPage() > wrapper.getNbPages()) {
+					wrapper.setCurrentPage(wrapper.getNbPages() - 1);
+				}
+				ps.setInt(3,
+						(wrapper.getCurrentPage() - 1) * wrapper.getNbDisplay());
+				ps.setInt(4, wrapper.getNbDisplay());
+	
+				rs = ps.executeQuery();
+	
+				while (rs.next()) {
+	
+					if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
+						introduced = formatter.parse(rs.getString(3));
+					} else {
+						introduced = null;
+					}
+					if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
+						discontinued = formatter.parse(rs.getString(4));
+					} else {
+						discontinued = null;
+					}
+					if (rs.getString(5) != null) {
+						company = companyService.retrieve(Long.parseLong(rs
+								.getString(5)));
+					} else {
+						company = null;
+					}
+					computer = Computer.builder()
+							.id(Long.parseLong(rs.getString(1)))
+							.name(rs.getString(2)).introduced(introduced)
+							.discontinued(discontinued).company(company).build();
+					computers.add(computer);
+				}
+				wrapper.setPages(computers);
 			}
-			ps.setInt(3,
-					(wrapper.getCurrentPage() - 1) * wrapper.getNbDisplay());
-			ps.setInt(4, wrapper.getNbDisplay());
-
-			rs = ps.executeQuery();
-
-			while (rs.next()) {
-
-				if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
-					introduced = formatter.parse(rs.getString(3));
-				} else {
-					introduced = null;
-				}
-				if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
-					discontinued = formatter.parse(rs.getString(4));
-				} else {
-					discontinued = null;
-				}
-				if (rs.getString(5) != null) {
-					company = companyService.retrieve(Long.parseLong(rs
-							.getString(5)));
-				} else {
-					company = null;
-				}
-				computer = Computer.builder()
-						.id(Long.parseLong(rs.getString(1)))
-						.name(rs.getString(2)).introduced(introduced)
-						.discontinued(discontinued).company(company).build();
-				computers.add(computer);
-			}
-			wrapper.setPages(computers);
 		}
-
 		this.closeObject(ps, rs);
 		return wrapper;
 	}

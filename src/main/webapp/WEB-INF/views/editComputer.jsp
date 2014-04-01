@@ -13,7 +13,7 @@
 
 	<h1>Edit Computer</h1>
 
-	<form id="editComputer" action="editcomputer" method="POST">
+	<form id="editComputer" action="/computer-database/computer/submit" method="GET">
 		<fieldset>
 			<input type="hidden" name="id"
 				value="<c:out value="${ computer.id }"/>" />
@@ -101,9 +101,10 @@
 			<input type="hidden" name="orderBy" value="${wrapper.orderBy}" /> <input
 				type="hidden" name="searchType" value="${wrapper.searchType}" /> <input
 				type="hidden" name="searchMotif" value="${wrapper.searchMotif}" />
+			<input type="hidden" name="edit" value="true"/>
 			<input type="submit" id="validInput" value="Edit" class="btn primary">
 			or <a
-				href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"
+				href="/computer-database/computer/show?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"
 				class="btn">Cancel</a>
 		</div>
 	</form>

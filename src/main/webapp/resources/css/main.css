@@ -71,3 +71,28 @@ table.computers .header a {
 .col5 {
 	width: 30%;
 }
+
+
+#nameInput { margin-left: .5em; float: left; }
+#nameInput, label { float: left; font-family: Arial, Helvetica, sans-serif; font-size: small; }
+#introducedInput { margin-left: .5em; float: left; }
+#introducedInput, label { float: left; font-family: Arial, Helvetica, sans-serif; font-size: small; }
+#discontinuedInput { margin-left: .5em; float: left; }
+#discontinuedInput, label { float: left; font-family: Arial, Helvetica, sans-serif; font-size: small; }
+
+#nameSpan { margin-left: .5em; float: left; }
+#introducedSpan { margin-left: .5em; float: left; }
+#discontinuedSpan { margin-left: .5em; float: left; }
+
+input.error { border: 1px solid red; }
+label.error {
+	background: url('/img/unchecked.gif') no-repeat;
+	padding-left: 16px;
+	margin-left: .3em;
+}
+label.valid {
+	background: url('/img/checked.gif') no-repeat;
+	display: block;
+	width: 16px;
+	height: 16px;
+}

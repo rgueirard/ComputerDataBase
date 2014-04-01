@@ -10,7 +10,8 @@
 
     <!-- Packages to scan to instanciate beans in spring context -->
     
-    <context:annotation-config />
+	<import resource="dispatcher-servlet.xml"/>   
+	<context:component-scan base-package="com.excilys.rgueirard.validator"/>
     <context:component-scan base-package="com.excilys.rgueirard.mapper"/>
     <context:component-scan base-package="com.excilys.rgueirard.persistence"/>
     <context:component-scan base-package="com.excilys.rgueirard.service"/>

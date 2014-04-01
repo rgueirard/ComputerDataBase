@@ -1,11 +1,14 @@
 package com.excilys.rgueirard.validator;
 
+import org.springframework.stereotype.Component;
+
 import com.excilys.rgueirard.dto.ComputerDTO;
 import com.excilys.rgueirard.wrapper.ErrorWrapper;
 
+@Component
 public class ComputerValidator {
 
-	public static ErrorWrapper validate(ComputerDTO computerDTO) {
+	public ErrorWrapper validate(ComputerDTO computerDTO) {
 		ErrorWrapper error = new ErrorWrapper();
 		Boolean dateError = false;
 		String regexpName = ".*[<|>|\"]+.*";
@@ -47,7 +50,7 @@ public class ComputerValidator {
 		return error;
 	}
 
-	public static boolean validDate(String date) {
+	public boolean validDate(String date) {
 		boolean error = true;
 		String regexpDate = "[0-9]{4}[-](0?[1-9]|1[012])[-](0?[1-9]|[12][0-9]|3[01])";
 		if (date.matches(regexpDate)) {
@@ -91,7 +94,7 @@ public class ComputerValidator {
 		return error;
 	}
 
-	private static boolean discontinuedLTIntroduced(String introduced,
+	private boolean discontinuedLTIntroduced(String introduced,
 			String discontinued) {
 
 		boolean error = false;

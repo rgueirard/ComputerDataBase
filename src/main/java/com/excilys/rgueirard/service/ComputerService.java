@@ -81,7 +81,7 @@ public class ComputerService {
 		}
 	}
 	
-	public void delete(String idString){
+	public void delete(long pId){
 		Connection connection = null;
 		Date dateUtil = new Date();
 		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
@@ -90,7 +90,7 @@ public class ComputerService {
 		try {
 			connection = dataBaseManager.getConnection();
 			connection.setAutoCommit(false);
-			id = computerDAO.delete(idString);
+			id = computerDAO.delete(pId);
 			logDAO.create(id, dateSql.toString(), "delete");
 			connection.commit();
 			connection.setAutoCommit(true);

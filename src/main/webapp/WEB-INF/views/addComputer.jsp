@@ -14,8 +14,7 @@
 	<h1>Add Computer</h1>
 
 
-	<form id="addComputer" action="addcomputer"
-		onsubmit="return validateForm()" method="POST">
+	<form id="addComputer" action="/computer-database/computer/submit" onsubmit="return validateForm()" method="GET">
 		<fieldset>
 			<div class="clearfix">
 				<label for="name">Computer name:</label>
@@ -25,11 +24,11 @@
 					<c:if
 						test='${(error.computerName != null)&&(error.computerName != "")}'>
 						<img
-							src="/ComputerDBMaven/src/main/resources/images/unchecked.gif"
+							src="../img/unchecked.gif"
 							border=0 width=14 height=14>
 						<c:out value="${error.computerName}" />
 						<span id="dName" style="display: none"> <img
-							src="/ComputerDBMaven/src/main/resources/images/unchecked.gif"
+							src="../img/unchecked.gif"
 							border=0 width=14 height=14> <c:out
 								value="Please enter a computer name. ou PAS" />
 						</span>
@@ -37,11 +36,11 @@
 					<c:if
 						test='${(error.invalidChar != null)&&(error.invalidChar != "")}'>
 						<img
-							src="/ComputerDBMaven/src/main/resources/images/unchecked.gif"
+							src="../img/unchecked.gif"
 							border=0 width=14 height=14>
 						<c:out value="${error.invalidChar}" />
 						<span id="dInv" style="display: none"> <img
-							src="/ComputerDBMaven/src/main/resources/images/unchecked.gif"
+							src="../img/unchecked.gif"
 							border=0 width=14 height=14> <c:out
 								value="Invalid character \'&lt\', \'&gt\' or \'\"\' !" />
 						</span>
@@ -58,11 +57,11 @@
 					<c:if
 						test='${(error.validIntroducedDate != null)&&(error.validIntroducedDate != "")}'>
 						<img
-							src="/ComputerDBMaven/src/main/resources/images/unchecked.gif"
+							src="../img/unchecked.gif"
 							border=0 width=14 height=14>
 						<c:out value="${error.validIntroducedDate}" />
 						<span id="dIntroduced" style="display: none"> <img
-							src="/ComputerDBMaven/src/main/resources/images/unchecked.gif"
+							src="../img/unchecked.gif"
 							border=0 width=14 height=14> <c:out
 								value="Please enter a valid introduced date." />
 						</span>
@@ -78,11 +77,11 @@
 					<c:if
 						test='${(error.validDiscontinuedDate != null)&&(error.validDiscontinuedDate != "")}'>
 						<img
-							src="/ComputerDBMaven/src/main/resources/images/unchecked.gif"
+							src="../img/unchecked.gif"
 							border=0 width=14 height=14>
 						<c:out value="${error.validDiscontinuedDate}" />
 						<span id="dDiscontinued" style="display: none"> <img
-							src="/ComputerDBMaven/src/main/resources/images/unchecked.gif"
+							src="../img/unchecked.gif"
 							border=0 width=14 height=14> <c:out
 								value="Please enter a valid discontinued date." />
 						</span>
@@ -90,11 +89,11 @@
 					<c:if
 						test='${(error.lesserThan != null)&&(error.lesserThan != "")}'>
 						<img
-							src="/ComputerDBMaven/src/main/resources/images/unchecked.gif"
+							src="../img/unchecked.gif"
 							border=0 width=14 height=14>
 						<c:out value="${error.lesserThan}" />
 						<span id="dLesserThan" style="display: none"> <img
-							src="/ComputerDBMaven/src/main/resources/images/unchecked.gif"
+							src="../img/unchecked.gif"
 							border=0 width=14 height=14> <c:out
 								value="Discontinued date is earlier than introduced date !" />
 						</span>
@@ -132,9 +131,10 @@
 			<input type="hidden" name="orderBy" value="${wrapper.orderBy}" /> <input
 				type="hidden" name="searchType" value="${wrapper.searchType}" /> <input
 				type="hidden" name="searchMotif" value="${wrapper.searchMotif}" />
+			<input type="hidden" name="edit" value="false"/>
 			<input type="submit" id="validInput" value="Add" class="btn primary">
 			or <a
-				href="dashboard?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"
+				href="/computer-database/computer/show?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"
 				class="btn">Cancel</a>
 		</div>
 	</form>
