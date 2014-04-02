@@ -2,11 +2,17 @@ package com.excilys.rgueirard.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,7 +25,6 @@ import com.excilys.rgueirard.mapper.WrapperMapper;
 import com.excilys.rgueirard.service.CompanyService;
 import com.excilys.rgueirard.service.ComputerService;
 import com.excilys.rgueirard.validator.ComputerValidator;
-import com.excilys.rgueirard.wrapper.ErrorWrapper;
 import com.excilys.rgueirard.wrapper.PageWrapper;
 
 @Controller
@@ -33,10 +38,6 @@ public class ComputerController {
 	private static final String PARAM_SEARCH_MOTIF = "searchMotif";
 	private static final String PARAM_ID = "id";
 	private static final String PARAM_EDIT = "edit";
-	private static final String PARAM_NAME = "name";
-	private static final String PARAM_INTRODUCED = "introducedDate";
-	private static final String PARAM_DISCONTINUED = "discontinuedDate";
-	private static final String PARAM_COMPANY_ID = "company";
 
 	private static Logger logger = LoggerFactory
 			.getLogger(ComputerController.class);
@@ -112,7 +113,7 @@ public class ComputerController {
 
 		model.addAttribute("companies", companies);
 		model.addAttribute("wrapper", wrapperDTO);
-
+		model.addAttribute("cptDTO", new ComputerDTO());
 		if (model.get("computer") != null) {
 			model.addAttribute("computer", model.get("computer"));
 		} else {
@@ -120,8 +121,7 @@ public class ComputerController {
 				computer = computerService.retrieveById(id);
 				computerDTO = computerMapper.computerToDTO(computer);
 				model.addAttribute("computer", computerDTO);
-
-				return "editComputer";
+				model.addAttribute("edit", edit);
 			}
 
 		}
@@ -139,46 +139,26 @@ public class ComputerController {
 			@RequestParam(value = PARAM_SEARCH_MOTIF, required = false) String searchMotif,
 			@RequestParam(value = PARAM_ID, required = false, defaultValue = "0") long id,
 			@RequestParam(value = PARAM_EDIT, required = false) boolean edit,
-			@RequestParam(value = PARAM_NAME, required = false) String name,
-			@RequestParam(value = PARAM_INTRODUCED, required = false) String introduced,
-			@RequestParam(value = PARAM_DISCONTINUED, required = false) String discontinued,
-			@RequestParam(value = PARAM_COMPANY_ID, required = false, defaultValue = "0") long company) {
+			@ModelAttribute("cptDTO") @Valid ComputerDTO cptDTO,
+			BindingResult result) {
 
+		PageWrapper<ComputerDTO> wrapperDTO = new PageWrapper<ComputerDTO>();
+		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
 		StringBuilder sb = new StringBuilder("redirect:/computer/");
-		ErrorWrapper error = new ErrorWrapper();
-		ComputerDTO computerDTO = new ComputerDTO();
 		Computer computer = null;
 
-		computerDTO.setName(name);
-		computerDTO.setIntroduced(introduced);
-		computerDTO.setDiscontinued(discontinued);
-		if (id != 0) {
-			computerDTO.setId(id);
-		}
-		if (company != 0) {
-			computerDTO.setCompanyId(company);
-		}
-
-		error = computerValidator.validate(computerDTO);
-		if (error.isState()) {
-			model.addAttribute("computer", computerDTO);
-			model.addAttribute("error", error);
+		if (result.hasErrors()) {
+			model.addAttribute("computer", cptDTO);
 			
-			sb.append("add?page=");
-			sb.append(page);
-			sb.append("&nbDisplay=");
-			sb.append(nbDisplay);
-			sb.append("&orderBy=");
-			sb.append(orderBy);
-			sb.append("&searchType=");
-			sb.append(searchType);
-			sb.append("&searchMotif=");
-			sb.append(searchMotif);
-			sb.append("&edit=");
-			sb.append(edit);
+			wrapper = getAttr(page, nbDisplay, orderBy, ascendant, searchType, searchMotif);
+			wrapperDTO = wrapperMapper.computerToDTO(wrapper);
+			
+			model.addAttribute("wrapper", wrapperDTO);
+			model.addAttribute("edit", edit);
+			return "addComputer";
 
 		} else {
-			computer = computerMapper.DTOToComputer(computerDTO);
+			computer = computerMapper.DTOToComputer(cptDTO);
 			if (edit) {
 				computerService.update(computer);
 			} else {
@@ -191,16 +171,18 @@ public class ComputerController {
 			sb.append(nbDisplay);
 			sb.append("&orderBy=");
 			sb.append(orderBy);
+			sb.append("&ascendant=");
+			sb.append(ascendant);
 			sb.append("&searchType=");
 			sb.append(searchType);
 			sb.append("&searchMotif=");
 			sb.append(searchMotif);
 			sb.append("&edit=");
 			sb.append(edit);
-			
+
+			return sb.toString();
 		}
-		
-		return sb.toString();
+
 	}
 
 	@RequestMapping(value = "/computer/del", method = RequestMethod.GET)
@@ -225,11 +207,13 @@ public class ComputerController {
 		sb.append(nbDisplay);
 		sb.append("&orderBy=");
 		sb.append(orderBy);
+		sb.append("&ascendant=");
+		sb.append(ascendant);
 		sb.append("&searchType=");
 		sb.append(searchType);
 		sb.append("&searchMotif=");
 		sb.append(searchMotif);
-				
+
 		return sb.toString();
 	}
 
@@ -242,7 +226,6 @@ public class ComputerController {
 			@RequestParam(value = PARAM_ASCENDANT, required = false, defaultValue = "true") boolean ascendant,
 			@RequestParam(value = PARAM_SEARCH_TYPE, required = false, defaultValue = "0") int searchType,
 			@RequestParam(value = PARAM_SEARCH_MOTIF, required = false) String searchMotif) {
-
 		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
 		PageWrapper<ComputerDTO> wrapperDTO = new PageWrapper<ComputerDTO>();
 
@@ -259,4 +242,8 @@ public class ComputerController {
 		return "dashboard";
 	}
 
+	@InitBinder("cptDTO")
+	protected void initBinder(WebDataBinder binder) {
+		binder.addValidators(computerValidator);
+	}
 }

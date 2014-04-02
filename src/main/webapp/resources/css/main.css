@@ -96,3 +96,9 @@ label.valid {
 	width: 16px;
 	height: 16px;
 }
+
+.errorMessage {
+	background: url('/img/checked.gif') no-repeat;
+	display: block;
+	color: red	
+}

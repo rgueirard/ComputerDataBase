@@ -1,54 +1,13 @@
 package com.excilys.rgueirard.validator;
 
 import org.springframework.stereotype.Component;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 
 import com.excilys.rgueirard.dto.ComputerDTO;
-import com.excilys.rgueirard.wrapper.ErrorWrapper;
 
 @Component
-public class ComputerValidator {
-
-	public ErrorWrapper validate(ComputerDTO computerDTO) {
-		ErrorWrapper error = new ErrorWrapper();
-		Boolean dateError = false;
-		String regexpName = ".*[<|>|\"]+.*";
-					
-		if ((computerDTO.getIntroduced().length() > 0)
-				&& (validDate(computerDTO.getIntroduced()))) {
-			error.setValidIntroducedDate("Please enter a valid introduced date.\n");
-			error.setState(true);
-			dateError = true;
-		}
-
-		if ((computerDTO.getDiscontinued().length() > 0)
-				&& (validDate(computerDTO.getDiscontinued()))) {
-			error.setValidDiscontinuedDate("Please enter a valid discontinued date.\n");
-			error.setState(true);
-			dateError = true;
-		}
-
-		if ((dateError == false)
-				&& (!validDate(computerDTO.getIntroduced()))
-				&& (!validDate(computerDTO.getDiscontinued()))) {
-			if (discontinuedLTIntroduced(computerDTO.getIntroduced(),
-					computerDTO.getDiscontinued())) {
-				error.setLesserThan("Discontinued date is earlier than introduced date !\n");
-				error.setState(true);
-			}
-		}
-
-		if (computerDTO.getName().trim().length() == 0) {
-			error.setComputerName("Please enter a computer name.\n");
-			error.setState(true);
-
-		} else {
-			if (computerDTO.getName().matches(regexpName)) {
-				error.setInvalidChar("Invalid character \'<\', \'>\' or \'\"\' !\n");
-				error.setState(true);
-			}
-		}
-		return error;
-	}
+public class ComputerValidator implements Validator{
 
 	public boolean validDate(String date) {
 		boolean error = true;
@@ -119,5 +78,52 @@ public class ComputerValidator {
 		}
 
 		return error;
+	}
+
+	@Override
+	public boolean supports(Class<?> arg0) {
+		return ComputerDTO.class.equals(arg0);
+	}
+
+	@Override
+	public void validate(Object arg0, Errors arg1) {
+		Boolean dateError = false;
+		ComputerDTO computerDTO = (ComputerDTO) arg0;
+		String regexpName = ".*[<|>|\"]+.*";
+					
+		if ((computerDTO.getIntroduced().length() > 0)
+				&& (validDate(computerDTO.getIntroduced()))) {
+			arg1.rejectValue("introduced", "cptDTO.int","Please enter a valid introduced date.\n");
+			
+			dateError = true;
+		}
+
+		if ((computerDTO.getDiscontinued().length() > 0)
+				&& (validDate(computerDTO.getDiscontinued()))) {
+			arg1.rejectValue("discontinued", "cptDTO.disc", "Please enter a valid discontinued date.\n");
+			
+			dateError = true;
+		}
+
+		if ((dateError == false)
+				&& (!validDate(computerDTO.getIntroduced()))
+				&& (!validDate(computerDTO.getDiscontinued()))) {
+			if (discontinuedLTIntroduced(computerDTO.getIntroduced(),
+					computerDTO.getDiscontinued())) {
+				arg1.rejectValue("discontinued", "cptDTO.lt", "Discontinued date is earlier than introduced date !\n");
+				
+			}
+		}
+
+		if (computerDTO.getName().trim().length() == 0) {
+			arg1.rejectValue("name", "cptDTO.name", "Please enter a computer name.\n");
+			
+
+		} else {
+			if (computerDTO.getName().matches(regexpName)) {
+				arg1.rejectValue("name", "cptDTO.inv", "Invalid character \'<\', \'>\' or \'\"\' !\n");
+				
+			}
+		}
 	}
 }
