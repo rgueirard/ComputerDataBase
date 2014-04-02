@@ -113,17 +113,18 @@ public class ComputerController {
 
 		model.addAttribute("companies", companies);
 		model.addAttribute("wrapper", wrapperDTO);
-		model.addAttribute("cptDTO", new ComputerDTO());
-		if (model.get("computer") != null) {
-			model.addAttribute("computer", model.get("computer"));
+		
+		if (model.get("cptDTO") != null) {
+			model.addAttribute("cptDTO", model.get("cptDTO"));
 		} else {
 			if (edit) {
 				computer = computerService.retrieveById(id);
 				computerDTO = computerMapper.computerToDTO(computer);
-				model.addAttribute("computer", computerDTO);
+				model.addAttribute("cptDTO", computerDTO);
 				model.addAttribute("edit", edit);
+			} else {
+				model.addAttribute("cptDTO", new ComputerDTO());
 			}
-
 		}
 		return "addComputer";
 	}
@@ -148,7 +149,11 @@ public class ComputerController {
 		Computer computer = null;
 
 		if (result.hasErrors()) {
-			model.addAttribute("computer", cptDTO);
+			
+			List<Company> companies = companyService.retrieveAll();
+
+			model.addAttribute("companies", companies);
+			model.addAttribute("cptDTO", cptDTO);
 			
 			wrapper = getAttr(page, nbDisplay, orderBy, ascendant, searchType, searchMotif);
 			wrapperDTO = wrapperMapper.computerToDTO(wrapper);

@@ -102,3 +102,8 @@ label.valid {
 	display: block;
 	color: red	
 }
+
+.language { 
+	float: right;
+	right: 5px;
+}

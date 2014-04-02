@@ -7,7 +7,7 @@ import org.springframework.validation.Validator;
 import com.excilys.rgueirard.dto.ComputerDTO;
 
 @Component
-public class ComputerValidator implements Validator{
+public class ComputerValidator implements Validator {
 
 	public boolean validDate(String date) {
 		boolean error = true;
@@ -87,42 +87,43 @@ public class ComputerValidator implements Validator{
 
 	@Override
 	public void validate(Object arg0, Errors arg1) {
-		Boolean dateError = false;
 		ComputerDTO computerDTO = (ComputerDTO) arg0;
 		String regexpName = ".*[<|>|\"]+.*";
-					
-		if ((computerDTO.getIntroduced().length() > 0)
+
+		if ((computerDTO.getIntroduced() != null)
+				&& (computerDTO.getIntroduced() != "")
 				&& (validDate(computerDTO.getIntroduced()))) {
-			arg1.rejectValue("introduced", "cptDTO.int","Please enter a valid introduced date.\n");
-			
-			dateError = true;
+			arg1.rejectValue("introduced", "cptDTO.err.int",
+					"Please enter a valid introduced date.\n");
 		}
 
-		if ((computerDTO.getDiscontinued().length() > 0)
+		if ((computerDTO.getDiscontinued() != null)
+				&& (computerDTO.getDiscontinued() != "")
 				&& (validDate(computerDTO.getDiscontinued()))) {
-			arg1.rejectValue("discontinued", "cptDTO.disc", "Please enter a valid discontinued date.\n");
-			
-			dateError = true;
+			arg1.rejectValue("discontinued", "cptDTO.err.disc",
+					"Please enter a valid discontinued date.\n");
 		}
 
-		if ((dateError == false)
-				&& (!validDate(computerDTO.getIntroduced()))
-				&& (!validDate(computerDTO.getDiscontinued()))) {
+		if (( computerDTO.getIntroduced() != null)
+				&& (computerDTO.getDiscontinued() != null)
+				&& (!validDate(computerDTO.getDiscontinued()))
+				&& (!validDate(computerDTO.getIntroduced())) ) {
 			if (discontinuedLTIntroduced(computerDTO.getIntroduced(),
 					computerDTO.getDiscontinued())) {
-				arg1.rejectValue("discontinued", "cptDTO.lt", "Discontinued date is earlier than introduced date !\n");
-				
+				arg1.rejectValue("discontinued", "cptDTO.err.lt",
+						"Discontinued date is earlier than introduced date !\n");
 			}
 		}
 
-		if (computerDTO.getName().trim().length() == 0) {
-			arg1.rejectValue("name", "cptDTO.name", "Please enter a computer name.\n");
-			
+		if ((computerDTO.getName() == null) || (computerDTO.getName().trim().length() == 0)) {
+			arg1.rejectValue("name", "cptDTO.err.name",
+					"Please enter a computer name.\n");
 
 		} else {
-			if (computerDTO.getName().matches(regexpName)) {
-				arg1.rejectValue("name", "cptDTO.inv", "Invalid character \'<\', \'>\' or \'\"\' !\n");
-				
+			if ((computerDTO.getName() != null) && (computerDTO.getName().matches(regexpName))) {
+				arg1.rejectValue("name", "cptDTO.err.inv",
+						"Invalid character \'<\', \'>\' or \'\"\' !\n");
+
 			}
 		}
 	}

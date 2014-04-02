@@ -14,10 +14,10 @@
 	<h1>
 		<c:choose>
 			<c:when test="${edit=='true'}">
-				<c:out value="Edit Computer"/>
+				<spring:message code="addCpt.title.edit" text="com.err.text" />
 			</c:when>
 			<c:otherwise>
-				<c:out value="Add Computer"/>
+				<spring:message code="com.title.add" text="com.err.text" />
 			</c:otherwise>		
 		</c:choose>
 	</h1>
@@ -25,49 +25,38 @@
 
 	<form:form id="addComputer" action="/computer-database/computer/submit" onsubmit="return validateForm()" method="GET" modelAttribute="cptDTO">
 		<fieldset>
+			<form:input type="hidden" path="id" />
+		
 			<div class="clearfix">
-				<label for="name">Computer name:</label>
+				<label for="name"><spring:message code="addCpt.lab.name" text="com.err.text" /></label>
 				<div class="input">
-					<form:input id="nameInput" type="text" path="name" value="${ computer.name }"/>
-					<span id="nameSpan" class="help-inline">Required</span>
+					<form:input id="nameInput" type="text" path="name"/>
+					<span id="nameSpan" class="help-inline"><spring:message code="addCpt.lab.req" text="com.err.text" /></span>
 					<form:errors path="name" cssClass="errorMessage"/>
 				</div>
 			</div>
 			<div class="clearfix">
-				<label for="introduced">Introduced date:</label>
+				<label for="introduced"><spring:message code="addCpt.lab.int" text="com.err.text" /></label>
 				<div class="input">
-					<form:input id="introducedInput" type="date" path="introduced" value="${computer.introduced}"/>
+					<form:input id="introducedInput" type="date" path="introduced"/>
 					<span id="introducedSpan" class="help-inline">YYYY-MM-DD</span>
 					<form:errors path="introduced" cssClass="errorMessage"/>
 				</div>
 			</div>
 			<div class="clearfix">
-				<label for="discontinued">Discontinued date:</label>
+				<label for="discontinued"><spring:message code="addCpt.lab.disc" text="com.err.text" /></label>
 				<div class="input">
-					<form:input id="discontinuedInput" path="discontinued" value="${computer.discontinued}"/>
+					<form:input id="discontinuedInput" path="discontinued"/>
 					<span id="discontinuedSpan" class="help-inline">YYYY-MM-DD</span>
 					<form:errors path="discontinued" cssClass="errorMessage"/>
 				</div>
 			</div>
 			<div class="clearfix">
-				<label for="company">Company Name:</label>
+				<label for="company"><spring:message code="addCpt.lab.cpny" text="com.err.text" /></label>
 				<div class="input">
 					<form:select path="companyId">
 						<form:option value="0">--</form:option>
-						<c:forEach items="${ companies }" var="company">
-							<c:choose>
-								<c:when test="${ company.id == computer.companyId }">
-									<form:option value="${ company.id }" selected="selected">
-										<c:out value="${ company.name }" />
-									</form:option>
-								</c:when>
-								<c:otherwise>
-									<form:option value="${ company.id }">
-										<c:out value="${ company.name }" />
-									</form:option>
-								</c:otherwise>
-							</c:choose>
-						</c:forEach>
+						<form:options items="${companies}" itemValue="id" itemLabel="name"/>
 					</form:select>
 				</div>
 			</div>
@@ -83,17 +72,17 @@
 			<c:choose>
 				<c:when test="${edit=='true'}">
 					<input type="hidden" name="edit" value="true"/>
-					<input type="submit" id="validInput" value="Edit" class="btn primary">
+					<input type="submit" id="validInput" value="<spring:message code="addCpt.button.edit" text="com.err.text" />" class="btn primary">
 				</c:when>
 				<c:otherwise>
 					<input type="hidden" name="edit" value="false"/>
-					<input type="submit" id="validInput" value="Add" class="btn primary">
+					<input type="submit" id="validInput" value="<spring:message code="addCpt.button.add" text="com.err.text" />" class="btn primary">
 				</c:otherwise>		
 			</c:choose>
 				
-			or <a
-				href="/computer-database/computer/show?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=${wrapper.ascendant}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"
-				class="btn">Cancel</a>
+			<spring:message code="addCpt.lab.or" text="com.err.text" />
+			<a href="/computer-database/computer/show?page=${wrapper.currentPage}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=${wrapper.ascendant}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"
+				class="btn"><spring:message code="addCpt.button.cancel" text="com.err.text" /></a>
 		</div>
 	</form:form>
 
