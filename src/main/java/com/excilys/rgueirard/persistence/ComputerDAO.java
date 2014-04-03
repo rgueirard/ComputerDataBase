@@ -6,13 +6,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -26,7 +26,6 @@ public class ComputerDAO {
 
 	@Autowired
 	DataBaseManager dataBaseManager;	
-	
 	
 	private final String ORDER = "ORDER BY ? ";
 	private final String ASC = "ASC ";
@@ -73,12 +72,10 @@ public class ComputerDAO {
 		java.sql.Date discontinuedSql = null;
 
 		if (computer.getIntroduced() != null) {
-			introducedSql = new java.sql.Date(computer.getIntroduced()
-					.getTime());
+			introducedSql = new java.sql.Date(computer.getIntroduced().getMillis());
 		}
 		if (computer.getDiscontinued() != null) {
-			discontinuedSql = new java.sql.Date(computer.getDiscontinued()
-					.getTime());
+			discontinuedSql = new java.sql.Date(computer.getDiscontinued().getMillis());
 		}
 
 		ps = connection.prepareStatement(query);
@@ -110,12 +107,10 @@ public class ComputerDAO {
 		ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 
 		if (computer.getIntroduced() != null) {
-			introducedSql = new java.sql.Date(computer.getIntroduced()
-					.getTime());
+			introducedSql = new java.sql.Date(computer.getIntroduced().getMillis());
 		}
 		if (computer.getDiscontinued() != null) {
-			discontinuedSql = new java.sql.Date(computer.getDiscontinued()
-					.getTime());
+			discontinuedSql = new java.sql.Date(computer.getDiscontinued().getMillis());
 		}
 
 		ps.setString(1, computer.getName());
@@ -143,7 +138,6 @@ public class ComputerDAO {
 	public PageWrapper<Computer> retrieve(PageWrapper<Computer> wrapper,
 			CompanyService companyService) throws SQLException, ParseException {
 		Connection connection = dataBaseManager.getConnection();
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		StringBuilder query = new StringBuilder(
@@ -152,8 +146,8 @@ public class ComputerDAO {
 				"SELECT count(*) FROM computer ");
 		List<Computer> computers = new ArrayList<Computer>();
 		Computer computer = null;
-		Date introduced = null;
-		Date discontinued = null;
+		DateTime introduced = null;
+		DateTime discontinued = null;
 		Company company = null;
 
 		/* retrieve all */
@@ -192,12 +186,12 @@ public class ComputerDAO {
 
 			while (rs.next()) {
 				if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
-					introduced = formatter.parse(rs.getString(3));
+					introduced = new DateTime(rs.getDate(3));
 				} else {
 					introduced = null;
 				}
 				if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
-					discontinued = formatter.parse(rs.getString(4));
+					discontinued = new DateTime(rs.getDate(4));
 				} else {
 					discontinued = null;
 				}
@@ -279,12 +273,12 @@ public class ComputerDAO {
 				while (rs.next()) {
 	
 					if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
-						introduced = formatter.parse(rs.getString(3));
+						introduced = new DateTime(rs.getDate(3));
 					} else {
 						introduced = null;
 					}
 					if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
-						discontinued = formatter.parse(rs.getString(4));
+						discontinued = new DateTime(rs.getDate(4));
 					} else {
 						discontinued = null;
 					}
@@ -311,10 +305,10 @@ public class ComputerDAO {
 			throws SQLException, ParseException {
 		Connection connection = dataBaseManager.getConnection();
 		Computer computer = null;
-		Date introduced = null;
-		Date discontinued = null;
+		DateTime introduced = null;
+		DateTime discontinued = null;
 		Company company = null;
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd");
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
@@ -327,12 +321,12 @@ public class ComputerDAO {
 		rs = ps.executeQuery();
 		rs.next();
 		if ((rs.getString(3) != null) && (rs.getString(3) != "")) {
-			introduced = formatter.parse(rs.getString(3));
+			introduced = DateTime.parse(rs.getString(3), formatter);
 		} else {
 			introduced = null;
 		}
 		if ((rs.getString(4) != null) && (rs.getString(4) != "")) {
-			discontinued = formatter.parse(rs.getString(4));
+			discontinued = DateTime.parse(rs.getString(4), formatter);
 		} else {
 			discontinued = null;
 		}

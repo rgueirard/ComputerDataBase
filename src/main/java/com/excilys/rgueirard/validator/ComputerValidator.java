@@ -1,5 +1,7 @@
 package com.excilys.rgueirard.validator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -8,8 +10,11 @@ import com.excilys.rgueirard.dto.ComputerDTO;
 
 @Component
 public class ComputerValidator implements Validator {
-
+	
+	private static Logger logger = LoggerFactory.getLogger(ComputerValidator.class);
+	
 	public boolean validDate(String date) {
+		logger.debug("Validation de date : format");
 		boolean error = true;
 		String regexpDate = "[0-9]{4}[-](0?[1-9]|1[012])[-](0?[1-9]|[12][0-9]|3[01])";
 		if (date.matches(regexpDate)) {
@@ -55,7 +60,7 @@ public class ComputerValidator implements Validator {
 
 	private boolean discontinuedLTIntroduced(String introduced,
 			String discontinued) {
-
+		logger.debug("Validation de date : discontinued < introduced ?");
 		boolean error = false;
 
 		int yearIntroduced = Integer.parseInt(introduced.substring(0, 4));
@@ -116,11 +121,13 @@ public class ComputerValidator implements Validator {
 		}
 
 		if ((computerDTO.getName() == null) || (computerDTO.getName().trim().length() == 0)) {
+			logger.debug("Validation de nom : nom vide");
 			arg1.rejectValue("name", "cptDTO.err.name",
 					"Please enter a computer name.\n");
 
 		} else {
 			if ((computerDTO.getName() != null) && (computerDTO.getName().matches(regexpName))) {
+				logger.debug("Validation de nom : nom invalide");
 				arg1.rejectValue("name", "cptDTO.err.inv",
 						"Invalid character \'<\', \'>\' or \'\"\' !\n");
 

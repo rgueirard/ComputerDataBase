@@ -97,9 +97,14 @@ public class ComputerController {
 			@RequestParam(value = PARAM_SEARCH_MOTIF, required = false) String searchMotif,
 			@RequestParam(value = PARAM_ID, required = false, defaultValue = "0") long id,
 			@RequestParam(value = PARAM_EDIT, required = false) boolean edit) {
+		
 
-		logger.debug("entering addComputer");
-
+		if(edit){
+			logger.debug("envoi dans l'ajout d'ordinateur");
+		} else {
+			logger.debug("envoi dans l'edition d'ordinateur");
+		}
+	
 		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
 		PageWrapper<ComputerDTO> wrapperDTO = new PageWrapper<ComputerDTO>();
 		ComputerDTO computerDTO = null;
@@ -143,12 +148,16 @@ public class ComputerController {
 			@ModelAttribute("cptDTO") @Valid ComputerDTO cptDTO,
 			BindingResult result) {
 
+		logger.debug("validation du formulaire");
+		
 		PageWrapper<ComputerDTO> wrapperDTO = new PageWrapper<ComputerDTO>();
 		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
 		StringBuilder sb = new StringBuilder("redirect:/computer/");
 		Computer computer = null;
 
 		if (result.hasErrors()) {
+			
+			logger.debug("formulaire non valide");
 			
 			List<Company> companies = companyService.retrieveAll();
 
@@ -163,6 +172,9 @@ public class ComputerController {
 			return "addComputer";
 
 		} else {
+			
+			logger.debug("formulaire valide");
+			
 			computer = computerMapper.DTOToComputer(cptDTO);
 			if (edit) {
 				computerService.update(computer);
@@ -201,6 +213,9 @@ public class ComputerController {
 			@RequestParam(value = PARAM_ID, required = false, defaultValue = "0") long id,
 			ModelMap model) {
 
+		
+		logger.debug("suppression d'ordinateur");
+		
 		StringBuilder sb = new StringBuilder("redirect:/computer/");
 		if (id != 0) {
 			computerService.delete(id);
@@ -231,6 +246,9 @@ public class ComputerController {
 			@RequestParam(value = PARAM_ASCENDANT, required = false, defaultValue = "true") boolean ascendant,
 			@RequestParam(value = PARAM_SEARCH_TYPE, required = false, defaultValue = "0") int searchType,
 			@RequestParam(value = PARAM_SEARCH_MOTIF, required = false) String searchMotif) {
+		
+		logger.debug("affichage des ordinateurs");
+		
 		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
 		PageWrapper<ComputerDTO> wrapperDTO = new PageWrapper<ComputerDTO>();
 

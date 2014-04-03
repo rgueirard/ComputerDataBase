@@ -1,10 +1,9 @@
 package com.excilys.rgueirard.mapper;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,17 +24,16 @@ public class ComputerMapper {
 	
 	public ComputerDTO computerToDTO(Computer computer) {
 		ComputerDTO computerDTO = null;
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		String introduced = null;
 		String discontinued = null;
 		long companyId = 0;
 		String companyName = null;
 
 		if (computer.getIntroduced() != null) {
-			introduced = formatter.format(computer.getIntroduced());
+			introduced = ISODateTimeFormat.date().print(computer.getIntroduced());
 		}
 		if (computer.getDiscontinued() != null) {
-			discontinued = formatter.format(computer.getDiscontinued());
+			discontinued = ISODateTimeFormat.date().print(computer.getDiscontinued());
 		}
 		if (computer.getCompany() != null) {
 			companyId = computer.getCompany().getId();
@@ -51,23 +49,19 @@ public class ComputerMapper {
 
 	public Computer DTOToComputer(ComputerDTO computerDTO) {
 		Computer computer = null;
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		Date introduced = null;
-		Date discontinued = null;
+		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd");
+		DateTime introduced = null;
+		DateTime discontinued = null;
 		Company company = null;
-		try {
-			if ((computerDTO.getIntroduced() != null)
-					&& (computerDTO.getIntroduced() != "")) {
+		if ((computerDTO.getIntroduced() != null)
+				&& (computerDTO.getIntroduced() != "")) {
 
-				introduced = formatter.parse(computerDTO.getIntroduced());
+			introduced = DateTime.parse(computerDTO.getIntroduced(), formatter);
 
-			}
-			if ((computerDTO.getDiscontinued() != null)
-					&& (computerDTO.getDiscontinued() != "")) {
-				discontinued = formatter.parse(computerDTO.getDiscontinued());
-			}
-		} catch (ParseException e) {
-			e.printStackTrace();
+		}
+		if ((computerDTO.getDiscontinued() != null)
+				&& (computerDTO.getDiscontinued() != "")) {
+			discontinued = DateTime.parse(computerDTO.getDiscontinued(), formatter);
 		}
 		if (computerDTO.getCompanyId() != 0) {
 			company = companyService.retrieve(computerDTO.getCompanyId());

@@ -1,12 +1,12 @@
 package com.excilys.rgueirard.domain;
 
-import java.util.Date;
+import org.joda.time.DateTime;
 
 public class Computer {
 	private long id;
 	private String name;
-	private Date introduced;
-	private Date discontinued;
+	private DateTime introduced;
+	private DateTime discontinued;
 	private Company company;
 
 	public Company getCompany() {
@@ -33,19 +33,19 @@ public class Computer {
 		this.name = name;
 	}
 
-	public Date getIntroduced() {
+	public DateTime getIntroduced() {
 		return introduced;
 	}
 
-	public void setIntroduced(Date introduced) {
+	public void setIntroduced(DateTime introduced) {
 		this.introduced = introduced;
 	}
 
-	public Date getDiscontinued() {
+	public DateTime getDiscontinued() {
 		return discontinued;
 	}
 
-	public void setDiscontinued(Date discontinued) {
+	public void setDiscontinued(DateTime discontinued) {
 		this.discontinued = discontinued;
 	}
 
@@ -111,12 +111,12 @@ public class Computer {
 			return this;
 		}
 
-		public Builder introduced(Date introduced) {
+		public Builder introduced(DateTime introduced) {
 			this.computer.introduced = introduced;
 			return this;
 		}
 
-		public Builder discontinued(Date discontinued) {
+		public Builder discontinued(DateTime discontinued) {
 			this.computer.discontinued = discontinued;
 			return this;
 		}

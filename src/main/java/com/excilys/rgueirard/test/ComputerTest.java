@@ -1,7 +1,6 @@
 package com.excilys.rgueirard.test;
 
-import java.util.Date;
-
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +14,7 @@ public class ComputerTest {
 		Company company = Company.builder().id(0).name("excilys").build();
 
 		Computer computer1 = Computer.builder().id(1).name("cmpt1")
-				.introduced(new Date()).discontinued(new Date())
+				.introduced(new DateTime()).discontinued(new DateTime())
 				.company(company).build();
 
 		Computer computer2 = Computer.builder().id(2).name("cmpt2")
