@@ -1,22 +1,23 @@
 package com.excilys.rgueirard.service;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Date;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.rgueirard.domain.Computer;
 import com.excilys.rgueirard.persistence.ComputerDAO;
-import com.excilys.rgueirard.persistence.DataBaseManager;
 import com.excilys.rgueirard.persistence.LogDAO;
 import com.excilys.rgueirard.wrapper.PageWrapper;
+import com.jolbox.bonecp.BoneCPDataSource;
 
 @Service
+@Transactional(readOnly = true)
 public class ComputerService {
 
 	private static Logger logger = LoggerFactory
@@ -26,156 +27,85 @@ public class ComputerService {
 	private ComputerDAO computerDAO;
 
 	@Autowired
-	private LogDAO logDAO;
+	private LogService logService;
 
 	@Autowired
 	private CompanyService companyService;
+	
+	@Autowired
+	private LogDAO logDAO;
 
 	@Autowired
-	DataBaseManager dataBaseManager;
+	private BoneCPDataSource dataBaseManager;
 
 	public ComputerService() {
 		super();
 	}
 
+	@Transactional(readOnly = false)
 	public void create(Computer computer) {
-		Connection connection = null;
-		Date dateUtil = new Date();
-		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
 		long id = 0;
-
+		DateTime date = new DateTime();
+		java.sql.Date dateSql = new java.sql.Date(date.getMillis());
 		try {
-			connection = dataBaseManager.getConnection();
-			connection.setAutoCommit(false);
+			logger.info("ComputerService : creation d'ordinateur");
 			id = computerDAO.create(computer);
 			logDAO.create(id, dateSql.toString(), "create");
-			connection.commit();
-			connection.setAutoCommit(true);
 		} catch (SQLException e) {
-			logger.debug("erreur sql dans create");
-			try {
-				connection.rollback();
-			} catch (SQLException e1) {
-				logger.debug("erreur de rollback dans create");
-				e.printStackTrace();
-			}
+			logger.error("erreur sql dans create");
 			e.printStackTrace();
 		} catch (ParseException e) {
-			logger.debug("erreur Parse dans create");
-			try {
-				connection.rollback();
-			} catch (SQLException e1) {
-				logger.debug("erreur de rollback dans create");
-				e.printStackTrace();
-			}
+			logger.error("erreur de parsage dans create");
 			e.printStackTrace();
-		} finally {
-			try {
-				dataBaseManager.closeConnection();
-			} catch (SQLException e) {
-				logger.debug("erreur de connectionClose dans create");
-				e.printStackTrace();
-			}
 		}
 	}
 
+	@Transactional(readOnly = false)
 	public void update(Computer computer) {
-		Connection connection = null;
-		Date dateUtil = new Date();
-		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
 		long id = 0;
-
+		DateTime date = new DateTime();
+		java.sql.Date dateSql = new java.sql.Date(date.getMillis());
 		try {
-			connection = dataBaseManager.getConnection();
-			connection.setAutoCommit(false);
+			logger.info("ComputerService : edition d'ordinateur");
 			id = computerDAO.update(computer);
 			logDAO.create(id, dateSql.toString(), "update");
-			connection.commit();
-			connection.setAutoCommit(true);
 		} catch (SQLException e) {
-			logger.debug("erreur sql dans update");
-			try {
-				connection.rollback();
-			} catch (SQLException e1) {
-				logger.debug("erreur de rollback dans update");
-				e.printStackTrace();
-			}
+			logger.error("erreur sql dans update");
 			e.printStackTrace();
 		} catch (ParseException e) {
-			logger.debug("erreur de parsage dans update");
-			try {
-				connection.rollback();
-			} catch (SQLException e1) {
-				logger.debug("erreur de rollback dans update");
-				e.printStackTrace();
-			}
+			logger.error("erreur de parsage dans update");
 			e.printStackTrace();
-		} finally {
-			try {
-				dataBaseManager.closeConnection();
-			} catch (SQLException e) {
-				logger.debug("erreur de closeConnection dans update");
-				e.printStackTrace();
-			}
 		}
 	}
 
+	@Transactional(readOnly = false)
 	public void delete(long pId) {
-		Connection connection = null;
-		Date dateUtil = new Date();
-		java.sql.Date dateSql = new java.sql.Date(dateUtil.getTime());
 		long id = 0;
-
+		DateTime date = new DateTime();
+		java.sql.Date dateSql = new java.sql.Date(date.getMillis());
 		try {
-			connection = dataBaseManager.getConnection();
-			connection.setAutoCommit(false);
+			logger.info("ComputerService : deletion d'ordinateur");
 			id = computerDAO.delete(pId);
 			logDAO.create(id, dateSql.toString(), "delete");
-			connection.commit();
-			connection.setAutoCommit(true);
 		} catch (SQLException e) {
-			logger.debug("erreur sql dans delete");
-			try {
-				connection.rollback();
-			} catch (SQLException e1) {
-				logger.debug("erreur rollback dans delete");
-				e.printStackTrace();
-			}
+			logger.error("erreur sql dans delete");
 			e.printStackTrace();
 		} catch (ParseException e) {
-			logger.debug("erreur parsage dans delete");
-			try {
-				connection.rollback();
-			} catch (SQLException e1) {
-				logger.debug("erreur parsage dans delete");
-				e.printStackTrace();
-			}
+			logger.error("erreur de parsage dans delete");
 			e.printStackTrace();
-		} finally {
-			try {
-				dataBaseManager.closeConnection();
-			} catch (SQLException e) {
-				logger.debug("erreur de closeConnection dans delete");
-				e.printStackTrace();
-			}
 		}
 	}
 
 	public PageWrapper<Computer> retrieve(PageWrapper<Computer> wrapper) {
 		try {
-			wrapper = computerDAO.retrieve(wrapper, companyService);
+			logger.info("ComputerService : rechercher d'ordinateurs");
+			wrapper = computerDAO.retrieve(wrapper);
 		} catch (SQLException e) {
-			logger.debug("erreur Sql dans retrieve");
+			logger.error("erreur Sql dans retrieve");
 			e.printStackTrace();
 		} catch (ParseException e) {
-			logger.debug("erreur parsage dans retrieve");
+			logger.error("erreur parsage dans retrieve");
 			e.printStackTrace();
-		} finally {
-			try {
-				dataBaseManager.closeConnection();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 		return wrapper;
 	}
@@ -183,19 +113,14 @@ public class ComputerService {
 	public Computer retrieveById(long id) {
 		Computer computer = null;
 		try {
-			computer = computerDAO.retrieveById(id, companyService);
+			logger.info("ComputerService : rechercher d'ordinateur par id");
+			computer = computerDAO.retrieveById(id);
 		} catch (SQLException e) {
-			logger.debug("erreur Sql dans retrieve");
+			logger.error("erreur Sql dans retrieve");
 			e.printStackTrace();
 		} catch (ParseException e) {
-			logger.debug("erreur parsage dans retrieve");
+			logger.error("erreur parsage dans retrieve");
 			e.printStackTrace();
-		} finally {
-			try {
-				dataBaseManager.closeConnection();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 		return computer;
 	}

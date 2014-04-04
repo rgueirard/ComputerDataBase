@@ -1,10 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ComputerDBMaven</groupId>
 	<artifactId>ComputerDBMaven</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<mysql.version>5.1.29</mysql.version>
@@ -14,23 +15,23 @@
 		<log4j.version>1.2.17</log4j.version>
 		<logback.version>1.1.1</logback.version>
 		<jstl.version>1.2</jstl.version>
-        <servlet-api.version>3.1.0</servlet-api.version>
-        <jsp-api.version>2.0</jsp-api.version>
+		<servlet-api.version>3.1.0</servlet-api.version>
+		<jsp-api.version>2.0</jsp-api.version>
 		<spring.version>4.0.3.RELEASE</spring.version>
 		<inject.version>1</inject.version>
 		<validator.version>5.1.0.Final</validator.version>
 		<jodatime.version>2.3</jodatime.version>
 	</properties>
-	
-	
+
+
 	<dependencies>
-	 	<!-- Mysql connector -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.version}</version>
-        </dependency>
-        <!-- bonecp -->
+		<!-- Mysql connector -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.version}</version>
+		</dependency>
+		<!-- bonecp -->
 		<dependency>
 			<groupId>com.jolbox</groupId>
 			<artifactId>bonecp</artifactId>
@@ -46,9 +47,9 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>${servlet-api.version}</version>
-        	<scope>provided</scope>
+			<scope>provided</scope>
 		</dependency>
-		<!--  slf4j -->
+		<!-- slf4j -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -65,8 +66,8 @@
 			<artifactId>log4j</artifactId>
 			<version>${log4j.version}</version>
 			<scope>compile</scope>
-	    </dependency>
-	    <dependency>
+		</dependency>
+		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jsp-api</artifactId>
 			<version>${jsp-api.version}</version>
@@ -82,30 +83,23 @@
 			<artifactId>logback-core</artifactId>
 			<version>${logback.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${spring.version}</version>
-            <scope>compile</scope>
-        </dependency>
 		<dependency>
-		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-context</artifactId>
-		    <version>${spring.version}</version>
-		    <scope>compile</scope>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring.version}</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${spring.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>javax.inject</groupId>
 			<artifactId>javax.inject</artifactId>
 			<version>${inject.version}</version>
 		</dependency>
-        <dependency>
+		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<version>${validator.version}</version>
@@ -116,19 +110,19 @@
 			<version>${jodatime.version}</version>
 		</dependency>
 	</dependencies>
-	
-	
+
+
 	<build>
-        <finalName>computer-database</finalName>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+		<finalName>computer-database</finalName>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

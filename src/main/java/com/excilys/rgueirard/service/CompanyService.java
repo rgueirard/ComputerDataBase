@@ -5,17 +5,16 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.rgueirard.domain.Company;
 import com.excilys.rgueirard.persistence.CompanyDAO;
-import com.excilys.rgueirard.persistence.DataBaseManager;
 
 @Service
+@Transactional(readOnly = true)
 public class CompanyService {
 
-	@Autowired
-	private DataBaseManager dataBaseManager;
-	
+		
 	@Autowired
 	private CompanyDAO companyDAO;
 	
@@ -24,9 +23,7 @@ public class CompanyService {
 	}
 	
 	public Company retrieve(long id){
-		
 		Company company = null;
-		
 		try {
 			company = companyDAO.retrieve(id);
 		} catch (SQLException e) {

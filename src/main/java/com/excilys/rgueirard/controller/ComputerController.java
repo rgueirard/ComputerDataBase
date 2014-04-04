@@ -100,9 +100,9 @@ public class ComputerController {
 		
 
 		if(edit){
-			logger.debug("envoi dans l'ajout d'ordinateur");
-		} else {
 			logger.debug("envoi dans l'edition d'ordinateur");
+		} else {
+			logger.debug("envoi dans l'ajout d'ordinateur");
 		}
 	
 		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
@@ -265,6 +265,11 @@ public class ComputerController {
 		return "dashboard";
 	}
 
+	@RequestMapping("/404")
+    public String error404(){
+        return "error";
+    }
+	
 	@InitBinder("cptDTO")
 	protected void initBinder(WebDataBinder binder) {
 		binder.addValidators(computerValidator);

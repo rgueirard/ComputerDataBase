@@ -10,14 +10,14 @@ import org.springframework.stereotype.Component;
 import com.excilys.rgueirard.domain.Company;
 import com.excilys.rgueirard.domain.Computer;
 import com.excilys.rgueirard.dto.ComputerDTO;
-import com.excilys.rgueirard.persistence.DataBaseManager;
 import com.excilys.rgueirard.service.CompanyService;
+import com.jolbox.bonecp.BoneCPDataSource;
 
 @Component
 public class ComputerMapper {
 
 	@Autowired
-	private DataBaseManager dataBaseManager;
+	private BoneCPDataSource dataBaseManager;
 	
 	@Autowired
 	private CompanyService companyService;

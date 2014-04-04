@@ -10,7 +10,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
+
+import com.jolbox.bonecp.BoneCPDataSource;
 
 @Repository
 public class LogDAO {
@@ -20,7 +23,7 @@ public class LogDAO {
 	}
 	
 	@Autowired
-	DataBaseManager dataBaseManager;	
+	private BoneCPDataSource dataBaseManager;	
 	
 	public static void closeObject(PreparedStatement ps, ResultSet rs) {
 		try {
@@ -36,7 +39,7 @@ public class LogDAO {
 	}
 	
 	public void create(long computerId, String timeS, String message) throws SQLException, ParseException {
-		Connection connection = dataBaseManager.getConnection();
+		Connection connection = DataSourceUtils.getConnection(dataBaseManager);
 		String query = "INSERT INTO log (id, computer_id, time, message) VALUES (0, ?, ?, ?)";
 		PreparedStatement ps = null;
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");

@@ -13,26 +13,34 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.rgueirard.domain.Company;
 import com.excilys.rgueirard.domain.Computer;
-import com.excilys.rgueirard.service.CompanyService;
 import com.excilys.rgueirard.wrapper.PageWrapper;
+import com.jolbox.bonecp.BoneCPDataSource;
 
 @Repository
 public class ComputerDAO {
 
-	@Autowired
-	DataBaseManager dataBaseManager;	
+	private static Logger logger = LoggerFactory
+			.getLogger(ComputerDAO.class);
 	
+	@Autowired
+	private BoneCPDataSource dataBaseManager;
+		
 	private final String ORDER = "ORDER BY ? ";
 	private final String ASC = "ASC ";
 	private final String DESC = "DESC ";
 	private final String LIMIT = "LIMIT ?, ? ";
-	private final String WHERENAME = "WHERE name LIKE ? ";
-	private final String WHEREID = "WHERE id = ? ";
+	private final String INNERJOINCPY = "INNER JOIN company AS cpy ";
+	private final String OUTERJOINCPY = "LEFT JOIN company AS cpy ";
+	private final String WHERENAME = "WHERE cpt.name LIKE ? ";
+	private final String WHEREID = "WHERE cpt.id = ? ";
 
 	public ComputerDAO() {
 		super();
@@ -50,8 +58,8 @@ public class ComputerDAO {
 	}
 
 	public long delete(long id) throws SQLException {
-		
-		Connection connection = dataBaseManager.getConnection();
+		logger.debug("ComputerDAO : deletion d'ordinateur");
+		Connection connection = DataSourceUtils.getConnection(dataBaseManager);
 		String query = "DELETE FROM computer WHERE id = ?";
 		PreparedStatement ps = null;
 
@@ -65,7 +73,8 @@ public class ComputerDAO {
 	}
 
 	public long update(Computer computer) throws SQLException, ParseException {
-		Connection connection = dataBaseManager.getConnection();
+		logger.debug("ComputerDAO : edition d'ordinateur");
+		Connection connection = DataSourceUtils.getConnection(dataBaseManager);
 		PreparedStatement ps = null;
 		String query = "UPDATE computer SET name=?, introduced=?, discontinued=?, company_id=? WHERE id=?";
 		java.sql.Date introducedSql = null;
@@ -97,7 +106,8 @@ public class ComputerDAO {
 	}
 
 	public long create(Computer computer) throws SQLException, ParseException {
-		Connection connection = dataBaseManager.getConnection();
+		logger.debug("ComputerDAO : creation d'ordinateur");
+		Connection connection = DataSourceUtils.getConnection(dataBaseManager);
 		String query = "INSERT INTO computer (id,name,introduced,discontinued,company_id) VALUES (0,?,?,?,?)";
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -122,7 +132,6 @@ public class ComputerDAO {
 		} else {
 			ps.setNull(4, Types.BIGINT);
 		}
-
 		ps.executeUpdate();
 		rs = ps.getGeneratedKeys();
 		rs.next();
@@ -135,15 +144,15 @@ public class ComputerDAO {
 		return computer.getId();
 	}
 
-	public PageWrapper<Computer> retrieve(PageWrapper<Computer> wrapper,
-			CompanyService companyService) throws SQLException, ParseException {
-		Connection connection = dataBaseManager.getConnection();
+	public PageWrapper<Computer> retrieve(PageWrapper<Computer> wrapper) throws SQLException, ParseException {
+		logger.debug("ComputerDAO : recherche d'ordinateurs");
+		Connection connection = DataSourceUtils.getConnection(dataBaseManager);
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		StringBuilder query = new StringBuilder(
-				"SELECT cpt.id,cpt.name,cpt.introduced,cpt.discontinued,cpt.company_id FROM computer AS cpt ");
+				"SELECT cpt.id,cpt.name,cpt.introduced,cpt.discontinued,cpt.company_id,cpy.name FROM computer AS cpt ");
 		StringBuilder sizeQuery = new StringBuilder(
-				"SELECT count(*) FROM computer ");
+				"SELECT count(*) FROM computer AS cpt ");
 		List<Computer> computers = new ArrayList<Computer>();
 		Computer computer = null;
 		DateTime introduced = null;
@@ -152,6 +161,8 @@ public class ComputerDAO {
 
 		/* retrieve all */
 		if (wrapper.getSearchMotif().isEmpty()) {
+			query.append(OUTERJOINCPY);
+			query.append("ON company_id=cpy.id ");
 			query.append(ORDER);
 			if (wrapper.isAscendant()) {
 				query.append(ASC);
@@ -196,8 +207,9 @@ public class ComputerDAO {
 					discontinued = null;
 				}
 				if (rs.getString(5) != null) {
-					company = companyService.retrieve(Long.parseLong(rs
-							.getString(5)));
+					//company = companyDAO.retrieve(Long.parseLong(rs
+					//		.getString(5)));
+					company = Company.builder().id(Long.parseLong(rs.getString(5))).name(rs.getString(6)).build();
 				} else {
 					company = null;
 				}
@@ -214,8 +226,10 @@ public class ComputerDAO {
 			switch (wrapper.getSearchType()) {
 			/* by name */
 			case 0:
-				sizeQuery.append(WHERENAME);
-				query.append(WHERENAME);
+				sizeQuery.append(OUTERJOINCPY);
+				sizeQuery.append("ON company_id=cpy.id WHERE cpt.name LIKE ? ");
+				query.append(OUTERJOINCPY);
+				query.append("ON company_id=cpy.id WHERE cpt.name LIKE ? ");
 				query.append(ORDER);
 				if (wrapper.isAscendant()) {
 					query.append(ASC);
@@ -226,9 +240,10 @@ public class ComputerDAO {
 				break;
 			/* by company */
 			case 1:
-				sizeQuery
-						.append("INNER JOIN company AS cpy WHERE company_id=cpy.id AND cpy.name LIKE ?");
-				query.append("INNER JOIN company AS cpy WHERE company_id=cpy.id AND cpy.name LIKE ? ");
+				sizeQuery.append(INNERJOINCPY);
+				sizeQuery.append("WHERE company_id=cpy.id AND cpy.name LIKE ?");
+				query.append(INNERJOINCPY);
+				query.append("WHERE company_id=cpy.id AND cpy.name LIKE ? ");
 				query.append(ORDER);
 				if (wrapper.isAscendant()) {
 					query.append(ASC);
@@ -243,7 +258,7 @@ public class ComputerDAO {
 			ps = connection.prepareStatement(sizeQuery.toString());
 
 			ps.setString(1, "%" + wrapper.getSearchMotif() + "%");
-
+			logger.debug("size : "+sizeQuery+"\nQuery : "+query+"\n");
 			rs = ps.executeQuery();
 			rs.next();
 			if ((rs.getString(1) != null) && (rs.getString(1) != "")) {
@@ -283,8 +298,9 @@ public class ComputerDAO {
 						discontinued = null;
 					}
 					if (rs.getString(5) != null) {
-						company = companyService.retrieve(Long.parseLong(rs
-								.getString(5)));
+//						company = companyDAO.retrieve(Long.parseLong(rs
+//								.getString(5)));
+						company = Company.builder().id(Long.parseLong(rs.getString(5))).name(rs.getString(6)).build();
 					} else {
 						company = null;
 					}
@@ -301,9 +317,11 @@ public class ComputerDAO {
 		return wrapper;
 	}
 
-	public Computer retrieveById(long id, CompanyService companyService)
+	public Computer retrieveById(long id)
 			throws SQLException, ParseException {
-		Connection connection = dataBaseManager.getConnection();
+		
+		logger.debug("ComputerDAO : recherche d'ordinateur par id");
+		Connection connection = DataSourceUtils.getConnection(dataBaseManager);
 		Computer computer = null;
 		DateTime introduced = null;
 		DateTime discontinued = null;
@@ -313,8 +331,8 @@ public class ComputerDAO {
 		ResultSet rs = null;
 
 		StringBuilder query = new StringBuilder(
-				"SELECT cpt.id,cpt.name,cpt.introduced,cpt.discontinued,cpt.company_id FROM computer AS cpt ");
-		query.append(WHEREID);
+				"SELECT cpt.id,cpt.name,cpt.introduced,cpt.discontinued,cpt.company_id,cpy.name FROM computer AS cpt LEFT JOIN company AS cpy ON company_id=cpy.id WHERE cpt.id = ? ");
+		
 
 		ps = connection.prepareStatement(query.toString());
 		ps.setLong(1, id);
@@ -331,7 +349,8 @@ public class ComputerDAO {
 			discontinued = null;
 		}
 		if (rs.getString(5) != null) {
-			company = companyService.retrieve(Long.parseLong(rs.getString(5)));
+			//company = companyService.retrieve(Long.parseLong(rs.getString(5)));
+			company = Company.builder().id(Long.parseLong(rs.getString(5))).name(rs.getString(6)).build();
 		} else {
 			company = null;
 		}
