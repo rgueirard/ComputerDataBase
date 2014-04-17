@@ -23,11 +23,19 @@
 		<property name="partitionCount" value="1" />
 		<property name="defaultAutoCommit" value="false" />
 	</bean>
+	
+	 <!-- Hibernate sessionFactory -->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="packagesToScan" value="com.excilys.rgueirard.domain" />
+    </bean>
+	
 	<tx:annotation-driven transaction-manager="transactionManager" />
-	<!-- declaration du transaction manager -->
+	
+	<!-- declaration du transaction manager pour Hibernate -->
 	<bean id="transactionManager"
-		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="dataSource" />
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
 	<!-- Bean JDBCTemplate pour Named statements -->

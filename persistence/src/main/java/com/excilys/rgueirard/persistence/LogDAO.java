@@ -1,19 +1,11 @@
 package com.excilys.rgueirard.persistence;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
+import org.hibernate.SessionFactory;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.jolbox.bonecp.BoneCPDataSource;
+import com.excilys.rgueirard.domain.Log;
 
 @Repository
 public class LogDAO {
@@ -23,40 +15,14 @@ public class LogDAO {
 	}
 
 	@Autowired
-	private BoneCPDataSource dataBaseManager;
-
-	@Autowired
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+	private SessionFactory sessionFactory;
 	
-	public static void closeObject(PreparedStatement ps, ResultSet rs) {
-		try {
-			if (ps != null) {
-				ps.close();
-			}
-			if (rs != null) {
-				rs.close();
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
+	public void create(long computerId, String message) {
 
-	public void create(long computerId, String timeS, String message)
-			throws SQLException, ParseException {
-		String query = "INSERT INTO log (id, computer_id, time, message) VALUES (0, :cptid, :time, :message)";
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		Date timeUtil = null;
-		java.sql.Date timeSql = null;
-		MapSqlParameterSource namedParameters = new MapSqlParameterSource();
+		DateTime time = new DateTime();
 		
-		if ((timeS != null) && (timeS != "")) {
-			timeUtil = formatter.parse(timeS);
-			timeSql = new java.sql.Date(timeUtil.getTime());
-		}
+		Log log = Log.builder().computerId(computerId).message(message).time(time).build();
 		
-		namedParameters.addValue("cptid",computerId);
-		namedParameters.addValue("time", timeSql);
-		namedParameters.addValue("message", message);
-		namedParameterJdbcTemplate.update(query,namedParameters);
+		sessionFactory.getCurrentSession().persist(log);		
 	}
 }

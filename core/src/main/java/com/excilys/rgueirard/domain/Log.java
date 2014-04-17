@@ -1,11 +1,33 @@
 package com.excilys.rgueirard.domain;
 
-import java.sql.Timestamp;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
+import org.joda.time.DateTime;
+
+@Entity
+@Table(name="log")
 public class Log {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name="id")
 	private long id;
-	private Timestamp time;
+	
+	@Column(name="time")
+	@Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
+	private DateTime time;
+	
+	@Column(name="message")
 	private String message;
+	
+	
+	@Column(name="computer_id")
 	private long computerId;
 	
 	public long getId() {
@@ -16,11 +38,11 @@ public class Log {
 		this.id = id;
 	}
 
-	public Timestamp getTime() {
+	public DateTime getTime() {
 		return time;
 	}
 
-	public void setTime(Timestamp time) {
+	public void setTime(DateTime time) {
 		this.time = time;
 	}
 
@@ -100,7 +122,7 @@ public class Log {
 			return this;
 		}
 		
-		public Builder time(Timestamp time) {
+		public Builder time(DateTime time) {
 			this.log.time = time;
 			return this;
 		}

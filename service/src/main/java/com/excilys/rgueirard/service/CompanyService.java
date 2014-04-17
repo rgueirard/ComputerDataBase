@@ -1,6 +1,5 @@
 package com.excilys.rgueirard.service;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,21 +23,13 @@ public class CompanyService {
 	
 	public Company retrieve(long id){
 		Company company = null;
-		try {
-			company = companyDAO.retrieve(id);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		company = companyDAO.retrieve(id);
 		return company;
 	}
 	
 	public List<Company> retrieveAll() {
 		List<Company> companies = null;
-		try {
-			companies = companyDAO.retrieveAll();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		companies = companyDAO.retrieveAll();
 		return companies;
 	}
 }
