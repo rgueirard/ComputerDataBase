@@ -3,8 +3,13 @@ package com.excilys.rgueirard.persistence;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.Query;
+import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +26,6 @@ public class ComputerDAO{
 	@Autowired
 	private SessionFactory sessionFactory;
 	
-	private final String ORDER = "ORDER BY :orderby ";
-	private final String ASC = "ASC ";
-	private final String DESC = "DESC ";
-	private final String INNERJOINCPY = "INNER JOIN cpt.company AS cpy ";
-	private final String OUTERJOINCPY = "LEFT JOIN cpt.company AS cpy ";
-
-
 	public ComputerDAO() {
 		super();
 	}
@@ -55,25 +53,56 @@ public class ComputerDAO{
 	public PageWrapper<Computer> retrieve(PageWrapper<Computer> wrapper) {
 		logger.debug("ComputerDAO : recherche d'ordinateurs");
 				
-		StringBuilder query = new StringBuilder(
-				"SELECT cpt FROM Computer AS cpt ");
-		StringBuilder sizeQuery = new StringBuilder(
-				"SELECT count(*) FROM Computer AS cpt ");
+		Criteria critCount = sessionFactory.getCurrentSession().createCriteria(Computer.class);
+		critCount.setProjection(Projections.rowCount());
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Computer.class);
+		
 		List<Computer> computers = new ArrayList<Computer>();
 		int count = 0;
+		
 
 		/* retrieve all */
 		if (wrapper.getSearchMotif().isEmpty()) {
-			query.append(OUTERJOINCPY);
-			//query.append("WITH cpt.company.id=cpy.id ");
-			query.append(ORDER);
-			if (wrapper.isAscendant()) {
-				query.append(ASC);
-			} else {
-				query.append(DESC);
+			crit.setFetchMode("company", FetchMode.JOIN).createAlias("company", "cpn", JoinType.LEFT_OUTER_JOIN);
+			switch (wrapper.getOrderBy()) {
+			case 1:
+				if(wrapper.isAscendant()){
+					crit.addOrder(Order.asc("id"));
+				} else {
+					crit.addOrder(Order.desc("id"));
+				}
+				break;
+			case 2:
+				if(wrapper.isAscendant()){
+					crit.addOrder(Order.asc("name"));
+				} else {
+					crit.addOrder(Order.desc("name"));
+				}
+				break;
+			case 3:
+				if(wrapper.isAscendant()){
+					crit.addOrder(Order.asc("introduced"));
+				} else {
+					crit.addOrder(Order.desc("introduced"));
+				}
+				break;
+			case 4:
+				if(wrapper.isAscendant()){
+					crit.addOrder(Order.asc("discontinued"));
+				} else {
+					crit.addOrder(Order.desc("discontinued"));
+				}
+				break;
+			case 5:
+				if(wrapper.isAscendant()){
+					crit.addOrder(Order.asc("company.name"));
+				} else {
+					crit.addOrder(Order.desc("company.name"));
+				}
+				break;
 			}
-
-			count = ((Long)(sessionFactory.getCurrentSession().createQuery(sizeQuery.toString()).iterate().next())).intValue();
+						
+			count = ((Long)(critCount.uniqueResult())).intValue();
 			
 			if (count != 0) {
 				wrapper.setSize(count);
@@ -86,9 +115,10 @@ public class ComputerDAO{
 			if (wrapper.getCurrentPage() > wrapper.getNbPages()) {
 				wrapper.setCurrentPage(wrapper.getNbPages() - 1);
 			}
-			
-			Query sFQuery = sessionFactory.getCurrentSession().createQuery(query.toString()).setParameter("orderby", wrapper.getOrderBy()).setMaxResults(wrapper.getNbDisplay()).setFirstResult((wrapper.getCurrentPage() - 1) * wrapper.getNbDisplay());
-			computers = sFQuery.list();
+					
+			crit.setMaxResults(wrapper.getNbDisplay()).setFirstResult((wrapper.getCurrentPage() - 1) * wrapper.getNbDisplay());
+			computers = crit.list();
+
 			wrapper.setPages(computers);
 
 			/* retrieve by name, by company, by id */
@@ -96,34 +126,95 @@ public class ComputerDAO{
 			switch (wrapper.getSearchType()) {
 			/* by name */
 			case 0:
-				sizeQuery.append(OUTERJOINCPY);
-				sizeQuery.append("WHERE cpt.name LIKE :searchmotif ");
-				query.append(OUTERJOINCPY);
-				query.append("WHERE cpt.name LIKE :searchmotif ");
-				query.append(ORDER);
-				if (wrapper.isAscendant()) {
-					query.append(ASC);
-				} else {
-					query.append(DESC);
+				critCount.setFetchMode("company", FetchMode.JOIN).createAlias("company", "cpn", JoinType.LEFT_OUTER_JOIN);
+				critCount.add(Restrictions.like("name" ,"%" + wrapper.getSearchMotif() + "%"));
+				crit.setFetchMode("company", FetchMode.JOIN).createAlias("company", "cpn", JoinType.LEFT_OUTER_JOIN);
+				crit.add(Restrictions.like("name" ,"%" + wrapper.getSearchMotif() + "%"));
+				switch (wrapper.getOrderBy()) {
+				case 1:
+					if(wrapper.isAscendant()){
+						crit.addOrder(Order.asc("id"));
+					} else {
+						crit.addOrder(Order.desc("id"));
+					}
+					break;
+				case 2:
+					if(wrapper.isAscendant()){
+						crit.addOrder(Order.asc("name"));
+					} else {
+						crit.addOrder(Order.desc("name"));
+					}
+					break;
+				case 3:
+					if(wrapper.isAscendant()){
+						crit.addOrder(Order.asc("introduced"));
+					} else {
+						crit.addOrder(Order.desc("introduced"));
+					}
+					break;
+				case 4:
+					if(wrapper.isAscendant()){
+						crit.addOrder(Order.asc("discontinued"));
+					} else {
+						crit.addOrder(Order.desc("discontinued"));
+					}
+					break;
+				case 5:
+					if(wrapper.isAscendant()){
+						crit.addOrder(Order.asc("company.name"));
+					} else {
+						crit.addOrder(Order.desc("company.name"));
+					}
+					break;
 				}
 				break;
 			/* by company */
 			case 1:
-				sizeQuery.append(INNERJOINCPY);
-				sizeQuery.append("WHERE cpy.name LIKE :searchmotif ");
-				query.append(INNERJOINCPY);
-				query.append("WHERE cpy.name LIKE :searchmotif ");
-				query.append(ORDER);
-				if (wrapper.isAscendant()) {
-					query.append(ASC);
-				} else {
-					query.append(DESC);
+				critCount.setFetchMode("company", FetchMode.JOIN).createAlias("company", "cpn", JoinType.INNER_JOIN);
+				critCount.add(Restrictions.like("cpn.name" ,"%" + wrapper.getSearchMotif() + "%"));
+				crit.setFetchMode("company", FetchMode.JOIN).createAlias("company", "cpn", JoinType.INNER_JOIN);
+				crit.add(Restrictions.like("cpn.name" ,"%" + wrapper.getSearchMotif() + "%"));
+				switch (wrapper.getOrderBy()) {
+				case 1:
+					if(wrapper.isAscendant()){
+						crit.addOrder(Order.asc("id"));
+					} else {
+						crit.addOrder(Order.desc("id"));
+					}
+					break;
+				case 2:
+					if(wrapper.isAscendant()){
+						crit.addOrder(Order.asc("name"));
+					} else {
+						crit.addOrder(Order.desc("name"));
+					}
+					break;
+				case 3:
+					if(wrapper.isAscendant()){
+						crit.addOrder(Order.asc("introduced"));
+					} else {
+						crit.addOrder(Order.desc("introduced"));
+					}
+					break;
+				case 4:
+					if(wrapper.isAscendant()){
+						crit.addOrder(Order.asc("discontinued"));
+					} else {
+						crit.addOrder(Order.desc("discontinued"));
+					}
+					break;
+				case 5:
+					if(wrapper.isAscendant()){
+						crit.addOrder(Order.asc("company.name"));
+					} else {
+						crit.addOrder(Order.desc("company.name"));
+					}
+					break;
 				}
-				break;
 			}
 
 			/* recupération de la taille */			
-			count = ((Long)(sessionFactory.getCurrentSession().createQuery(sizeQuery.toString()).setParameter("searchmotif" ,"%" + wrapper.getSearchMotif() + "%").iterate().next())).intValue();
+			count = ((Long)(critCount.uniqueResult())).intValue();
 			
 			if (count != 0) {
 				wrapper.setSize(count);
@@ -139,8 +230,9 @@ public class ComputerDAO{
 					wrapper.setCurrentPage(wrapper.getNbPages() - 1);
 				}
 				
-				Query sFQuery = sessionFactory.getCurrentSession().createQuery(query.toString()).setParameter("searchmotif", "%" + wrapper.getSearchMotif() + "%").setParameter("orderby", wrapper.getOrderBy()).setMaxResults(wrapper.getNbDisplay()).setFirstResult((wrapper.getCurrentPage() - 1) * wrapper.getNbDisplay());
-				computers = sFQuery.list();
+				crit.setMaxResults(wrapper.getNbDisplay()).setFirstResult((wrapper.getCurrentPage() - 1) * wrapper.getNbDisplay());
+				computers = crit.list();
+				
 				wrapper.setPages(computers);
 			}
 		}

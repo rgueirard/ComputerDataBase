@@ -3,8 +3,11 @@ package com.excilys.rgueirard.persistence;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -19,11 +22,14 @@ public class CompanyDAO {
 
 	@Autowired
 	private SessionFactory sessionFactory;
-
+	
 	public Company retrieve(long id) {
 		Company company = null;
 		
-		company = (Company) sessionFactory.getCurrentSession().get(Company.class, id);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Company.class);
+		crit.add(Restrictions.eq( "id", id ));
+		company = (Company) crit.uniqueResult();
+		//company = (Company) sessionFactory.getCurrentSession().get(Company.class, id);
 		
 		return company;
 	}
@@ -32,9 +38,10 @@ public class CompanyDAO {
 	public List<Company> retrieveAll() {
 		List<Company> companies = new ArrayList<Company>();
 		
-		Query query = sessionFactory.getCurrentSession().createQuery("FROM Company cpn");
-		companies = query.list();
-		
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Company.class);
+		//Query query = sessionFactory.getCurrentSession().createQuery("FROM Company cpn");
+		//companies = query.list();
+		companies = crit.list();
 		return companies;
 	}
 
