@@ -3,15 +3,14 @@ package com.excilys.rgueirard.persistence;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.rgueirard.domain.Company;
+import com.excilys.rgueirard.domain.QCompany;
+import com.mysema.query.jpa.hibernate.HibernateQuery;
+
 
 @Repository
 public class CompanyDAO {
@@ -26,22 +25,21 @@ public class CompanyDAO {
 	public Company retrieve(long id) {
 		Company company = null;
 		
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Company.class);
-		crit.add(Restrictions.eq( "id", id ));
-		company = (Company) crit.uniqueResult();
-		//company = (Company) sessionFactory.getCurrentSession().get(Company.class, id);
+		QCompany qCompany = QCompany.company;
+		HibernateQuery query = new HibernateQuery(sessionFactory.getCurrentSession());
 		
+		company = query.from(qCompany).where(qCompany.id.eq(id)).uniqueResult(qCompany);
+			
 		return company;
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Company> retrieveAll() {
 		List<Company> companies = new ArrayList<Company>();
 		
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Company.class);
-		//Query query = sessionFactory.getCurrentSession().createQuery("FROM Company cpn");
-		//companies = query.list();
-		companies = crit.list();
+		QCompany qCompany = QCompany.company;
+		HibernateQuery query = new HibernateQuery(sessionFactory.getCurrentSession());
+		
+		companies = query.from(qCompany).list(qCompany);
 		return companies;
 	}
 

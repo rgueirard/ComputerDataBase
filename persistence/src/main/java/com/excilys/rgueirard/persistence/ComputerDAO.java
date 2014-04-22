@@ -3,20 +3,17 @@ package com.excilys.rgueirard.persistence;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.sql.JoinType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.rgueirard.domain.Computer;
+import com.excilys.rgueirard.domain.QCompany;
+import com.excilys.rgueirard.domain.QComputer;
 import com.excilys.rgueirard.wrapper.PageWrapper;
+import com.mysema.query.jpa.hibernate.HibernateQuery;
 
 @Repository
 public class ComputerDAO{
@@ -49,60 +46,59 @@ public class ComputerDAO{
 		return computer.getId();
 	}
 
-	@SuppressWarnings("unchecked")
 	public PageWrapper<Computer> retrieve(PageWrapper<Computer> wrapper) {
 		logger.debug("ComputerDAO : recherche d'ordinateurs");
 				
-		Criteria critCount = sessionFactory.getCurrentSession().createCriteria(Computer.class);
-		critCount.setProjection(Projections.rowCount());
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Computer.class);
-		
+		QComputer qComputer = QComputer.computer;
+		HibernateQuery query = new HibernateQuery(sessionFactory.getCurrentSession());
+		HibernateQuery queryCount = new HibernateQuery(sessionFactory.getCurrentSession());
+				
 		List<Computer> computers = new ArrayList<Computer>();
 		int count = 0;
 		
 
 		/* retrieve all */
 		if (wrapper.getSearchMotif().isEmpty()) {
-			crit.setFetchMode("company", FetchMode.JOIN).createAlias("company", "cpn", JoinType.LEFT_OUTER_JOIN);
+			query.leftJoin(qComputer.company, QCompany.company);
 			switch (wrapper.getOrderBy()) {
 			case 1:
 				if(wrapper.isAscendant()){
-					crit.addOrder(Order.asc("id"));
+					query.orderBy(qComputer.id.asc());
 				} else {
-					crit.addOrder(Order.desc("id"));
+					query.orderBy(qComputer.id.desc());
 				}
 				break;
 			case 2:
 				if(wrapper.isAscendant()){
-					crit.addOrder(Order.asc("name"));
+					query.orderBy(qComputer.name.asc());
 				} else {
-					crit.addOrder(Order.desc("name"));
+					query.orderBy(qComputer.name.desc());
 				}
 				break;
 			case 3:
 				if(wrapper.isAscendant()){
-					crit.addOrder(Order.asc("introduced"));
+					query.orderBy(qComputer.introduced.asc());
 				} else {
-					crit.addOrder(Order.desc("introduced"));
+					query.orderBy(qComputer.introduced.desc());
 				}
 				break;
 			case 4:
 				if(wrapper.isAscendant()){
-					crit.addOrder(Order.asc("discontinued"));
+					query.orderBy(qComputer.discontinued.asc());
 				} else {
-					crit.addOrder(Order.desc("discontinued"));
+					query.orderBy(qComputer.discontinued.desc());
 				}
 				break;
 			case 5:
 				if(wrapper.isAscendant()){
-					crit.addOrder(Order.asc("company.name"));
+					query.orderBy(qComputer.company.name.asc());
 				} else {
-					crit.addOrder(Order.desc("company.name"));
+					query.orderBy(qComputer.company.name.desc());
 				}
 				break;
 			}
 						
-			count = ((Long)(critCount.uniqueResult())).intValue();
+			count = ((Long)queryCount.count()).intValue();
 			
 			if (count != 0) {
 				wrapper.setSize(count);
@@ -115,9 +111,9 @@ public class ComputerDAO{
 			if (wrapper.getCurrentPage() > wrapper.getNbPages()) {
 				wrapper.setCurrentPage(wrapper.getNbPages() - 1);
 			}
-					
-			crit.setMaxResults(wrapper.getNbDisplay()).setFirstResult((wrapper.getCurrentPage() - 1) * wrapper.getNbDisplay());
-			computers = crit.list();
+				
+			query.offset((wrapper.getCurrentPage() - 1) * wrapper.getNbDisplay()).limit(wrapper.getNbDisplay());
+			computers = query.list(QComputer.computer);
 
 			wrapper.setPages(computers);
 
@@ -126,95 +122,97 @@ public class ComputerDAO{
 			switch (wrapper.getSearchType()) {
 			/* by name */
 			case 0:
-				critCount.setFetchMode("company", FetchMode.JOIN).createAlias("company", "cpn", JoinType.LEFT_OUTER_JOIN);
-				critCount.add(Restrictions.like("name" ,"%" + wrapper.getSearchMotif() + "%"));
-				crit.setFetchMode("company", FetchMode.JOIN).createAlias("company", "cpn", JoinType.LEFT_OUTER_JOIN);
-				crit.add(Restrictions.like("name" ,"%" + wrapper.getSearchMotif() + "%"));
+				queryCount.leftJoin(qComputer.company, QCompany.company);
+				queryCount.where(qComputer.name.like("%" + wrapper.getSearchMotif() + "%"));
+				query.leftJoin(qComputer.company, QCompany.company);
+				query.where(qComputer.name.like("%" + wrapper.getSearchMotif() + "%"));
+				
 				switch (wrapper.getOrderBy()) {
 				case 1:
 					if(wrapper.isAscendant()){
-						crit.addOrder(Order.asc("id"));
+						query.orderBy(qComputer.id.asc());
 					} else {
-						crit.addOrder(Order.desc("id"));
+						query.orderBy(qComputer.id.desc());
 					}
 					break;
 				case 2:
 					if(wrapper.isAscendant()){
-						crit.addOrder(Order.asc("name"));
+						query.orderBy(qComputer.name.asc());
 					} else {
-						crit.addOrder(Order.desc("name"));
+						query.orderBy(qComputer.name.desc());
 					}
 					break;
 				case 3:
 					if(wrapper.isAscendant()){
-						crit.addOrder(Order.asc("introduced"));
+						query.orderBy(qComputer.introduced.asc());
 					} else {
-						crit.addOrder(Order.desc("introduced"));
+						query.orderBy(qComputer.introduced.desc());
 					}
 					break;
 				case 4:
 					if(wrapper.isAscendant()){
-						crit.addOrder(Order.asc("discontinued"));
+						query.orderBy(qComputer.discontinued.asc());
 					} else {
-						crit.addOrder(Order.desc("discontinued"));
+						query.orderBy(qComputer.discontinued.desc());
 					}
 					break;
 				case 5:
 					if(wrapper.isAscendant()){
-						crit.addOrder(Order.asc("company.name"));
+						query.orderBy(qComputer.company.name.asc());
 					} else {
-						crit.addOrder(Order.desc("company.name"));
+						query.orderBy(qComputer.company.name.desc());
 					}
 					break;
 				}
 				break;
 			/* by company */
 			case 1:
-				critCount.setFetchMode("company", FetchMode.JOIN).createAlias("company", "cpn", JoinType.INNER_JOIN);
-				critCount.add(Restrictions.like("cpn.name" ,"%" + wrapper.getSearchMotif() + "%"));
-				crit.setFetchMode("company", FetchMode.JOIN).createAlias("company", "cpn", JoinType.INNER_JOIN);
-				crit.add(Restrictions.like("cpn.name" ,"%" + wrapper.getSearchMotif() + "%"));
+				queryCount.innerJoin(qComputer.company, QCompany.company);
+				queryCount.where(qComputer.company.name.like("%" + wrapper.getSearchMotif() + "%"));
+				query.innerJoin(qComputer.company, QCompany.company);
+				query.where(qComputer.company.name.like("%" + wrapper.getSearchMotif() + "%"));
 				switch (wrapper.getOrderBy()) {
 				case 1:
 					if(wrapper.isAscendant()){
-						crit.addOrder(Order.asc("id"));
+						query.orderBy(qComputer.id.asc());
 					} else {
-						crit.addOrder(Order.desc("id"));
+						query.orderBy(qComputer.id.desc());
 					}
 					break;
 				case 2:
 					if(wrapper.isAscendant()){
-						crit.addOrder(Order.asc("name"));
+						query.orderBy(qComputer.name.asc());
 					} else {
-						crit.addOrder(Order.desc("name"));
+						query.orderBy(qComputer.name.desc());
 					}
 					break;
 				case 3:
 					if(wrapper.isAscendant()){
-						crit.addOrder(Order.asc("introduced"));
+						query.orderBy(qComputer.introduced.asc());
 					} else {
-						crit.addOrder(Order.desc("introduced"));
+						query.orderBy(qComputer.introduced.desc());
 					}
 					break;
 				case 4:
 					if(wrapper.isAscendant()){
-						crit.addOrder(Order.asc("discontinued"));
+						query.orderBy(qComputer.discontinued.asc());
 					} else {
-						crit.addOrder(Order.desc("discontinued"));
+						query.orderBy(qComputer.discontinued.desc());
 					}
 					break;
 				case 5:
 					if(wrapper.isAscendant()){
-						crit.addOrder(Order.asc("company.name"));
+						query.orderBy(qComputer.company.name.asc());
 					} else {
-						crit.addOrder(Order.desc("company.name"));
+						query.orderBy(qComputer.company.name.desc());
 					}
 					break;
 				}
+				break;
 			}
 
 			/* recupération de la taille */			
-			count = ((Long)(critCount.uniqueResult())).intValue();
+			count = ((Long)queryCount.count()).intValue();
 			
 			if (count != 0) {
 				wrapper.setSize(count);
@@ -230,8 +228,8 @@ public class ComputerDAO{
 					wrapper.setCurrentPage(wrapper.getNbPages() - 1);
 				}
 				
-				crit.setMaxResults(wrapper.getNbDisplay()).setFirstResult((wrapper.getCurrentPage() - 1) * wrapper.getNbDisplay());
-				computers = crit.list();
+				query.offset((wrapper.getCurrentPage() - 1) * wrapper.getNbDisplay()).limit(wrapper.getNbDisplay());
+				computers = query.list(QComputer.computer);
 				
 				wrapper.setPages(computers);
 			}
