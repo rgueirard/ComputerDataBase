@@ -31,6 +31,7 @@
 		<hibernate.version>4.3.4.Final</hibernate.version>
 		<jadira.version>2.0.1</jadira.version>
 		<querydsl.version>3.3.2</querydsl.version>
+		<spring-data.version>1.5.1.RELEASE</spring-data.version>
 	</properties>
 
 	<dependencyManagement>
@@ -161,6 +162,17 @@
 				<groupId>com.mysema.querydsl</groupId>
 				<artifactId>querydsl-jpa</artifactId>
 				<version>${querydsl.version}</version>
+			</dependency>
+			<!-- Spring data jpa -->
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-jpa</artifactId>
+				<version>${spring-data.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-entitymanager</artifactId>
+				<version>${hibernate.version}</version>
 			</dependency>
 		</dependencies>
 

@@ -24,18 +24,23 @@
 		<property name="defaultAutoCommit" value="false" />
 	</bean>
 	
-	 <!-- Hibernate sessionFactory -->
-    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+	  <!-- Spring data EntityManagerFactoryBean -->
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="persistenceUnitName" value="persistenceUnit"/>
         <property name="dataSource" ref="dataSource"/>
-        <property name="packagesToScan" value="com.excilys.rgueirard.domain" />
+        <property name="packagesToScan" value="com.excilys.rgueirard.domain"/>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+        </property>
     </bean>
+   	
    	
 	<tx:annotation-driven transaction-manager="transactionManager" />
 	
 	<!-- declaration du transaction manager pour Hibernate -->
 	<bean id="transactionManager"
-		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-		<property name="sessionFactory" ref="sessionFactory" />
+		class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
 
 	

@@ -23,13 +23,13 @@ public class CompanyService {
 	
 	public Company retrieve(long id){
 		Company company = null;
-		company = companyDAO.retrieve(id);
+		company = companyDAO.findOne(id);
 		return company;
 	}
 	
 	public List<Company> retrieveAll() {
 		List<Company> companies = null;
-		companies = companyDAO.retrieveAll();
+		companies = companyDAO.findAll();
 		return companies;
 	}
 }

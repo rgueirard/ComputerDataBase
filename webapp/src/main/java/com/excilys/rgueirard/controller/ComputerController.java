@@ -7,6 +7,10 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -219,7 +223,7 @@ public class ComputerController {
 		if (id != 0) {
 			computerService.delete(id);
 		}
-
+		
 		sb.append("show?page=");
 		sb.append(page);
 		sb.append("&nbDisplay=");
@@ -232,7 +236,7 @@ public class ComputerController {
 		sb.append(searchType);
 		sb.append("&searchMotif=");
 		sb.append(searchMotif);
-
+		
 		return sb.toString();
 	}
 
@@ -248,15 +252,66 @@ public class ComputerController {
 
 		logger.debug("affichage des ordinateurs");
 
+		Page<Computer> pageCpt = null;
+		Sort sort = null;
+		
+		switch (orderBy) {
+		case 1:
+			if(ascendant){
+				sort = new Sort(Sort.Direction.ASC, "id");
+			} else {
+				sort = new Sort(Sort.Direction.DESC, "id");
+			}
+			break;
+		case 2:
+			if(ascendant){
+				sort = new Sort(Sort.Direction.ASC, "name");
+			} else {
+				sort = new Sort(Sort.Direction.DESC, "name");
+			}
+			break;
+		case 3:
+			if(ascendant){
+				sort = new Sort(Sort.Direction.ASC, "introduced");
+			} else {
+				sort = new Sort(Sort.Direction.DESC, "introduced");
+			}
+			break;
+		case 4:
+			if(ascendant){
+				sort = new Sort(Sort.Direction.ASC, "discontinued");
+			} else {
+				sort = new Sort(Sort.Direction.DESC, "discontinued");
+			}
+			break;
+		case 5:
+			if(ascendant){
+				sort = new Sort(Sort.Direction.ASC, "company_id");
+			} else {
+				sort = new Sort(Sort.Direction.DESC, "company_id");
+			}
+			break;
+		}		
+		
 		PageWrapper<Computer> wrapper = new PageWrapper<Computer>();
 		PageWrapper<ComputerDTO> wrapperDTO = new PageWrapper<ComputerDTO>();
 
 		wrapper = getAttr(page, nbDisplay, orderBy, ascendant, searchType,
 				searchMotif);
-
+		
+		Pageable pageable = new PageRequest(page-1, nbDisplay, sort);
 		/* recuperation de la liste d'ordinateur */
-		wrapper = computerService.retrieve(wrapper);
-
+		if (searchMotif == null||searchMotif.isEmpty()) {
+			pageCpt = computerService.findAll(pageable);
+		} else {
+			pageCpt = computerService.retrieve(searchMotif, pageable);
+		}
+		wrapper.setNbPages(pageCpt.getTotalPages());
+		
+			wrapper.setCurrentPage(pageCpt.getNumber()+1);
+				
+		wrapper.setPages(pageCpt.getContent());
+		wrapper.setSize((int)pageCpt.getTotalElements());
 		wrapperDTO = wrapperMapper.computerToDTO(wrapper);
 
 		model.addAttribute("wrapper", wrapperDTO);

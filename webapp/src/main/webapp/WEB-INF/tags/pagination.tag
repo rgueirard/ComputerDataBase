@@ -1,13 +1,15 @@
-<%@ tag body-content="empty" %>
+<%@ tag body-content="empty"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ attribute name="wrapper" required="true" type="com.excilys.rgueirard.wrapper.PageWrapper" %>
+<%@ attribute name="wrapper" required="true"
+	type="com.excilys.rgueirard.wrapper.PageWrapper"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <table>
 	<tr>
 		<c:if test="${wrapper.currentPage != 1}">
 			<td><a
 				href="/computer-database/computer/show?page=${wrapper.currentPage - 1}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=${wrapper.ascendant}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"
-				class="btn primary"><spring:message code="page.lab.prev" text="com.err.text" /></a></td>
+				class="btn primary"><spring:message code="page.lab.prev"
+						text="com.err.text" /></a></td>
 		</c:if>
 		<c:choose>
 			<c:when test="${wrapper.nbPages gt 10}">
@@ -95,7 +97,8 @@
 		<c:if test="${wrapper.currentPage lt wrapper.nbPages}">
 			<td><a
 				href="/computer-database/computer/show?page=${wrapper.currentPage + 1}&nbDisplay=${wrapper.nbDisplay}&orderBy=${wrapper.orderBy}&ascendant=${wrapper.ascendant}&searchType=${wrapper.searchType}&searchMotif=${wrapper.searchMotif}"
-				class="btn primary"><spring:message code="page.lab.next" text="com.err.text" /></a></td>
+				class="btn primary"><spring:message code="page.lab.next"
+						text="com.err.text" /></a></td>
 		</c:if>
 	</tr>
 </table>

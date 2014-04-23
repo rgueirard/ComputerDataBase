@@ -1,15 +1,18 @@
 package com.excilys.rgueirard.service;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.rgueirard.domain.Computer;
+import com.excilys.rgueirard.domain.Log;
 import com.excilys.rgueirard.persistence.ComputerDAO;
 import com.excilys.rgueirard.persistence.LogDAO;
-import com.excilys.rgueirard.wrapper.PageWrapper;
 
 @Service
 @Transactional(readOnly = true)
@@ -20,9 +23,6 @@ public class ComputerService {
 
 	@Autowired
 	private ComputerDAO computerDAO;
-
-	@Autowired
-	private LogService logService;
 
 	@Autowired
 	private CompanyService companyService;
@@ -36,48 +36,60 @@ public class ComputerService {
 
 	@Transactional(readOnly = false)
 	public void create(Computer computer) {
-		long id = 0;
+		Computer result = null;
+		DateTime time = new DateTime();
+		Log log = null;
+
 
 		logger.info("ComputerService : creation d'ordinateur");
-		id = computerDAO.create(computer);
-		logDAO.create(id, "create");
+		
+		result = computerDAO.save(computer);
+		log = Log.builder().computerId(result.getId()).message("create").time(time).build();
+		logDAO.save(log);
 
 	}
 
 	@Transactional(readOnly = false)
 	public void update(Computer computer) {
-		long id = 0;
-
+		Computer result = null;
+		DateTime time = new DateTime();
+		Log log = null;
+		
 		logger.info("ComputerService : edition d'ordinateur");
-		id = computerDAO.update(computer);
-		logDAO.create(id, "update");
+		
+		result = computerDAO.save(computer);
+		log = Log.builder().computerId(result.getId()).message("update").time(time).build();
+		logDAO.save(log);
 
 	}
 
 	@Transactional(readOnly = false)
 	public void delete(long pId) {
-		long id = 0;
-
+		DateTime time = new DateTime();
+		Log log = null;
+		
 		logger.info("ComputerService : deletion d'ordinateur");
-		id = computerDAO.delete(pId);
-		logDAO.create(id, "delete");
-
+		computerDAO.delete(pId);
+		log = Log.builder().computerId(pId).message("delete").time(time).build();
+		logDAO.save(log);
 	}
 
-	public PageWrapper<Computer> retrieve(PageWrapper<Computer> wrapper) {
+	public Page<Computer> retrieve(String searchMotif, Pageable pageable) {
 
 		logger.info("ComputerService : rechercher d'ordinateurs");
-		wrapper = computerDAO.retrieve(wrapper);
-
-		return wrapper;
+		return computerDAO.findByNameContainingOrCompanyNameContaining(searchMotif, searchMotif, pageable);
 	}
 
 	public Computer retrieveById(long id) {
 		Computer computer = null;
 
 		logger.info("ComputerService : rechercher d'ordinateur par id");
-		computer = computerDAO.retrieveById(id);
+		computer = computerDAO.findOne(id);
 
 		return computer;
+	}
+
+	public Page<Computer> findAll(Pageable pageable) {
+		return computerDAO.findAll(pageable);
 	}
 }
