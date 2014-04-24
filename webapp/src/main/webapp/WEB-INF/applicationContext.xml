@@ -9,7 +9,7 @@
 			http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
 
    	<import resource="dispatcher-servlet.xml"/>   
+   	<import resource="spring-security.xml"/>
 	<import resource="classpath:service-context.xml"/>
 	<import resource="classpath:binding-context.xml"/>
-	 
 </beans>

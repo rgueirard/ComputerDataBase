@@ -74,12 +74,18 @@ public class ComputerService {
 		logDAO.save(log);
 	}
 
-	public Page<Computer> retrieve(String searchMotif, Pageable pageable) {
+	public Page<Computer> retrieveByName(String searchMotif, Pageable pageable) {
 
 		logger.info("ComputerService : rechercher d'ordinateurs");
-		return computerDAO.findByNameContainingOrCompanyNameContaining(searchMotif, searchMotif, pageable);
+		return computerDAO.findByNameContaining(searchMotif, pageable);
 	}
+	
+	public Page<Computer> retrieveByCompanyName(String searchMotif, Pageable pageable) {
 
+		logger.info("ComputerService : rechercher d'ordinateurs");
+		return computerDAO.findByCompanyNameContaining(searchMotif, pageable);
+	}
+	
 	public Computer retrieveById(long id) {
 		Computer computer = null;
 

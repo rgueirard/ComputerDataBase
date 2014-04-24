@@ -12,6 +12,12 @@
 		<dependency>
 			<groupId>ComputerDBModule</groupId>
 			<artifactId>persistence</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>spring-aop</artifactId>
+					<groupId>org.springframework</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- bonecp -->
 		<dependency>

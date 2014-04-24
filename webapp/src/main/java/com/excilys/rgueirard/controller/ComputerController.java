@@ -286,9 +286,9 @@ public class ComputerController {
 			break;
 		case 5:
 			if(ascendant){
-				sort = new Sort(Sort.Direction.ASC, "company_id");
+				sort = new Sort(Sort.Direction.ASC, "company.name");
 			} else {
-				sort = new Sort(Sort.Direction.DESC, "company_id");
+				sort = new Sort(Sort.Direction.DESC, "company.name");
 			}
 			break;
 		}		
@@ -304,7 +304,11 @@ public class ComputerController {
 		if (searchMotif == null||searchMotif.isEmpty()) {
 			pageCpt = computerService.findAll(pageable);
 		} else {
-			pageCpt = computerService.retrieve(searchMotif, pageable);
+			if(searchType == 0) {
+				pageCpt = computerService.retrieveByName(searchMotif, pageable);
+			} else {
+				pageCpt = computerService.retrieveByCompanyName(searchMotif, pageable);
+			}
 		}
 		wrapper.setNbPages(pageCpt.getTotalPages());
 		
