@@ -10,5 +10,5 @@
     
     <context:component-scan base-package="com.excilys.rgueirard.validator"/>
     <context:component-scan base-package="com.excilys.rgueirard.mapper"/>
-    
+    <import resource="classpath:service-context.xml"/>
 </beans>

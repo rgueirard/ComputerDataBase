@@ -1,5 +1,7 @@
 package com.excilys.rgueirard.service;
 
+import java.util.List;
+
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,5 +99,9 @@ public class ComputerService {
 
 	public Page<Computer> findAll(Pageable pageable) {
 		return computerDAO.findAll(pageable);
+	}
+	
+	public List<Computer> findAll() {
+		return computerDAO.findAll();
 	}
 }

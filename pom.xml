@@ -11,6 +11,7 @@
 		<module>persistence</module>
 		<module>service</module>
 		<module>webapp</module>
+		<module>webservices</module>
 	</modules>
 
 	<properties>
@@ -33,6 +34,8 @@
 		<querydsl.version>3.3.2</querydsl.version>
 		<spring-data.version>1.5.1.RELEASE</spring-data.version>
 		<spring-security.version>3.2.3.RELEASE</spring-security.version>
+		<jaxws.version>1.9</jaxws.version>
+		<jaxws-rt.version>2.2.8</jaxws-rt.version>
 	</properties>
 
 	<dependencyManagement>
@@ -186,8 +189,19 @@
 				<artifactId>spring-security-config</artifactId>
 				<version>${spring-security.version}</version>
 			</dependency>
+			<!-- Jax-Ws -->
+			<!-- JAX-WS -->
+			<dependency>
+				<groupId>com.sun.xml.ws</groupId>
+				<artifactId>jaxws-rt</artifactId>
+				<version>${jaxws-rt.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jvnet.jax-ws-commons.spring</groupId>
+				<artifactId>jaxws-spring</artifactId>
+				<version>${jaxws.version}</version>
+			</dependency>
 		</dependencies>
-
 
 	</dependencyManagement>
 
@@ -204,4 +218,5 @@
 			</plugin>
 		</plugins>
 	</build>
+
 </project>
