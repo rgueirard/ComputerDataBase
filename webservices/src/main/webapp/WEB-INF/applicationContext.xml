@@ -16,8 +16,11 @@
 		<jaxrs:serviceBeans>
 			<bean class="com.excilys.rgueirard.webservices.ComputerWebService" />
 		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
+		</jaxrs:providers>
 	</jaxrs:server>
-	
+
 	<import resource="classpath:binding-context.xml" />
 
 </beans>
