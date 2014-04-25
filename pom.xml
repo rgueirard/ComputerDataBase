@@ -34,8 +34,8 @@
 		<querydsl.version>3.3.2</querydsl.version>
 		<spring-data.version>1.5.1.RELEASE</spring-data.version>
 		<spring-security.version>3.2.3.RELEASE</spring-security.version>
-		<jaxws.version>1.9</jaxws.version>
-		<jaxws-rt.version>2.2.8</jaxws-rt.version>
+		<cxf.version>2.7.11</cxf.version>
+		<jackson-jackrs.version>1.9.13</jackson-jackrs.version>
 	</properties>
 
 	<dependencyManagement>
@@ -189,17 +189,16 @@
 				<artifactId>spring-security-config</artifactId>
 				<version>${spring-security.version}</version>
 			</dependency>
-			<!-- Jax-Ws -->
-			<!-- JAX-WS -->
+			<!-- Jax-Rs -->
 			<dependency>
-				<groupId>com.sun.xml.ws</groupId>
-				<artifactId>jaxws-rt</artifactId>
-				<version>${jaxws-rt.version}</version>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-frontend-jaxrs</artifactId>
+				<version>${cxf.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.jvnet.jax-ws-commons.spring</groupId>
-				<artifactId>jaxws-spring</artifactId>
-				<version>${jaxws.version}</version>
+				<groupId>org.codehaus.jackson</groupId>
+				<artifactId>jackson-jaxrs</artifactId>
+				<version>${jackson-jackrs.version}</version>
 			</dependency>
 		</dependencies>
 
